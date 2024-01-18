@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}MyMoney - {{budget.name}} {% endblock title %}
+
+{% block content %}
+<p>{{budget.name}}</p>
+
+<h2>Transactions</h2>
+<ul>
+  {% for transaction in budget.transaction_set.all %}
+  <li>
+    <a href="{% url 'budget:transaction_detail' transaction.id %}">{{transaction.amount}}</a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

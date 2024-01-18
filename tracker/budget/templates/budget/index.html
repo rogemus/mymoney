@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %} MyMoney - Budgets {% endblock %}
+
+{% block content %}
+<ul>
+  {% for budget in budgets %}
+  <li><a href="{% url 'budget:budget_detail' budget.id %}">{{budget.name}}</li>
+  {% endfor %}
+</ul>
+{% endblock %}
