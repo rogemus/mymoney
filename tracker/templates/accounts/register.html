@@ -1,0 +1,13 @@
+{% block content %}
+
+<form method="POST">
+  {% csrf_token %}
+
+  <button type="submit">Register</button>
+</form>
+
+<div class="border-top pt-3">
+  Need An Account? <a href="{% url 'accounts:signup' %}">Sign Up Now</a>
+</div>
+
+{% endblock content %}
