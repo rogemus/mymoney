@@ -15,4 +15,5 @@ urlpatterns = [
         views.signout,
         name="signout",
     ),
+    path("register_user", views.register_user, name="register_user"),
 ]

@@ -13,4 +13,6 @@ Add base for adding user account
 Add login/logout
 Move template to root of tracker app
 
+## Day 4 - 21.01.2024
+Add basic register form
 
