@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.contrib import messages
 
 
 def signin(request):
@@ -22,7 +23,8 @@ def register_user(request):
     user = User.objects.create_user(username, email, password)
 
     user.save()
-    return HttpResponse("User created")
+    messages.success(request, "User created!")
+    return redirect("/accounts/signup")
 
 
 def signup(request):

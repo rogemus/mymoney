@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}MyMoney - Add Transaction {% endblock title %}
+
+{% block content %}
+
+{% include "shared/message.html" %}
+
+<form action="" method="post">
+  <div>
+    <label for="amount">Amount</label>
+    <input id="amount" name="amount" placeholder="0.00">
+  </div>
+
+  <div>
+    <label id="is_expense">Is Expense</label>
+    <input type="checkbox" value="true" id="is_expense" name="is_expense">
+  </div>
+
+  <div>
+    <label for="description">Description</label>
+    <textarea id="description" placeholder="Transaction description..."></textarea>
+  </div>
+
+  <button type="submit">Add Transaction</button>
+</form>
+
+{% endblock content %}
