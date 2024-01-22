@@ -16,3 +16,5 @@ Move template to root of tracker app
 ## Day 4 - 21.01.2024
 Add basic register form
 
+## Day 5 - 22.01.2024
+Add messages to views after request

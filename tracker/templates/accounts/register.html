@@ -1,5 +1,7 @@
 {% block content %}
 
+{% include "shared/message.html" %}
+
 <form action="{% url 'accounts:register_user' %}" method="POST">
   {% csrf_token %}
   <div>
