@@ -13,16 +13,22 @@ class SignIn(View):
     form = AuthenticationForm()
 
     def get(self, request):
+        """
+        Render login form
+        """
         return render(request, self.template_name, context={"form": self.form})
 
     def post(self, request):
+        """
+        Authentication user to app using session token
+        """
         password = request.POST["password"]
         username = request.POST["username"]
         user = authenticate(username=username, password=password)
 
         if user is not None:
             login(request, user)
-            return redirect("/budget/list")
+            return redirect("/budget")
         else:
             messages.error(request, "User does not exst.")
 
@@ -34,13 +40,20 @@ class SignUp(View):
     form = UserCreationForm()
 
     def get(self, request):
+        """
+        Render register form
+        """
         return render(request, self.template_name, context={"form": self.form})
 
     def post(self, request):
+        """
+        Create user
+        """
         email = request.POST["email"]
         password = request.POST["password"]
         username = request.POST["username"]
 
+        # [TODO]: Add validation
         user = User.objects.create_user(username, email, password)
 
         user.save()
@@ -51,6 +64,9 @@ class SignUp(View):
 @method_decorator(login_required, name="dispatch")
 class SignOut(View):
     def get(self, request):
+        """
+        Logout user
+        """
         logout(request)
         messages.success(request, "User logout!")
         return redirect("/")
