@@ -3,9 +3,38 @@
 
 <head>
   <title>{% block title %}MyMoney{% endblock title %}</title>
+
+  <!-- TODO: Remove this to proper file -->
+  <style>
+    nav {
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
 </head>
 
 <body>
+  <nav>
+    <ul>
+      <li>
+        <a href="{% url 'budget:index' %}">Budgets list</a>
+      </li>
+      <li>
+        <a href="{% url 'budget:budget_add' %}">Add Budget</a>
+      </li>
+    </ul>
+    <ul>
+      <li>
+        {% if request.user.is_authenticated %}
+        {{ request.user.username }}
+        {% endif %}
+      </li>
+      <li>
+        <a href="{% url 'accounts:signout' %}">Signout</a>
+      </li>
+    </ul>
+  </nav>
+
   {% block content %}
   {% endblock content %}
 </body>

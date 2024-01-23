@@ -4,7 +4,8 @@ from . import views
 
 app_name = "budget"
 urlpatterns = [
-    path("", views.IndexView.as_view(), name="index"),
+    path("list", views.IndexView.as_view(), name="index"),
+    path("add/", views.add_budget_view, name="budget_add"),
     path("<int:pk>/", views.BudgetDetail.as_view(), name="budget_detail"),
     path(
         "t/<int:pk>/",

@@ -6,10 +6,11 @@
 
 {% include "shared/message.html" %}
 
-<form action="" method="post">
+<form action="{% url 'budget:budget_add' %}" method="post">
+  {% csrf_token %}
   <div>
-    <label for="name">Name</label>
-    <input id="name" name="name" placeholder="Budget name..." />
+    <label for="budget_name">Name</label>
+    <input id="budget_name" name="budget_name" placeholder="Budget name..." />
   </div>
 
   <button type="submit">Add Budget</button>
