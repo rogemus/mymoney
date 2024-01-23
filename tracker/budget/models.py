@@ -13,6 +13,7 @@ class Budget(models.Model):
     name = models.CharField(max_length=150)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    description = models.CharField(max_length=250, default="")
 
 
 class Transaction(models.Model):

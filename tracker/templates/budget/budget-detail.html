@@ -6,10 +6,20 @@
 <p>{{budget.name}}</p>
 
 <h2>Transactions</h2>
+
+{% include 'transaction/transaction-add.html' with budget_id=budget.id %}
+
 <ul>
   {% for transaction in budget.transaction_set.all %}
   <li>
-    <a href="{% url 'budget:transaction_detail' transaction.id %}">{{transaction.amount}}</a>
+    <a href="{% url 'budget:transaction_detail' transaction.id %}">
+      {% if transaction.is_expense %}
+      -
+      {% else %}
+      +
+      {% endif %}
+      {{transaction.amount}}
+    </a>
   </li>
   {% endfor %}
 </ul>
