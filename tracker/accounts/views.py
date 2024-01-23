@@ -4,30 +4,39 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+from django.utils.decorators import method_decorator
+from django.views import View
 
 
-def signin(request):
-    # Add proper validation
-    if request.method == "POST":
+class SignIn(View):
+    template_name = "accounts/login.html"
+    form = AuthenticationForm()
+
+    def get(self, request):
+        return render(request, self.template_name, context={"form": self.form})
+
+    def post(self, request):
         password = request.POST["password"]
         username = request.POST["username"]
         user = authenticate(username=username, password=password)
 
-        if user is None:
-            messages.error(
-                request, "User does not exist. Provide correct username, password"
-            )
-        else:
+        if user is not None:
             login(request, user)
             return redirect("/budget/list")
+        else:
+            messages.error(request, "User does not exst.")
 
-    form = AuthenticationForm()
-    return render(request, template_name="accounts/login.html", context={"form": form})
+        return render(request, self.template_name, context={"form": self.form})
 
 
-def signup(request):
-    # Add proper validation
-    if request.method == "POST":
+class SignUp(View):
+    template_name = "accounts/register.html"
+    form = UserCreationForm()
+
+    def get(self, request):
+        return render(request, self.template_name, context={"form": self.form})
+
+    def post(self, request):
         email = request.POST["email"]
         password = request.POST["password"]
         username = request.POST["username"]
@@ -36,14 +45,12 @@ def signup(request):
 
         user.save()
         messages.success(request, "User created!")
-
-    form = UserCreationForm()
-    return render(
-        request, template_name="accounts/register.html", context={"form": form}
-    )
+        return render(request, self.template_name, context={"form": self.form})
 
 
-@login_required
-def signout(request):
-    logout(request)
-    redirect("index")
+@method_decorator(login_required, name="dispatch")
+class SignOut(View):
+    def get(self, request):
+        logout(request)
+        messages.success(request, "User logout!")
+        return redirect("/")

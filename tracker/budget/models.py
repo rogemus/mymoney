@@ -2,6 +2,7 @@ import calendar
 from datetime import date
 
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -11,6 +12,7 @@ class Budget(models.Model):
 
     name = models.CharField(max_length=150)
     created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
 
 class Transaction(models.Model):
@@ -34,6 +36,7 @@ class Transaction(models.Model):
     amount = models.FloatField(null=True, blank=True, default=0.0)
     is_expense = models.BooleanField(default=True)
     description = models.CharField(max_length=300, default="")
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
 
 # class TransactionCategory(models.Model):

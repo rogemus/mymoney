@@ -4,8 +4,8 @@ from .models import Budget, Transaction
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ["amount", "is_expense", "created_at", "in_current_month"]
-    list_filter = ["created_at"]
+    list_display = ["amount", "is_expense", "created_at", "in_current_month", "user"]
+    list_filter = ["created_at", "user"]
 
 
 class TransactionInline(admin.TabularInline):
@@ -14,7 +14,7 @@ class TransactionInline(admin.TabularInline):
 
 
 class BudgetAdmin(admin.ModelAdmin):
-    fields = ["name"]
+    fields = ["name", "user"]
     inlines = [TransactionInline]
     search_fields = ["name"]
 
