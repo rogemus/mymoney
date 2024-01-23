@@ -15,6 +15,10 @@ class Budget(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     description = models.CharField(max_length=250, default="")
 
+    # @property
+    # def current_month_transaction(self):
+    #     return Transaction.objects.filter(in_current_month=True, budget__id=self.id)
+
 
 class Transaction(models.Model):
     def __str__(self):
