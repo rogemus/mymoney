@@ -1,6 +1,8 @@
 {% block content %}
 
-<form method="POST">
+{% include 'shared/message.html' %}
+
+<form action="{% url 'accounts:signin' %}" method="POST">
   {% csrf_token %}
   {{ form }}
   <button type="submit">Login</button>
