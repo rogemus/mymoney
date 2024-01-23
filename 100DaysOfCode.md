@@ -18,3 +18,7 @@ Add basic register form
 
 ## Day 5 - 22.01.2024
 Add messages to views after request
+
+## Day 6 - 23.01.2024
+Add form for adding Transaction
+Revaftor views to classes
