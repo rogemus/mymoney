@@ -14,7 +14,7 @@ class TransactionInline(admin.TabularInline):
 
 
 class BudgetAdmin(admin.ModelAdmin):
-    fields = ["name", "user"]
+    fields = ["name", "user", "shared_to" ]
     inlines = [TransactionInline]
     search_fields = ["name"]
 

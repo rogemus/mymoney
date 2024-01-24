@@ -12,9 +12,9 @@ class Budget(models.Model):
 
     name = models.CharField(max_length=150)
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, related_name="user", on_delete=models.DO_NOTHING)
     description = models.CharField(max_length=250, default="")
-
+    shared_to = models.ManyToManyField(User, related_name="shared_to")
     # @property
     # def current_month_transaction(self):
     #     return Transaction.objects.filter(in_current_month=True, budget__id=self.id)

@@ -1,5 +1,3 @@
-{% include "shared/message.html" %}
-
 <form id="transaction_add" action="{% url 'budget:transaction_add' budget_id=budget_id %}" method="post">
   {% csrf_token %}
   <div>

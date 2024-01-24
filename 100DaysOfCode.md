@@ -22,3 +22,6 @@ Add messages to views after request
 ## Day 6 - 23.01.2024
 Add form for adding Transaction
 Revaftor views to classes
+
+## Day 7 - 24.01.2024
+Add basic share functionality. User A can share budget to User B

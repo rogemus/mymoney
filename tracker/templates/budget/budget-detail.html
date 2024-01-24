@@ -5,10 +5,30 @@
 {% block content %}
 <p>{{budget.name}}</p>
 
+{% include 'shared/message.html' %}
+
+<!--- Share to user --->
+<hr />
+<form method="post" action="{% url 'budget:budget_share' budget.id %}">
+  {% csrf_token %}
+  <select name="share_to" id="share_to">
+    <option value="1">Admin</option>
+    <option value="2">User 1</option>
+    <option value="3">User 2</option>
+  </select>
+  <button type="submit">Share budget</button>
+</form>
+<hr />
+
+<h2>Shared to users:</h2>
+<ul>
+  {% for user in shared_to_users %}
+  <li>{{user.username}}</li>
+  {% endfor %}
+</ul>
+
 <h2>Transactions</h2>
-
 {% include 'transaction/transaction-add.html' with budget_id=budget.id %}
-
 <ul>
   {% for transaction in budget.transaction_set.all %}
   <li>
@@ -19,7 +39,7 @@
       +
       {% endif %}
       {{transaction.amount}}
-    </a>
+    </a> by {{transaction.user.username}}
   </li>
   {% endfor %}
 </ul>
