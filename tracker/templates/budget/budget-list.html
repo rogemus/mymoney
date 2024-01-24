@@ -3,9 +3,17 @@
 {% block title %} MyMoney - Budgets {% endblock %}
 
 {% block content %}
+<h2>My budgets</h2>
 <ul>
   {% for budget in budgets %}
-  <li><a href="{% url 'budget:budget_detail' budget.id %}">{{budget.name}}</li>
+  <li><a href="{% url 'budget:budget_detail' budget.id %}">{{budget.name}}</a></li>
+  {% endfor %}
+</ul>
+
+<h2>Shared</h2>
+<ul>
+  {% for budget in shared_budgets %}
+  <li><a href="{% url 'budget:budget_detail' budget.id %}">{{budget.name}}</a></li>
   {% endfor %}
 </ul>
 {% endblock %}

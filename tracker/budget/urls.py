@@ -4,13 +4,30 @@ from . import views
 
 app_name = "budget"
 urlpatterns = [
-    path("", views.BudgetList.as_view(), name="index"),
-    path("add/", views.BudgetAdd.as_view(), name="budget_add"),
-    path("<int:pk>/", views.BudgetDetail.as_view(), name="budget_detail"),
+    path(
+        "",
+        views.BudgetList.as_view(),
+        name="index"
+    ),
+    path(
+        "add/",
+        views.BudgetAdd.as_view(),
+        name="budget_add"
+    ),
+    path(
+        "<int:pk>/",
+        views.BudgetDetail.as_view(),
+        name="budget_detail"
+    ),
     path(
         "<int:budget_id>/transaction_add",
-        view=views.TransactionAdd.as_view(),
+        views.TransactionAdd.as_view(),
         name="transaction_add",
+    ),
+    path(
+        "<int:budget_id>/share",
+        views.BudgetShare.as_view(),
+        name="budget_share"
     ),
     path(
         "t/<int:pk>/",

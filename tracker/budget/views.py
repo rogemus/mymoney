@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
 from django.views import View, generic
@@ -10,26 +11,54 @@ from .models import Budget, Transaction
 
 @method_decorator(login_required, name="dispatch")
 class BudgetList(View):
-    template_name = "budget/index.html"
+    template_name = "budget/budget-list.html"
 
     def get(self, request):
         """
         Budgets list for login user
         """
         budgets = Budget.objects.filter(user=request.user)
-        return render(request, self.template_name, {"budgets": budgets})
+        shared_budgets = Budget.objects.filter(shared_to=request.user)
+
+        return render(
+            request,
+            self.template_name,
+            {"budgets": budgets, "shared_budgets": shared_budgets},
+        )
 
 
-# [TODO] Add Update funtion for budget
-class BudgetDetail(LoginRequiredMixin, generic.DetailView):
-    model = Budget
+class BudgetDetail(View):
     template_name = "budget/budget-detail.html"
+
+    def get(self, request, pk):
+        budget = Budget.objects.get(pk=pk)
+        shared_to_users = budget.shared_to.all()
+
+        print(shared_to_users)
+        return render(
+            request,
+            self.template_name,
+            context={"budget": budget, "shared_to_users": shared_to_users},
+        )
 
 
 # [TODO] Add update function for transaction
 class TransactionDetail(LoginRequiredMixin, generic.DetailView):
     model = Transaction
     template_name = "transaction/transaction-detail.html"
+
+
+class BudgetShare(View):
+    def post(self, request, budget_id):
+        # TODO: this should be 2 step feature.
+        # User A types user emails in field on front, and User B should accept link in the email
+        share_to = request.POST["share_to"]
+        budget = Budget.objects.get(pk=budget_id)
+        user_share_to = User.objects.get(pk=share_to)
+        budget.shared_to.add(user_share_to)
+        budget.save()
+        messages.success(request, "Budget shared")
+        return redirect("/budget/%s" % budget_id)
 
 
 @method_decorator(login_required, name="dispatch")
