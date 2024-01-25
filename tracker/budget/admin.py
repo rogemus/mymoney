@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Budget, Transaction
+from .models import Budget, Invitation, Transaction
 
 
 class TransactionAdmin(admin.ModelAdmin):
@@ -18,6 +18,9 @@ class BudgetAdmin(admin.ModelAdmin):
     inlines = [TransactionInline]
     search_fields = ["name"]
 
+class InvitationsAdmin(admin.ModelAdmin):
+    model = Invitation
 
+admin.site.register(Invitation, InvitationsAdmin)
 admin.site.register(Budget, BudgetAdmin)
 admin.site.register(Transaction, TransactionAdmin)

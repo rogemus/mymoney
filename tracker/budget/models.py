@@ -1,10 +1,11 @@
 import calendar
 import uuid
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 
 
 class Budget(models.Model):
@@ -16,10 +17,34 @@ class Budget(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, related_name="user", on_delete=models.DO_NOTHING)
     description = models.CharField(max_length=250, default="")
-    shared_to = models.ManyToManyField(User, related_name="shared_to")
+    shared_to = models.ManyToManyField(User, related_name="shared_to", blank=True)
     # @property
     # def current_month_transaction(self):
     #     return Transaction.objects.filter(in_current_month=True, budget__id=self.id)
+
+
+class Invitation(models.Model):
+    now = timezone.now()
+    future = now + timedelta(hours=48)
+
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True
+    )
+    budget = models.ForeignKey(Budget, on_delete=models.DO_NOTHING)
+    from_user = models.ForeignKey(
+        User, related_name="from_user", on_delete=models.DO_NOTHING
+    )
+    accepted = models.BooleanField(default=False)
+    to_user = models.ForeignKey(
+        User, related_name="to_user", on_delete=models.DO_NOTHING
+    )
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    valid_from = models.DateTimeField(default=now)
+    valid_to = models.DateTimeField(default=future)
+
+    @property
+    def expired(self):
+        return timezone.now() >= self.valid_to
 
 
 class Transaction(models.Model):

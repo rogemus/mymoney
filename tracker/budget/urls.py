@@ -30,6 +30,11 @@ urlpatterns = [
         name="budget_share"
     ),
     path(
+        "join/",
+        views.BudgetShareToken.as_view(),
+        name="budget_share_token"
+    ),
+    path(
         "t/<int:pk>/",
         views.TransactionDetail.as_view(),
         name="transaction_detail",
