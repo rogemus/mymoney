@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}MyMoney - Add Budget {% endblock title %}
+
+{% block content %}
+
+{% include "shared/message.html" %}
+
+<div>
+  from: <strong>{{invitation.from_user}}</strong><br />
+  to: <strong>{{invitation.to_user}}</strong><br />
+  token: <strong>{{invitation.token}}</strong>
+</div>
+
+{% endblock content %}

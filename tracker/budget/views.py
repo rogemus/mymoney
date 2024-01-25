@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View, generic
 
-from .models import Budget, Transaction
+from .models import Budget, Invitation, Transaction
 
 
 @method_decorator(login_required, name="dispatch")
@@ -19,14 +20,45 @@ class BudgetList(View):
         """
         budgets = Budget.objects.filter(user=request.user)
         shared_budgets = Budget.objects.filter(shared_to=request.user)
+        invitations = Invitation.objects.filter(
+            from_user=request.user, valid_to__gt=timezone.now()
+        )
 
         return render(
             request,
             self.template_name,
-            {"budgets": budgets, "shared_budgets": shared_budgets},
+            {
+                "budgets": budgets,
+                "shared_budgets": shared_budgets,
+                "invitations": invitations,
+            },
         )
 
 
+@method_decorator(login_required, name="dispatch")
+class BudgetShareToken(View):
+    template_name = "budget/budget-share.html"
+
+    def get(self, request):
+        if "invitationToken" not in request.GET:
+            messages.error(request, "Token not present")
+        else:
+            token = request.GET["invitationToken"]
+            invitation = Invitation.objects.get(token=token)
+
+            if invitation.to_user.id == request.user.id:
+                invitation.budget.shared_to.add(request.user)
+                invitation.accepted = True
+                invitation.save()
+            else:
+                messages.error(request, "Invalid user from invitation")
+
+            return render(
+                request, self.template_name, context={"invitation": invitation}
+            )
+
+
+@method_decorator(login_required, name="dispatch")
 class BudgetDetail(View):
     template_name = "budget/budget-detail.html"
 
