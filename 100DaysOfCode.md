@@ -25,3 +25,6 @@ Revaftor views to classes
 
 ## Day 7 - 24.01.2024
 Add basic share functionality. User A can share budget to User B
+
+## Day 8 - 25.01.2024
+Add uuid to models

@@ -1,4 +1,5 @@
 import calendar
+import uuid
 from datetime import date
 
 from django.contrib import admin
@@ -10,6 +11,7 @@ class Budget(models.Model):
     def __str__(self):
         return self.name
 
+    unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=150)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, related_name="user", on_delete=models.DO_NOTHING)
@@ -42,6 +44,7 @@ class Transaction(models.Model):
     is_expense = models.BooleanField(default=True)
     description = models.CharField(max_length=300, default="")
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
 
 # class TransactionCategory(models.Model):
