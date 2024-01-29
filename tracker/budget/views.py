@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -78,6 +79,37 @@ class BudgetDetail(View):
 class TransactionDetail(LoginRequiredMixin, generic.DetailView):
     model = Transaction
     template_name = "transaction/transaction-detail.html"
+
+
+# class BudgetInvite(View):
+#     def post(self, request, budget_id):
+#         users_emails = request.GET["users_emails"]
+#         emails = users_emails.split(",")
+#         budget = Budget.objects.get(pk=budget_id)
+#
+#         for email in emails:
+#             user = User.objects.get(email=email)
+#             invitation = Invitation(budget=budget, to_user=user, from_user=request.user)
+#             invitation.save()
+#
+#             msg = (
+#                 """
+#             User: %s invited you to budget: %s \n
+#             Open link in the browser:
+#
+#             http://localhost:8000/join?invitationToken=%s
+#             """
+#                 % user.username,
+#                 budget.name,
+#                 invitation.token,
+#             )
+#
+#             send_mail(
+#                 subject="Invite to budget",
+#                 message=msg,
+#                 from_email="from@mymoney.com",
+#                 recipient_list=[email],
+#             )
 
 
 class BudgetShare(View):
