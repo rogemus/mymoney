@@ -1,0 +1,17 @@
+{
+  "name": "mymoney",
+  "version": "1.0.0",
+  "description": "This GitHub project focuses on creating a user-friendly app to tract daily expanes with key features such as user authentication, budget creation, and transaction management.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node ./esbuild.dev.js",
+    "build": "node ./esbuild.build.js"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.19.12"
+  }
+}
