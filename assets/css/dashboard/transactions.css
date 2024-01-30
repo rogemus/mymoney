@@ -1,0 +1,76 @@
+/*     <ul class="transactions-list"> */
+/**/
+/*       <li class="transactions-item"> */
+/*         <div class="transactions-left"> */
+/*           <div class="transactions-category-icon"> */
+/*             🍺 */
+/*           </div> */
+/*           <div class="transactions-info"> */
+/*             <div class="transactions-category-name">Shopping</div> */
+/*             <div class="transactions-desc">Personal Payment</div> */
+/*           </div> */
+/*         </div> */
+/**/
+/*         <div class="transactions-right"> */
+/*           <div class="transactions-amount expense"> */
+/*             -35 USD */
+/*           </div> */
+/*         </div> */
+/*       </li> */
+/**/
+
+.transactions-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.transactions-item {
+  margin-bottom: 20px;
+}
+
+.transactions-item,
+.transactions-left {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transactions-info {
+  margin-left: 20px;
+}
+
+.transactions-category-icon {
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-blue);
+  height: 40px;
+  width: 40px;
+}
+
+.transactions-category-name {
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.transactions-desc {
+  color: var(--color-grey);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 200px;
+  cursor: help;
+}
+
+.transactions-amount {
+  color: var(--color-green);
+  font-weight: 800;
+  margin-left: 20px;
+
+  &.expense {
+    color: var(--color-red);
+  }
+}

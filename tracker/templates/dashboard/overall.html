@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %} MyMoney - Budgets {% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+  <div class="banalce card">
+    <div class="card-title">This is title</div>
+    <div class="card-content">This month balance</div>
+  </div>
+  <div class="flow card">
+    <div class="card-title">This is title</div>
+    <div class="card-content">Monthly flow</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">This is title</div>
+    <div class="card-content transactions">
+      <ul class="transactions-list">
+
+        <li class="transactions-item">
+          <div class="transactions-left">
+            <div class="transactions-category-icon">
+              🍺
+            </div>
+            <div class="transactions-info">
+              <div class="transactions-category-name">Shopping</div>
+              <div class="transactions-desc" title="Full transactions-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac elit
+                arcu. Donec lectus elit, tempus vel sollicitudin sed, auctor in risus. Vestibulum sapien turpis, rutrum
+                porta elit sit amet, vulputate scelerisque massa.</div>
+            </div>
+          </div>
+
+          <div class="transactions-right">
+            <div class="transactions-amount expense">
+              -35 USD
+            </div>
+          </div>
+        </li>
+        <li class="transactions-item">
+          <div class="transactions-left">
+            <div class="transactions-category-icon">
+              🍺
+            </div>
+            <div class="transactions-info">
+              <div class="transactions-category-name">Shopping</div>
+              <div class="transactions-desc">Personal Payment</div>
+            </div>
+          </div>
+
+          <div class="transactions-right">
+            <div class="transactions-amount expense">
+              -35 USD
+            </div>
+          </div>
+        </li>
+
+        <li class="transactions-item">
+          <div class="transactions-left">
+            <div class="transactions-category-icon">
+              💰
+            </div>
+            <div class="transactions-info">
+              <div class="transactions-category-name">Salary</div>
+              <div class="transactions-desc"></div>
+            </div>
+          </div>
+
+          <div class="transactions-right">
+            <div class="transactions-amount">
+              3599 USD
+            </div>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+
+  </div>
+  <div class="spending card">
+    <div class="card-title">This is title</div>
+    <div class="card-content">this month spending</div>
+  </div>
+</div>
+
+{% endblock %}

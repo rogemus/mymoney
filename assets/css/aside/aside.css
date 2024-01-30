@@ -1,0 +1,26 @@
+.aside {
+  position: relative;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  padding: 40px 25px;
+  background: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  & a {
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 17px;
+    color: inherit;
+  }
+
+  & svg {
+    fill: inherit;
+  }
+}
+
+.main-nav {
+  padding-bottom: 25px;
+}
