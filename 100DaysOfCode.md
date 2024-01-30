@@ -29,3 +29,11 @@ Add basic share functionality. User A can share budget to User B
 ## Day 8 - 25.01.2024
 Add uuid to models
 Add invitation logic
+
+## Day 9 - 29.01.2024
+Add dashboard view to app
+Add sample esbuild config for css
+
+## Day 10 - 30.01.2024
+Start working on the styles for dashboard
+
