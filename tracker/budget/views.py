@@ -12,6 +12,14 @@ from .models import Budget, Invitation, Transaction
 
 
 @method_decorator(login_required, name="dispatch")
+class Dashboard(View):
+    template_name = "dashboard/overall.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+
+@method_decorator(login_required, name="dispatch")
 class BudgetList(View):
     template_name = "budget/budget-list.html"
 

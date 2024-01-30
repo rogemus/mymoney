@@ -6,8 +6,13 @@ app_name = "budget"
 urlpatterns = [
     path(
         "",
-        views.BudgetList.as_view(),
+        views.Dashboard.as_view(),
         name="index"
+    ),
+    path(
+        "/list",
+        views.BudgetList.as_view(),
+        name="budget_list"
     ),
     path(
         "add/",
