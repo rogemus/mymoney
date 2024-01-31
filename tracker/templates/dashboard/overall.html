@@ -15,7 +15,7 @@
   </div>
 
   <div class="card">
-    <div class="card-title">This is title</div>
+    <div class="card-title">Latest Transactions</div>
     <div class="card-content transactions">
       <ul class="transactions-list">
 
@@ -26,9 +26,61 @@
             </div>
             <div class="transactions-info">
               <div class="transactions-category-name">Shopping</div>
-              <div class="transactions-desc" title="Full transactions-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac elit
+              <div class="transactions-desc" title="Full transactions-desc">Lorem ipsum dolor sit amet, consectetur
+                adipiscing elit. Donec ac elit
                 arcu. Donec lectus elit, tempus vel sollicitudin sed, auctor in risus. Vestibulum sapien turpis, rutrum
                 porta elit sit amet, vulputate scelerisque massa.</div>
+            </div>
+          </div>
+
+          <div class="transactions-right">
+            <div class="transactions-amount expense">
+              -35 USD
+            </div>
+          </div>
+        </li>
+        <li class="transactions-item">
+          <div class="transactions-left">
+            <div class="transactions-category-icon">
+              🍺
+            </div>
+            <div class="transactions-info">
+              <div class="transactions-category-name">Shopping</div>
+              <div class="transactions-desc">Personal Payment</div>
+            </div>
+          </div>
+
+          <div class="transactions-right">
+            <div class="transactions-amount expense">
+              -35 USD
+            </div>
+          </div>
+        </li>
+        <li class="transactions-item">
+          <div class="transactions-left">
+            <div class="transactions-category-icon">
+              🍺
+            </div>
+            <div class="transactions-info">
+              <div class="transactions-category-name">Shopping</div>
+              <div class="transactions-desc">Personal Payment</div>
+            </div>
+          </div>
+
+          <div class="transactions-right">
+            <div class="transactions-amount expense">
+              -35 USD
+            </div>
+          </div>
+        </li>
+        <li class="transactions-item">
+          <div class="transactions-left">
+            <div class="transactions-category-icon">
+              🍺
+            </div>
+            <div class="transactions-info">
+              <div class="transactions-category-name">Shopping</div>
+              <div class="transactions-desc">Personal Payment</div>
             </div>
           </div>
 
@@ -79,9 +131,17 @@
 
   </div>
   <div class="spending card">
-    <div class="card-title">This is title</div>
-    <div class="card-content">this month spending</div>
+    <div class="card-title">Spending This Month</div>
+    <div class="card-content">
+
+      <canvas id="spending"></canvas>
+    </div>
   </div>
 </div>
+
+
+
+{% load static %}
+<script type="module" src="{% static 'js/dashboard.js' %}"></script>
 
 {% endblock %}
