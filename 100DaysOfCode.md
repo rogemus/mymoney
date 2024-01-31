@@ -37,3 +37,6 @@ Add sample esbuild config for css
 ## Day 10 - 30.01.2024
 Start working on the styles for dashboard
 
+## Day 11 - 01.02.2024
+Add basic chart for monthly spending
+

@@ -1,0 +1,10 @@
+.spending {
+  & .card-content {
+    max-width: 450px;
+    margin-inline: auto;
+  }
+
+  & canva {
+    margin-inline: auto;
+  }
+}

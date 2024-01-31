@@ -9,3 +9,5 @@
 @import './dashboard/card.css';
 @import './dashboard/dashboard.css';
 @import './dashboard/transactions.css';
+
+@import './spending/spending.css';
