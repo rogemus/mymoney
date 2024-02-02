@@ -5,13 +5,17 @@
 {% block content %}
 
 <div class="dashboard">
-  <div class="banalce card">
-    <div class="card-title">This is title</div>
-    <div class="card-content">This month balance</div>
+  <div class="balance card">
+    <div class="card-content">
+      <div class="balance-title">This monthl banalce</div>
+      <div class="balance-amount">$ 321.32</div>
+    </div>
   </div>
   <div class="flow card">
     <div class="card-title">This is title</div>
-    <div class="card-content">Monthly flow</div>
+    <div class="card-content">
+      <canvas id="flow"></canvas>
+    </div>
   </div>
 
   <div class="card">
@@ -133,7 +137,6 @@
   <div class="spending card">
     <div class="card-title">Spending This Month</div>
     <div class="card-content">
-
       <canvas id="spending"></canvas>
     </div>
   </div>

@@ -1,0 +1,40 @@
+.balance {
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+
+  & .card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    z-index: 0;
+  }
+
+
+  &:after {
+    content: '';
+    background: var(--color-violet);
+    height: 300px;
+    width: 300px;
+    border-radius: 100% 0 0 100%;
+    right: -100px;
+    top: -25px;
+    position: absolute;
+  }
+}
+
+.balance-title {
+  padding: 0 25px;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.balance-amount {
+  color: var(--color-white);
+  font-weight: 900;
+  font-size: 32px;
+  z-index: 10;
+  padding-right: 25px;
+}
