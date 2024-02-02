@@ -1,24 +1,3 @@
-/*     <ul class="transactions-list"> */
-/**/
-/*       <li class="transactions-item"> */
-/*         <div class="transactions-left"> */
-/*           <div class="transactions-category-icon"> */
-/*             🍺 */
-/*           </div> */
-/*           <div class="transactions-info"> */
-/*             <div class="transactions-category-name">Shopping</div> */
-/*             <div class="transactions-desc">Personal Payment</div> */
-/*           </div> */
-/*         </div> */
-/**/
-/*         <div class="transactions-right"> */
-/*           <div class="transactions-amount expense"> */
-/*             -35 USD */
-/*           </div> */
-/*         </div> */
-/*       </li> */
-/**/
-
 .transactions-list {
   margin: 0;
   padding: 0;

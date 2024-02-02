@@ -7,7 +7,7 @@
 @import './aside/nav.css';
 
 @import './dashboard/card.css';
+@import './dashboard/balance.css';
 @import './dashboard/dashboard.css';
+@import './dashboard/spending.css';
 @import './dashboard/transactions.css';
-
-@import './spending/spending.css';
