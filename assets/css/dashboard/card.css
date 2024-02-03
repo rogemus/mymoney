@@ -6,8 +6,8 @@
 }
 
 .card-title {
-  font-size: 20px;
-  font-weight: 900;
+  font-size: var(--font-s-m);
+  font-weight: var(--font-w-900);
   color: var(--color-black);
 }
 

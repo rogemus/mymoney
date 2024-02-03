@@ -11,8 +11,7 @@
 
   & a {
     text-decoration: none;
-    font-weight: 800;
-    font-size: 17px;
+    font-variation-settings: var(--font-w-800);
     color: inherit;
   }
 

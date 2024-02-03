@@ -1,4 +1,5 @@
 @import './vars.css';
+@import './fonts.css';
 @import './base.css';
 
 @import './aside/aside.css';
@@ -11,3 +12,4 @@
 @import './dashboard/dashboard.css';
 @import './dashboard/spending.css';
 @import './dashboard/transactions.css';
+@import './dashboard//flow.css';

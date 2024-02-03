@@ -30,13 +30,12 @@
 }
 
 .transactions-category-name {
-  font-weight: 800;
-  font-size: 17px;
+  font-weight: var(--font-w-800);
 }
 
 .transactions-desc {
   color: var(--color-grey);
-  font-size: 14px;
+  font-size: var(--font-s-s);
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -46,7 +45,7 @@
 
 .transactions-amount {
   color: var(--color-green);
-  font-weight: 800;
+  font-weight: var(--font-w-800);
   margin-left: 20px;
 
   &.expense {
