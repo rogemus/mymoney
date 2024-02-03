@@ -1,6 +1,6 @@
-import Chart from "chart.js/auto";
+import Chart, { ChartConfiguration, Plugin } from "chart.js/auto";
 
-const centerLabelPlugin = {
+const centerLabelPlugin: Plugin<'doughnut'> = {
   id: 'centerLabelPlugin',
   afterDatasetDraw(chart, args) {
     const { ctx } = chart;
@@ -48,24 +48,22 @@ const loadData = () => {
 }
 
 export const transactionsPerCategoryChart = () => {
-  const canvas = document.getElementById('spending');
-  const data = loadData();
-  const options = {
-    plugins: {
-      legend: {
-        title: {
-          display: true,
-          padding: 5
-        },
-        position: 'bottom'
+  const canvas = document.getElementById('spending') as HTMLCanvasElement;
+  const chartConfig: ChartConfiguration<'doughnut'> = {
+    type: 'doughnut',
+    data: loadData(),
+    plugins: [centerLabelPlugin],
+    options: {
+      plugins: {
+        legend: {
+          title: {
+            display: true,
+            padding: 5
+          },
+          position: 'bottom'
+        }
       }
     }
   }
-
-  new Chart(canvas, {
-    type: 'doughnut',
-    data: data,
-    plugins: [centerLabelPlugin],
-    options
-  });
+  new Chart(canvas, chartConfig);
 }

@@ -1,5 +1,5 @@
 export default {
-  entryPoints: ['./assets/css/index.css', "./assets/js/*.js"],
+  entryPoints: ['./assets/css/index.css', "./assets/js/*.ts"],
   outdir: './tracker/static',
   bundle: true,
   logLevel: 'info',

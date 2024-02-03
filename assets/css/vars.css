@@ -1,4 +1,5 @@
 :root {
+  /* Colors */
   --color-black: #111111;
   --color-white: #FFFFFF;
   --color-grey: #A1A0BD;
@@ -12,4 +13,23 @@
   --color-light-red: #F5DCDC;
   --color-green: #4FD18B;
   --color-light-green: #DCF5E8;
+
+  /* Font Weight */
+  --font-w-900: 900;
+  --font-w-800: 800;
+  --font-w-700: 700;
+  --font-w-600: 600;
+  --font-w-500: 500;
+  --font-w-400: 400;
+  --font-w-300: 300;
+  --font-w-200: 200;
+  --font-w-100: 100;
+
+  /* Font Size */
+  --font-s-xl: 36px;
+  --font-s-l: 32px;
+  --font-s-m: 24px;
+  --font-s-base: 18px;
+  --font-s-s: 14px;
+  --font-s-sx: 12px;
 }

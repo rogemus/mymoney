@@ -27,14 +27,14 @@
 
 .balance-title {
   padding: 0 25px;
-  font-size: 24px;
-  font-weight: 900;
+  font-size: var(--font-s-m);
+  font-weight: var(--font-w-900);
 }
 
 .balance-amount {
   color: var(--color-white);
-  font-weight: 900;
-  font-size: 32px;
+  font-weight: var(--font-w-900);
+  font-size: var(--font-s-l);
   z-index: 10;
   padding-right: 25px;
 }
