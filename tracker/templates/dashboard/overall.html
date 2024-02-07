@@ -4,147 +4,42 @@
 
 {% block content %}
 
-<div class="dashboard">
-  <div class="balance card">
-    <div class="card-content">
-      <div class="balance-title">This monthly banalce</div>
-      <div class="balance-amount">$ 321.32</div>
-    </div>
-  </div>
-  <div class="flow card">
-    <div class="card-title">This is title</div>
-    <div class="card-content">
-      <canvas id="flow"></canvas>
-    </div>
+<div class="flex two">
+  <div>
+    <article class="card">
+      <header>
+        This monthly banalce
+      </header>
+      <section>$ 321.32</section>
+    </article>
   </div>
 
-  <div class="card">
-    <div class="card-title">Latest Transactions</div>
-    <div class="card-content transactions">
-      <ul class="transactions-list">
-
-        <li class="transactions-item">
-          <div class="transactions-left">
-            <div class="transactions-category-icon">
-              🍺
-            </div>
-            <div class="transactions-info">
-              <div class="transactions-category-name">Shopping</div>
-              <div class="transactions-desc" title="Full transactions-desc">Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit. Donec ac elit
-                arcu. Donec lectus elit, tempus vel sollicitudin sed, auctor in risus. Vestibulum sapien turpis, rutrum
-                porta elit sit amet, vulputate scelerisque massa.</div>
-            </div>
-          </div>
-
-          <div class="transactions-right">
-            <div class="transactions-amount expense">
-              -35 USD
-            </div>
-          </div>
-        </li>
-        <li class="transactions-item">
-          <div class="transactions-left">
-            <div class="transactions-category-icon">
-              🍺
-            </div>
-            <div class="transactions-info">
-              <div class="transactions-category-name">Shopping</div>
-              <div class="transactions-desc">Personal Payment</div>
-            </div>
-          </div>
-
-          <div class="transactions-right">
-            <div class="transactions-amount expense">
-              -35 USD
-            </div>
-          </div>
-        </li>
-        <li class="transactions-item">
-          <div class="transactions-left">
-            <div class="transactions-category-icon">
-              🍺
-            </div>
-            <div class="transactions-info">
-              <div class="transactions-category-name">Shopping</div>
-              <div class="transactions-desc">Personal Payment</div>
-            </div>
-          </div>
-
-          <div class="transactions-right">
-            <div class="transactions-amount expense">
-              -35 USD
-            </div>
-          </div>
-        </li>
-        <li class="transactions-item">
-          <div class="transactions-left">
-            <div class="transactions-category-icon">
-              🍺
-            </div>
-            <div class="transactions-info">
-              <div class="transactions-category-name">Shopping</div>
-              <div class="transactions-desc">Personal Payment</div>
-            </div>
-          </div>
-
-          <div class="transactions-right">
-            <div class="transactions-amount expense">
-              -35 USD
-            </div>
-          </div>
-        </li>
-        <li class="transactions-item">
-          <div class="transactions-left">
-            <div class="transactions-category-icon">
-              🍺
-            </div>
-            <div class="transactions-info">
-              <div class="transactions-category-name">Shopping</div>
-              <div class="transactions-desc">Personal Payment</div>
-            </div>
-          </div>
-
-          <div class="transactions-right">
-            <div class="transactions-amount expense">
-              -35 USD
-            </div>
-          </div>
-        </li>
-
-        <li class="transactions-item">
-          <div class="transactions-left">
-            <div class="transactions-category-icon">
-              💰
-            </div>
-            <div class="transactions-info">
-              <div class="transactions-category-name">Salary</div>
-              <div class="transactions-desc"></div>
-            </div>
-          </div>
-
-          <div class="transactions-right">
-            <div class="transactions-amount">
-              3599 USD
-            </div>
-          </div>
-        </li>
-
-      </ul>
-    </div>
-
+  <div>
+    <article class="card">
+      <header>Monthly flow</header>
+      <section></section>
+    </article>
   </div>
-  <div class="spending card">
-    <div class="card-title">Spending This Month</div>
-    <div class="card-content">
-      <canvas id="spending"></canvas>
-    </div>
+
+  <div>
+    <article class="card">
+      <header>Latest Transactions</header>
+      <section>
+        {% include 'dashboard/transaction.html' %}
+        {% include 'dashboard/transaction.html' %}
+        {% include 'dashboard/transaction.html' %}
+        {% include 'dashboard/transaction.html' %}
+      </section>
+    </article>
+  </div>
+
+  <div>
+    <article class="card">
+      <header>Spending per category</header>
+      <section></section>
+    </article>
   </div>
 </div>
 
-
-
-{% load static %}
-<script type="module" src="{% static 'js/dashboard.js' %}"></script>
 
 {% endblock %}

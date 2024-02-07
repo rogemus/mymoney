@@ -40,3 +40,9 @@ Start working on the styles for dashboard
 ## Day 11 - 01.02.2024
 Add basic chart for monthly spending
 
+## Day 12 - 07.02.2024
+!!! After wasteing around 3 days looking for best design to implement for whole app, and not doing any real progress i decided to fu%# it and use as basic css as possible and focus on backend code, and all features. Maybe in the future i will implemnet proper ui. !!!
+Add Category to Transaction
+Remove all css for dashboards
+Add Picnic.CSS for styles
+

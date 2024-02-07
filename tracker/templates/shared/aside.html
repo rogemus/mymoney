@@ -1,0 +1,31 @@
+<aside>
+  <div class="logo">
+    <a href="#">
+      HOME
+    </a>
+  </div>
+
+  <ul>
+    <li>
+      <a href="{% url 'budget:index' %}">Overview</a>
+    </li>
+    <li>
+      <a href="#">Transations</a>
+    </li>
+  </ul>
+
+  <ul>
+    <li>
+      <a href="#">Settings</a>
+    </li>
+    <li>
+      <a href="#">Help</a>
+    </li>
+  </ul>
+
+  <ul>
+    <li>
+      <a href="{% url 'accounts:signout' %}">Logout</a>
+    </li>
+  </ul>
+</aside>
