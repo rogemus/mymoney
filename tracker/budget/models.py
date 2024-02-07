@@ -1,6 +1,6 @@
 import calendar
 import uuid
-from datetime import date, timedelta
+from datetime import date
 
 from django.contrib import admin
 from django.contrib.auth.models import User
@@ -21,8 +21,13 @@ class Budget(models.Model):
 
 
 class Invitation(models.Model):
-    now = timezone.now()
-    future = now + timedelta(hours=48)
+    def __str__(self):
+        return "%s, b(%s) | usr(%s) -> usr(%s)" % (
+            self.id,
+            self.budget.id,
+            self.from_user.username,
+            self.to_user.username,
+        )
 
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
@@ -36,12 +41,23 @@ class Invitation(models.Model):
         User, related_name="to_user", on_delete=models.DO_NOTHING
     )
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    valid_from = models.DateTimeField(default=now)
-    valid_to = models.DateTimeField(default=future)
+    valid_from = models.DateTimeField(auto_now_add=True)
+    valid_to = models.DateTimeField()
 
     @property
     def expired(self):
         return timezone.now() >= self.valid_to
+
+
+class TransactionCategory(models.Model):
+    def __str__(self):
+        return self.name
+
+    color = models.CharField(max_length=10)
+    description = models.CharField(max_length=300)
+    icon = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
+    unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
 
 class Transaction(models.Model):
@@ -67,10 +83,6 @@ class Transaction(models.Model):
     description = models.CharField(max_length=300, default="")
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-
-# class TransactionCategory(models.Model):
-#     transaction = models.ForeignKey(Transaction, on_delete=)
-#     name = models.CharField(max_length=100)
-#     icon = models.CharField(max_length=200)
-#     description = models.CharField(max_length=300)
+    category = models.ForeignKey(
+        TransactionCategory, on_delete=models.DO_NOTHING, blank=True, null=True
+    )

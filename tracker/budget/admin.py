@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Budget, Invitation, Transaction
+from .models import Budget, Invitation, Transaction, TransactionCategory
 
 
 class TransactionAdmin(admin.ModelAdmin):
@@ -14,13 +14,20 @@ class TransactionInline(admin.TabularInline):
 
 
 class BudgetAdmin(admin.ModelAdmin):
-    fields = ["name", "user", "shared_to" ]
+    fields = ["name", "user", "shared_to"]
     inlines = [TransactionInline]
     search_fields = ["name"]
+
 
 class InvitationsAdmin(admin.ModelAdmin):
     model = Invitation
 
+
+class TransactionCategoryAdmin(admin.ModelAdmin):
+    model = TransactionCategory
+
+
 admin.site.register(Invitation, InvitationsAdmin)
 admin.site.register(Budget, BudgetAdmin)
 admin.site.register(Transaction, TransactionAdmin)
+admin.site.register(TransactionCategory, TransactionCategoryAdmin)
