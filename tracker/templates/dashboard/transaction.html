@@ -1,13 +1,26 @@
 <li class="flex">
-  <div>🎬</div>
+  <div>
+    {% if transaction.transaction__category__icon %}
+      {{transaction.transaction__category__icon}}
+    {% else %}
+      🥖
+    {% endif %}
+  </div>
   <div class="three-fifth">
-    <h4>Shopping</h4>
-    <h5>Donec lectus elit, tempus vel sollicitudin sed, auctor in risus. Vestibulum sapien turpis, rutrum
-      porta elit sit amet, vulputate scelerisque massa.
+    <h5>
+      {% if transaction.transaction__category__name %}
+        {{transaction.transaction__category__name}}
+      {% else %}
+        No Category
+      {% endif %}
     </h5>
+    <h6>
+      {% if transaction.transaction__description %}
+        {{transaction.transaction__description}}
+      {% endif %}
+    </h6>
   </div>
   <div>
-    -35.33 USD
+    {{transaction.transaction__amount}}
   </div>
 </li>
-

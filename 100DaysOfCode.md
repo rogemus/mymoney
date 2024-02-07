@@ -46,3 +46,5 @@ Add Category to Transaction
 Remove all css for dashboards
 Add Picnic.CSS for styles
 
+## Day 13 - 08.02.2024
+Populate dashboard with data
