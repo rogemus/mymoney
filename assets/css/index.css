@@ -1,15 +1,6 @@
-@import './vars.css';
-@import './fonts.css';
-@import './base.css';
 
-@import './aside/aside.css';
-@import './aside/logo.css';
-@import './aside/logout.css';
-@import './aside/nav.css';
-
-@import './dashboard/card.css';
-@import './dashboard/balance.css';
-@import './dashboard/dashboard.css';
-@import './dashboard/spending.css';
-@import './dashboard/transactions.css';
-@import './dashboard//flow.css';
+/* LOGO */
+.logo {
+  margin-bottom: 50px;
+  padding: 30px;
+}
