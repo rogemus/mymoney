@@ -10,7 +10,7 @@ from django.utils import timezone
 
 class Budget(models.Model):
     def __str__(self):
-        return self.name
+        return "b(%s) t[%s]" % (self.name, self.transaction_set.count())
 
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=150)
@@ -54,7 +54,7 @@ class TransactionCategory(models.Model):
         return self.name
 
     color = models.CharField(max_length=10)
-    description = models.CharField(max_length=300)
+    description = models.CharField(max_length=300, null=True, blank=True)
     icon = models.CharField(max_length=50)
     name = models.CharField(max_length=100)
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -62,7 +62,7 @@ class TransactionCategory(models.Model):
 
 class Transaction(models.Model):
     def __str__(self):
-        return "%s: %s, %s" % (self.budget.id, self.amount, self.is_expense)
+        return "%s: %s" % (self.budget.id, self.amount)
 
     @admin.display(
         boolean=True,
@@ -79,8 +79,7 @@ class Transaction(models.Model):
     budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     amount = models.FloatField(null=True, blank=True, default=0.0)
-    is_expense = models.BooleanField(default=True)
-    description = models.CharField(max_length=300, default="")
+    description = models.CharField(max_length=300, default="", null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     category = models.ForeignKey(

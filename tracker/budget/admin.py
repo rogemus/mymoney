@@ -4,7 +4,7 @@ from .models import Budget, Invitation, Transaction, TransactionCategory
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ["amount", "is_expense", "created_at", "in_current_month", "user"]
+    list_display = ["amount", "created_at", "in_current_month", "user"]
     list_filter = ["created_at", "user"]
 
 

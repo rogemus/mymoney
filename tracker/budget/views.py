@@ -1,8 +1,13 @@
+import calendar
+from itertools import groupby
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.db import connection
+from django.db.models import Prefetch, Q, Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -16,7 +21,57 @@ class Dashboard(View):
     template_name = "dashboard/overall.html"
 
     def get(self, request):
-        return render(request, self.template_name)
+        today = timezone.now()
+        total_expenses = 0
+        total_income = 0
+        transactions = []
+
+        transactions = list(
+            Budget.objects.filter(Q(user=request.user) | Q(shared_to=request.user))
+            .prefetch_related(
+                Prefetch(
+                    "transaction_set",
+                    queryset=Transaction.objects.filter(
+                        created_at__year=str(today.year),
+                        created_at__month=str(today.month),
+                    ).order_by("-created_at"),
+                )
+            )
+            .values(
+                "transaction",
+                "transaction__amount",
+                "transaction__description",
+                "transaction__created_at",
+                "transaction__unique_id",
+                "transaction__user",
+                "transaction__user__id",
+                "transaction__user__username",
+                "transaction__category",
+                "transaction__category__color",
+                "transaction__category__description",
+                "transaction__category__icon",
+                "transaction__category__name",
+                "transaction__category__unique_id",
+            )
+            .order_by("transaction__created_at")
+        )
+
+        for transaction in transactions:
+            if transaction["transaction__amount"] >= 0:
+                total_income += transaction["transaction__amount"]
+            else:
+                total_expenses += transaction["transaction__amount"]
+
+        context = {
+            "total": total_income + total_expenses,
+            "total_income": total_income,
+            "total_expenses": total_expenses,
+            "latest_transactions": transactions[:10],
+            "transactions_per_category": [],
+            "balance_flow": []
+        }
+        # print(context)
+        return render(request, self.template_name, context=context)
 
 
 @method_decorator(login_required, name="dispatch")

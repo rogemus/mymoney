@@ -4,33 +4,59 @@
 
 {% block content %}
 
-<div class="flex two">
+<div class="balance flex three">
   <div>
     <article class="card">
       <header>
         This monthly banalce
       </header>
       <section>
-        <h2><span class="label">$ 321.32</span></h2>
+        <span class="label">{{total}} PLN</span>
       </section>
     </article>
   </div>
 
   <div>
     <article class="card">
-      <header>Monthly flow</header>
-      <section></section>
+      <header>
+        Total income
+      </header>
+      <section>
+        <span class="label success">{{total_income}} PLN</span>
+      </section>
     </article>
   </div>
 
   <div>
     <article class="card">
+      <header>
+        Total expanses
+      </header>
+      <section>
+        <span class="label error">{{total_expenses}} PLN</span>
+      </section>
+    </article>
+  </div>
+
+</div>
+
+<div class="flex">
+  <div>
+    <article class="card">
+      <header>Monthly flow</header>
+      <section>flow</section>
+    </article>
+  </div>
+</div>
+
+<div class="flex two">
+  <div>
+    <article class="card">
       <header>Latest Transactions</header>
       <section>
-        {% include 'dashboard/transaction.html' %}
-        {% include 'dashboard/transaction.html' %}
-        {% include 'dashboard/transaction.html' %}
-        {% include 'dashboard/transaction.html' %}
+        {% for transaction in latest_transactions %}
+          {% include 'dashboard/transaction.html' with transaction=transaction %}
+        {% endfor %}
       </section>
     </article>
   </div>
