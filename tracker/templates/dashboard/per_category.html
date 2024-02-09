@@ -1,0 +1,7 @@
+<ul class="per-category">
+  {% for key, group in groups.items %}
+    <li class="flex two">
+      <span>{{group.icon}} {{group.name}}: </span> <span class="amount">{{group.total}}</span>
+    </li>
+  {% endfor %}
+</ul>

@@ -22,3 +22,24 @@ body {
     padding: 20px;
   }
 }
+
+/* FLOW */
+.flow {
+  & .flow-item {
+    text-align: center;
+  }
+
+  span {
+    margin: 0;
+  }
+}
+
+/* PER CATEGORY */
+.per-category {
+  margin: 0;
+  padding: 0 10px;
+
+  & .amount {
+    text-align: right;
+  }
+}
