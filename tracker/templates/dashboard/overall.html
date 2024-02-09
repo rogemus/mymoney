@@ -44,7 +44,10 @@
   <div>
     <article class="card">
       <header>Monthly flow</header>
-      <section>flow</section>
+      <section>
+        <!-- [TODO]: Add here line chart-->
+        {% include 'dashboard/flow.html' with transactions_flow=transactions_flow %}
+      </section>
     </article>
   </div>
 </div>
@@ -64,7 +67,10 @@
   <div>
     <article class="card">
       <header>Spending per category</header>
-      <section></section>
+      <section>
+        <!-- [TODO]: Add donaut chart here  -->
+        {% include 'dashboard/per_category.html' with groups=transactions_per_category %}
+      </section>
     </article>
   </div>
 </div>

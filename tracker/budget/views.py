@@ -1,13 +1,10 @@
 import calendar
-from itertools import groupby
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
-from django.db import connection
-from django.db.models import Prefetch, Q, Sum
+from django.db.models import Prefetch, Q
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -16,15 +13,48 @@ from django.views import View, generic
 from .models import Budget, Invitation, Transaction
 
 
+def grouped_transaction_by_catergory(t, grouped_by: dict) -> None:
+    if t["transaction__category__name"] not in grouped_by:
+        grouped_by[t["transaction__category__name"]] = {
+            "name": str(t["transaction__category__name"]),
+            "icon": t["transaction__category__icon"],
+            "color": t["transaction__category__color"],
+            "description": t["transaction__category__description"],
+            "id": t["transaction__category__unique_id"],
+            "total": t["transaction__amount"],
+        }
+    else:
+        amount = t["transaction__amount"]
+        total = grouped_by[t["transaction__category__name"]]["total"]
+        grouped_by[t["transaction__category__name"]]["total"] = round(total + amount, 2)
+
+
+def calculate_transactions_flow(t, transactions_flow: dict[str, int]) -> None:
+    day = t["transaction__created_at"].day
+    month = t["transaction__created_at"].month
+    label = f"{day}.{month}"
+    transactions_flow[label] = round(
+        transactions_flow[label] + t["transaction__amount"], 2
+    )
+
+
+def create_empty_transactions_flow(today):
+    monthrange = calendar.monthrange(today.year, today.month)
+    list_of_days = list(range(1, monthrange[1]))
+    list_of_labels = [f"{day}.{today.month}" for day in list_of_days]
+    return dict.fromkeys(list_of_labels, 0)
+
+
 @method_decorator(login_required, name="dispatch")
 class Dashboard(View):
     template_name = "dashboard/overall.html"
 
     def get(self, request):
         today = timezone.now()
+        transactions_flow = create_empty_transactions_flow(today)
         total_expenses = 0
         total_income = 0
-        transactions = []
+        grouped_by = {}
 
         transactions = list(
             Budget.objects.filter(Q(user=request.user) | Q(shared_to=request.user))
@@ -56,21 +86,23 @@ class Dashboard(View):
             .order_by("transaction__created_at")
         )
 
-        for transaction in transactions:
-            if transaction["transaction__amount"] >= 0:
-                total_income += transaction["transaction__amount"]
+        for t in transactions:
+            grouped_transaction_by_catergory(t, grouped_by)
+            calculate_transactions_flow(t, transactions_flow)
+
+            if t["transaction__amount"] >= 0:
+                total_income += t["transaction__amount"]
             else:
-                total_expenses += transaction["transaction__amount"]
+                total_expenses += t["transaction__amount"]
 
         context = {
-            "total": total_income + total_expenses,
-            "total_income": total_income,
-            "total_expenses": total_expenses,
+            "total": round(total_income + total_expenses, 2),
+            "total_income": round(total_income, 2),
+            "total_expenses": round(total_expenses, 2),
             "latest_transactions": transactions[:10],
-            "transactions_per_category": [],
-            "balance_flow": []
+            "transactions_per_category": grouped_by,
+            "transactions_flow": transactions_flow,
         }
-        # print(context)
         return render(request, self.template_name, context=context)
 
 
