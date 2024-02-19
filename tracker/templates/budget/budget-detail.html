@@ -1,8 +1,9 @@
-{% extends "base.html" %}
+{% extends "base/private.html" %}
 
 {% block title %}MyMoney - {{budget.name}} {% endblock title %}
 
 {% block content %}
+
 <p>{{budget.name}}</p>
 
 {% include 'shared/message.html' %}
@@ -20,27 +21,19 @@
 </form>
 <hr />
 
-<h2>Shared to users:</h2>
-<ul>
-  {% for user in shared_to_users %}
-  <li>{{user.username}}</li>
-  {% endfor %}
-</ul>
+{% if budget.shared_to.all %}
+  {% include 'budget/budget-shared-with.html' with budget=budget %}
+{% endif %}
 
 <h2>Transactions</h2>
+
 {% include 'transaction/transaction-add.html' with budget_id=budget.id %}
-<ul>
+
+<div id="transactions">
   {% for transaction in budget.transaction_set.all %}
-  <li>
-    <a href="{% url 'budget:transaction_detail' transaction.id %}">
-      {% if transaction.is_expense %}
-      -
-      {% else %}
-      +
-      {% endif %}
-      {{transaction.amount}}
-    </a> by {{transaction.user.username}}
-  </li>
+    {% include 'transaction/transaction-list-item.html' with transaction=transaction %}
   {% endfor %}
-</ul>
+</div>
+
+
 {% endblock %}

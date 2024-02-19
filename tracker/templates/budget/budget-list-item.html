@@ -1,0 +1,17 @@
+<article class="card budgets-item">
+  <header>
+    <h3><a href="{% url 'budget:budget_detail' budget.id %}">{{budget.name}}</a></h3>
+  </header>
+  {% if budget.description %}
+    <section>
+      {{budget.description}}
+    </section>
+  {% endif %}
+
+  {% if budget.shared_to.all %}
+    <footer >
+      {% include 'budget/budget-shared-with.html' with budget=budget %}
+    </footer>
+  {% endif %}
+</article>
+
