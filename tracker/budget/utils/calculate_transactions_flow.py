@@ -1,13 +1,11 @@
-from ..views.dashboard import BudgetTransation
+from ..views.types import BudgetTransation
 from .create_empty_transactions_flow import create_empty_transactions_flow
 from datetime import datetime
 
 
-def calculate_transactions_flow(
-    transactions: list[BudgetTransation], date: datetime
-) -> dict[str, float]:
+def calculate_transactions_flow(transactions: list[BudgetTransation], date: datetime) -> dict[str, float]:
     """
-    Calculate transactions flow for given transactions
+    Calculate transactions flow for given date
     """
     flow = create_empty_transactions_flow(date)
 

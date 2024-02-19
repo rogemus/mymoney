@@ -3,8 +3,9 @@ from ..utils import (
     calculate_transactions_flow,
     create_empty_transactions_flow,
     group_transactions_by_category,
+    calculate_totals_for_transactions,
 )
-from ..views.dashboard import BudgetTransation
+from ..views.types import BudgetTransation
 from django.test import TestCase
 
 
@@ -28,7 +29,21 @@ def create_mock_transaction(amount, id, date) -> BudgetTransation:
 
 
 class Utils(TestCase):
-    maxDiff = None
+    def test_calculate_totals_for_transactions(self):
+        """
+        calculate_totals_for_transactions() returns total_income (positive), total_expences (negative), total (overall) for transactions
+        """
+
+        t_1 = create_mock_transaction(12, "cat_id_1", datetime(2024, 2, 1))
+        t_2 = create_mock_transaction(-3.2, "cat_id_1", datetime(2024, 2, 2))
+        t_3 = create_mock_transaction(5, "cat_id_1", datetime(2024, 2, 3))
+        t_4 = create_mock_transaction(-2.16, "cat_id_1", datetime(2024, 2, 3))
+        transactions = [t_1, t_2, t_3, t_4]
+        total_income, total_expences, total = calculate_totals_for_transactions(transactions)
+
+        self.assertEqual(total_income, 17)
+        self.assertEqual(total_expences, -5.36)
+        self.assertEqual(total, 11.64)
 
     def test_calculate_transactions_flow(self):
         """
