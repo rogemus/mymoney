@@ -1,4 +1,4 @@
-from ..views.dashboard import BudgetTransation
+from ..views.types import BudgetTransation
 from typing import TypedDict
 
 
@@ -16,9 +16,7 @@ class TransactionGroup(TypedDict):
     transactions: list[BudgetTransation]
 
 
-def group_transactions_by_category(
-    transactions: list[BudgetTransation],
-) -> dict[str, TransactionGroup]:
+def group_transactions_by_category(transactions: list[BudgetTransation]) -> dict[str, TransactionGroup]:
     """
     Group transactions based on the `transaction__category__unique_id`. While grouping canculate total amount for group
     """
