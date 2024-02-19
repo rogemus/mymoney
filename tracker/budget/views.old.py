@@ -49,6 +49,7 @@ def create_empty_transactions_flow(today):
 class Dashboard(View):
     template_name = "dashboard/overall.html"
 
+    # [TODO]: Add tests
     def get(self, request):
         today = timezone.now()
         transactions_flow = create_empty_transactions_flow(today)
@@ -87,13 +88,14 @@ class Dashboard(View):
         )
 
         for t in transactions:
-            grouped_transaction_by_catergory(t, grouped_by)
-            calculate_transactions_flow(t, transactions_flow)
+            if t["transaction"] is not None:
+                grouped_transaction_by_catergory(t, grouped_by)
+                calculate_transactions_flow(t, transactions_flow)
 
-            if t["transaction__amount"] >= 0:
-                total_income += t["transaction__amount"]
-            else:
-                total_expenses += t["transaction__amount"]
+                if t["transaction__amount"] >= 0:
+                    total_income += t["transaction__amount"]
+                else:
+                    total_expenses += t["transaction__amount"]
 
         context = {
             "total": round(total_income + total_expenses, 2),
@@ -114,11 +116,14 @@ class BudgetList(View):
         """
         Budgets list for login user
         """
-        budgets = Budget.objects.filter(user=request.user)
         shared_budgets = Budget.objects.filter(shared_to=request.user)
         invitations = Invitation.objects.filter(
             from_user=request.user, valid_to__gt=timezone.now()
         )
+        budgets = Budget.objects.filter(
+            Q(user=request.user) | Q(shared_to=request.user)
+        )
+        print(budgets)
 
         return render(
             request,
@@ -161,7 +166,7 @@ class BudgetDetail(View):
     def get(self, request, pk):
         budget = Budget.objects.get(pk=pk)
         shared_to_users = budget.shared_to.all()
-
+        
         print(shared_to_users)
         return render(
             request,
@@ -227,23 +232,20 @@ class TransactionAdd(View):
         Add new transaction to budget
         """
         amount = request.POST["amount"]
-        is_expense = (
-            bool(request.POST["is_expense"]) if "is_expense" in request.POST else False
-        )
         description = request.POST["desc"]
         budget = Budget.objects.get(pk=budget_id)
 
         # [TODO] Add Validation
         transaction = Transaction(
             amount=amount,
-            is_expense=is_expense,
             description=description,
             budget=budget,
             user=request.user,
         )
         transaction.save()
         messages.success(request, "Transaction added!")
-        return redirect("/budget/%s" % budget_id)
+        context = { "transaction": transaction}
+        return render(request, template_name='partials/transaction.html', context=context)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -271,3 +273,4 @@ class BudgetAdd(View):
             new_budget.save()
 
         return render(request, self.template_name)
+
