@@ -1,8 +1,8 @@
 # TODO
 
 ## Basic
-- [ ] Create Basic HTTP server
-- [ ] Return Basic JSON
+- [x] Create Basic HTTP server
+- [x] Return Basic JSON
 - [ ] Accept POST Requrst
 - [ ] Store data in memory
 
