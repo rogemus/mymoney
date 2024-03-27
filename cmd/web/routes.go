@@ -8,12 +8,12 @@ func (a *App) Routes() http.Handler {
 	// API
 	mux.HandleFunc("GET /hello", GetHello)
 
-  // API: Budget
-  mux.HandleFunc("GET /budget/{id}", a.GetBudget)
-  mux.HandleFunc("GET /budgets", a.GetBudgets)
+	// API: Budget
+	mux.HandleFunc("GET /budget/{id}", a.GetBudget)
+	mux.HandleFunc("GET /budgets", a.GetBudgets)
 
 	publicFiles := http.FileServer(http.Dir(a.PublicDir))
 	mux.Handle("/", publicFiles)
 
-	return mux
+	return LogReq(mux)
 }

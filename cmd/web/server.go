@@ -1,7 +1,7 @@
 package web
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -11,9 +11,10 @@ func (a *App) RunServer() {
 		Handler: a.Routes(),
 	}
 
+  log.Printf("Listening on port: %v ...", a.Addr)
 	err := srv.ListenAndServe()
 
 	if err != nil {
-		fmt.Println("Error while oppening the server", err)
+    log.Fatal("Error while oppening the server :()")
 	}
 }
