@@ -1,6 +1,0 @@
-<div class="shared-with">
-  <span><strong>Shared with: </strong></span>
-  {% for user in budget.shared_to.all %}
-    <a class="avatar" href="#">{{user.username|slice:"0:2"}} </a>
-  {% endfor %}
-</div>
