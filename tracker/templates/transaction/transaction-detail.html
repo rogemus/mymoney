@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-
-{% block title %}MyMoney - {{budget.name}} ({{transaction.id}}) {% endblock title %}
-
-{% block content %}
-<p>{{transaction.created_at}}
-<p>{{transaction.amount}}</p>
-<p>{{transaction.description}}</p>
-{% endblock %}

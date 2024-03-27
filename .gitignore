@@ -1,7 +1,0 @@
-__pycache__/
-*$py.class
-db.sqlite3
-db.sqlite3-journal
-/tracker/static
-node_modules/
-.DS_Store
