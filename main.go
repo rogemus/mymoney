@@ -1,7 +1,20 @@
 package main
 
-import "tracker/cmd/web"
+import (
+	"tracker/cmd/web"
+	"tracker/pkg/models"
+)
 
 func main() {
-	web.AppServer()
+  db := models.Database{}
+  db.Connect()
+  defer db.Close()
+
+  app := &web.App{
+    Addr: ":3333",
+    DB: &db,
+    PublicDir: "./ui/public/",
+  }
+
+  app.RunServer()
 }
