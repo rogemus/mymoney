@@ -5,5 +5,5 @@ import "tracker/pkg/models"
 type App struct {
 	Addr      string
 	PublicDir string
-  DB *models.Database
+	Database  *models.Database
 }
