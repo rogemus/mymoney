@@ -1,19 +1,10 @@
 package models
 
-import (
-	"fmt"
-)
+import "database/sql"
 
 type Database struct {
-  Budgets []Budget
-  Transactions []Transaction
+  *sql.DB
 }
 
-func (db *Database) Connect() {
-  fmt.Println("connecting to db...")
-}
 
-func (db *Database) Close() {
-  fmt.Println("Disconnecting from db...")
-}
 

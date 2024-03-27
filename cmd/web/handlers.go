@@ -21,7 +21,8 @@ func (a *App) GetBudget(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	budget := a.DB.GetBudget(1)
+	// TODO: handle error
+	budget, _ := a.Database.GetBudget(1)
 	json.NewEncoder(w).Encode(budget)
 }
 
@@ -29,6 +30,7 @@ func (a *App) GetBudgets(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	budgets := a.DB.GetBudgets()
+	// TODO: handle error
+	budgets, _ := a.Database.GetBudgets()
 	json.NewEncoder(w).Encode(budgets)
 }
