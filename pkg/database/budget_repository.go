@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"tracker/pkg/models"
-	"tracker/pkg/utils"
 )
 
 type BudgetRepository struct {
@@ -18,7 +17,6 @@ func NewBudgetRepository(db *sql.DB) *BudgetRepository {
 func (br *BudgetRepository) GetBudget(id int) (models.Budget, error) {
 	var b models.Budget
 	query := "SELECT ID, Uuid, Title, Created, Description FROM budget WHERE ID = ?"
-	utils.LogInfo(fmt.Sprintf("Looking for Budget(%b)...", id))
 	row := br.db.QueryRow(query, id)
 
 	if err := row.Scan(&b.ID, &b.Uuid, &b.Title, &b.Created, &b.Description); err != nil {
@@ -29,14 +27,12 @@ func (br *BudgetRepository) GetBudget(id int) (models.Budget, error) {
 		return b, fmt.Errorf("GetBudget %d: %v", id, err)
 	}
 
-	utils.LogInfo(fmt.Sprintf("Found: Budget(%d, %s)", b.ID, b.Title))
 	return b, nil
 }
 
 func (br *BudgetRepository) GetBudgets() ([]models.Budget, error) {
 	var budgets []models.Budget
 	query := "SELECT ID, Uuid, Title, Created, Description FROM budget"
-	utils.LogInfo("Looking for []Budget...")
 	rows, err := br.db.Query(query)
 
 	if err != nil {
@@ -59,7 +55,6 @@ func (br *BudgetRepository) GetBudgets() ([]models.Budget, error) {
 		return nil, fmt.Errorf("GetBudgets: %v", err)
 	}
 
-	utils.LogInfo("Found: []Budget")
 	return budgets, nil
 }
 
@@ -78,4 +73,27 @@ func (br *BudgetRepository) CreateBudget(budget models.Budget) (int64, error) {
 	}
 
 	return id, nil
+}
+
+func (br *BudgetRepository) DeleteBudget(id int) error {
+	query := "DELETE from budget WHERE ID = ?;"
+	_, err := br.db.Exec(query, id)
+
+	if err != nil {
+		return fmt.Errorf("DeleteBudget(%d): %v", id, err)
+	}
+
+	return nil
+}
+
+func (br *BudgetRepository) UpdateBudget(budget models.Budget, id int) error {
+	query := "UPDATE budget SET Title=?, Description=? WHERE ID = ?;"
+	_, err := br.db.Exec(query, budget.Title, budget.Description, id)
+
+	if err != nil {
+    println("DUPA")
+		return fmt.Errorf("UpdateBudget(%d): %v", id, err)
+	}
+
+	return nil
 }

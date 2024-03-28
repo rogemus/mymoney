@@ -18,6 +18,8 @@ func (a *App) Routes() http.Handler {
 
 	// API: Budget
 	mux.HandleFunc("GET /budget/{id}", handlers.GetBudget)
+	mux.HandleFunc("DELETE /budget/{id}", handlers.DeleteBudget)
+	mux.HandleFunc("PUT /budget/{id}", handlers.UpdateBudget)
 	mux.HandleFunc("GET /budgets", handlers.GetBudgets)
 	mux.HandleFunc("POST /budgets", handlers.CreateBudget)
 
