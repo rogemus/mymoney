@@ -17,8 +17,8 @@ Share budgets with other users.
 - [x] Get Budget by id
 - [x] Get Budget list
 - [x] Add Budget
-- [ ] Update Budget
-- [ ] Delete Budget
+- [x] Update Budget
+- [x] Delete Budget
 - [ ] Share Budget
 
 ## Transaction Handling:

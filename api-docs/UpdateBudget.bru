@@ -1,0 +1,18 @@
+meta {
+  name: UpdateBudget
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{url}}/budget/2
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "Title": "New title",
+    "Description": "New description"
+  }
+}
