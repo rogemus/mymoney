@@ -1,10 +1,7 @@
-package models
+package database
 
 import "database/sql"
 
 type Database struct {
-  *sql.DB
+	*sql.DB
 }
-
-
-

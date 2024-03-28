@@ -1,17 +1,20 @@
-package web
+package handlers
 
 import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"tracker/pkg/database"
 	"tracker/pkg/models"
 	"tracker/pkg/utils"
 )
 
-func (a *App) GetBudget(w http.ResponseWriter, r *http.Request) {
+func GetBudget(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	id, _ := strconv.Atoi(r.PathValue("id"))
-	budget, err := a.Database.GetBudget(id)
+	db := database.GetDB()
+	br := database.NewBudgetRepository(db)
+	budget, err := br.GetBudget(id)
 
 	// TODO handle different type of error
 	// TODO write tests
@@ -28,9 +31,11 @@ func (a *App) GetBudget(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(budget)
 }
 
-func (a *App) GetBudgets(w http.ResponseWriter, r *http.Request) {
+func GetBudgets(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	budgets, err := a.Database.GetBudgets()
+	db := database.GetDB()
+	br := database.NewBudgetRepository(db)
+	budgets, err := br.GetBudgets()
 
 	// TODO handle different type of error
 	// TODO write tests
