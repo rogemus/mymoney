@@ -1,8 +1,9 @@
 package web
 
 import (
-	"log"
+	"fmt"
 	"net/http"
+	"tracker/pkg/utils"
 )
 
 func (a *App) RunServer() {
@@ -11,10 +12,10 @@ func (a *App) RunServer() {
 		Handler: a.Routes(),
 	}
 
-  log.Printf("Listening on port: %v ...", a.Addr)
+	utils.LogInfo(fmt.Sprintf("Listening on port: %v ...", a.Addr))
 	err := srv.ListenAndServe()
 
 	if err != nil {
-    log.Fatal("Error while oppening the server :()")
+		utils.LogFatal("Error while oppening the server :()")
 	}
 }

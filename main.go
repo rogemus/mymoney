@@ -1,28 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"github.com/go-sql-driver/mysql"
-	"log"
 	"os"
 	"tracker/cmd/web"
-	"tracker/pkg/models"
+	"tracker/pkg/database"
+	"tracker/pkg/utils"
 )
-
-func connect(cfg string) *sql.DB {
-	db, err := sql.Open("mysql", cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pingErr := db.Ping()
-
-	if pingErr != nil {
-		log.Fatal(pingErr)
-	}
-
-	return db
-}
 
 func main() {
 	cfg := mysql.Config{
@@ -33,12 +17,14 @@ func main() {
 		ParseTime: true,
 	}
 
-	db := connect(cfg.FormatDSN())
-	log.Println("Connected do DB!")
+	err := database.InitDB(cfg.FormatDSN())
+
+	if err != nil {
+		utils.LogFatal(err.Error())
+	}
 
 	app := &web.App{
 		Addr:      ":3333",
-		Database:  &models.Database{DB: db},
 		PublicDir: "./ui/public/",
 	}
 
