@@ -11,3 +11,8 @@ type Budget struct {
 	Description string
 	Title       string
 }
+
+type BudgetWithTransactions struct {
+	Budget
+	Transactions []Transaction
+}
