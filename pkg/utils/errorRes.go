@@ -4,8 +4,8 @@ import (
 	"tracker/pkg/models"
 )
 
-func ErrRes(err error) models.ErrorPayload {
+func ErrRes(err error) models.GenericPayload {
 	errMsg := err.Error()
 	LogError(errMsg)
-	return models.ErrorPayload{Msg: errMsg}
+	return models.GenericPayload{Msg: errMsg}
 }

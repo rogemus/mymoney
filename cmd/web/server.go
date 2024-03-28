@@ -26,7 +26,7 @@ func (a *App) Routes() http.Handler {
 	publicFiles := http.FileServer(http.Dir(a.PublicDir))
 	mux.Handle("/", publicFiles)
 
-	return middleware.LogReq(mux)
+	return middleware.LogReq(middleware.ServeJson(mux))
 }
 
 func (a *App) RunServer() {

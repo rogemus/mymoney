@@ -5,8 +5,8 @@ import (
 )
 
 type Budget struct {
-	ID          int
-	Uuid        string
+	BudgetID    int
+	BudgetUuid  string
 	Created     time.Time
 	Description string
 	Title       string
