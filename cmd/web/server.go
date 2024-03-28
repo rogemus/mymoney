@@ -19,6 +19,7 @@ func (a *App) Routes() http.Handler {
 	// API: Budget
 	mux.HandleFunc("GET /budget/{id}", handlers.GetBudget)
 	mux.HandleFunc("GET /budgets", handlers.GetBudgets)
+	mux.HandleFunc("POST /budgets", handlers.CreateBudget)
 
 	publicFiles := http.FileServer(http.Dir(a.PublicDir))
 	mux.Handle("/", publicFiles)
