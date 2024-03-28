@@ -1,0 +1,18 @@
+meta {
+  name: CreateBudget
+  type: http
+  seq: 4
+}
+
+post {
+  url: /budgets
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "Title": "Test Budget",
+    "Description": ""
+  }
+}

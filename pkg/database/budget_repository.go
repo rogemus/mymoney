@@ -62,3 +62,20 @@ func (br *BudgetRepository) GetBudgets() ([]models.Budget, error) {
 	utils.LogInfo("Found: []Budget")
 	return budgets, nil
 }
+
+func (br *BudgetRepository) CreateBudget(budget models.Budget) (int64, error) {
+	query := "INSERT INTO budget (Title, Description) VALUES (?, ?);"
+	result, err := br.db.Exec(query, budget.Title, budget.Description)
+
+	if err != nil {
+		return 0, fmt.Errorf("CreateBudget: %v", err)
+	}
+
+	id, err := result.LastInsertId()
+
+	if err != nil {
+		return 0, fmt.Errorf("CreateBudget: %v", err)
+	}
+
+	return id, nil
+}
