@@ -3,8 +3,8 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
+	"tracker/pkg/utils"
 )
 
 type Budget struct {
@@ -18,7 +18,7 @@ type Budget struct {
 func (db *Database) GetBudget(id int) (Budget, error) {
 	var b Budget
 	query := "SELECT ID, Uuid, Title, Created, Description FROM budget WHERE ID = ?"
-	log.Printf("Looking for Budget(%b)...", id)
+	utils.LogInfo(fmt.Sprintf("Looking for Budget(%b)...", id))
 	row := db.QueryRow(query, id)
 
 	if err := row.Scan(&b.ID, &b.Uuid, &b.Title, &b.Created, &b.Description); err != nil {
@@ -29,14 +29,14 @@ func (db *Database) GetBudget(id int) (Budget, error) {
 		return b, fmt.Errorf("GetBudget %d: %v", id, err)
 	}
 
-	log.Printf("Found: Budget(%d, %s)", b.ID, b.Title)
+	utils.LogInfo(fmt.Sprintf("Found: Budget(%d, %s)", b.ID, b.Title))
 	return b, nil
 }
 
 func (db *Database) GetBudgets() ([]Budget, error) {
 	var budgets []Budget
 	query := "SELECT ID, Uuid, Title, Created, Description FROM budget"
-	log.Print("Looking for []Budget...")
+	utils.LogInfo("Looking for []Budget...")
 	rows, err := db.Query(query)
 
 	if err != nil {
@@ -59,6 +59,6 @@ func (db *Database) GetBudgets() ([]Budget, error) {
 		return nil, fmt.Errorf("GetBudgets: %v", err)
 	}
 
-  log.Printf("Found: []Budget")
+	utils.LogInfo("Found: []Budget")
 	return budgets, nil
 }
