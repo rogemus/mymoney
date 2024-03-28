@@ -1,5 +1,5 @@
 package models
 
-type ErrorPayload struct {
+type GenericPayload struct {
   Msg string
 }

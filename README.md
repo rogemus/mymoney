@@ -14,11 +14,11 @@ Secure login and registration.
 Create and customize budgets.
 Share budgets with other users.
 
-- [x] Get Budget by id
-- [x] Get Budget list
-- [x] Add Budget
-- [x] Update Budget
-- [x] Delete Budget
+- [x] ~~Get Budget by id~~
+- [x] ~~Get Budget list~~
+- [x] ~~Add Budget~~
+- [x] ~~Update Budget~~
+- [x] ~~Delete Budget~~
 - [ ] Share Budget
 
 ## Transaction Handling:

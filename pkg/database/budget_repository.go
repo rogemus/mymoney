@@ -16,10 +16,10 @@ func NewBudgetRepository(db *sql.DB) *BudgetRepository {
 
 func (br *BudgetRepository) GetBudget(id int) (models.Budget, error) {
 	var b models.Budget
-	query := "SELECT ID, Uuid, Title, Created, Description FROM budget WHERE ID = ?"
+	query := "SELECT BudgetID, BudgetUuid, Title, Created, Description FROM budget WHERE BudgetID = ?"
 	row := br.db.QueryRow(query, id)
 
-	if err := row.Scan(&b.ID, &b.Uuid, &b.Title, &b.Created, &b.Description); err != nil {
+	if err := row.Scan(&b.BudgetID, &b.BudgetUuid, &b.Title, &b.Created, &b.Description); err != nil {
 		if err == sql.ErrNoRows {
 			return b, fmt.Errorf("GetBudget %d: no such budget", id)
 		}
@@ -32,7 +32,7 @@ func (br *BudgetRepository) GetBudget(id int) (models.Budget, error) {
 
 func (br *BudgetRepository) GetBudgets() ([]models.Budget, error) {
 	var budgets []models.Budget
-	query := "SELECT ID, Uuid, Title, Created, Description FROM budget"
+	query := "SELECT BudgetID, BudgetUuid, Title, Created, Description FROM budget"
 	rows, err := br.db.Query(query)
 
 	if err != nil {
@@ -44,7 +44,7 @@ func (br *BudgetRepository) GetBudgets() ([]models.Budget, error) {
 	for rows.Next() {
 		var b models.Budget
 
-		if err := rows.Scan(&b.ID, &b.Uuid, &b.Title, &b.Created, &b.Description); err != nil {
+		if err := rows.Scan(&b.BudgetID, &b.BudgetUuid, &b.Title, &b.Created, &b.Description); err != nil {
 			return nil, fmt.Errorf("GetBudgets: %v", err)
 		}
 
@@ -76,7 +76,7 @@ func (br *BudgetRepository) CreateBudget(budget models.Budget) (int64, error) {
 }
 
 func (br *BudgetRepository) DeleteBudget(id int) error {
-	query := "DELETE from budget WHERE ID = ?;"
+	query := "DELETE from budget WHERE BudgetID = ?;"
 	_, err := br.db.Exec(query, id)
 
 	if err != nil {
@@ -87,11 +87,10 @@ func (br *BudgetRepository) DeleteBudget(id int) error {
 }
 
 func (br *BudgetRepository) UpdateBudget(budget models.Budget, id int) error {
-	query := "UPDATE budget SET Title=?, Description=? WHERE ID = ?;"
+	query := "UPDATE budget SET Title=?, Description=? WHERE BudgetID = ?;"
 	_, err := br.db.Exec(query, budget.Title, budget.Description, id)
 
 	if err != nil {
-    println("DUPA")
 		return fmt.Errorf("UpdateBudget(%d): %v", id, err)
 	}
 

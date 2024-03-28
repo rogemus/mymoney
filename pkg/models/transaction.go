@@ -3,10 +3,10 @@ package models
 import "time"
 
 type Transaction struct {
-	ID       int
-	Uuid     string
-	Name     string
-	Amount   float32
-	Created  time.Time
-	BudgetId int
+	TransactionID   int
+	TransactionUuid string
+	Description     string
+	Amount          float32
+	Created         time.Time
+	BudgetID        int
 }
