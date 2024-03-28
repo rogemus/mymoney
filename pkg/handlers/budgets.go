@@ -12,9 +12,16 @@ import (
 func GetBudget(w http.ResponseWriter, r *http.Request) {
 	db := database.GetDB()
 	br := database.NewBudgetRepository(db)
+	tr := database.NewTransactionRepository(db)
+
 	id, _ := strconv.Atoi(r.PathValue("id"))
 	budget, err := br.GetBudget(id)
-  encoder := json.NewEncoder(w)
+	transactions, _ := tr.GetTransactions(id)
+	encoder := json.NewEncoder(w)
+	budgetWithTransaction := models.BudgetWithTransactions{
+		Budget:       budget,
+		Transactions: transactions,
+	}
 
 	// TODO handle different type of error
 	// TODO write tests
@@ -26,14 +33,14 @@ func GetBudget(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	encoder.Encode(budget)
+	encoder.Encode(budgetWithTransaction)
 }
 
 func GetBudgets(w http.ResponseWriter, r *http.Request) {
 	db := database.GetDB()
 	br := database.NewBudgetRepository(db)
 	budgets, err := br.GetBudgets()
-  encoder := json.NewEncoder(w)
+	encoder := json.NewEncoder(w)
 
 	// TODO handle different type of error
 	// TODO write tests
