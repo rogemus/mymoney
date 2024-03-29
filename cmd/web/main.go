@@ -1,11 +1,15 @@
-package web
+package main
 
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"tracker/pkg/database"
 	"tracker/pkg/handlers"
 	"tracker/pkg/middleware"
 	"tracker/pkg/utils"
+	"github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 type App struct {
@@ -41,4 +45,31 @@ func (a *App) RunServer() {
 	if err != nil {
 		utils.LogFatal("Error while oppening the server :()")
 	}
+}
+
+func main() {
+	if err := godotenv.Load(); err != nil {
+		utils.LogFatal("Error loading .env file")
+	}
+
+	cfg := mysql.Config{
+		User:      os.Getenv("DBUSER"),
+		Passwd:    os.Getenv("DBPASS"),
+		Addr:      "localhost:3309",
+		DBName:    "tracker",
+		ParseTime: true,
+	}
+
+	err := database.InitDB(cfg.FormatDSN())
+
+	if err != nil {
+		utils.LogFatal(err.Error())
+	}
+
+	app := &App{
+		Addr:      ":3333",
+		PublicDir: "./ui/public/",
+	}
+
+	app.RunServer()
 }
