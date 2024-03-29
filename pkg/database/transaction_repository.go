@@ -14,17 +14,17 @@ func NewTransactionRepository(db *sql.DB) TransactionRepository {
 	return TransactionRepository{db}
 }
 
+var QueryGetTransactions = `
+  SELECT
+    *
+  FROM
+    transaction
+  WHERE
+    BudgetID = ?;`
+
 func (tr *TransactionRepository) GetTransactions(budgetId int) ([]models.Transaction, error) {
 	var transactions []models.Transaction
-	query := `
-    SELECT 
-      TransactionId, TransactionUuid, Description, Amount, Created, BudgetID
-    FROM
-      transaction
-    WHERE
-      BudgetID = ?;
-  `
-	rows, err := tr.db.Query(query, budgetId)
+	rows, err := tr.db.Query(QueryGetTransactions, budgetId)
 
 	if err != nil {
 		return nil, fmt.Errorf("GetTransactions: %v", err)
