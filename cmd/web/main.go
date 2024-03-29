@@ -2,18 +2,17 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"net/http"
 	"os"
 	"tracker/pkg/database"
 	"tracker/pkg/handlers"
 	"tracker/pkg/middleware"
 	"tracker/pkg/utils"
-	"github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
 type App struct {
-	Addr      string
 	PublicDir string
 }
 
@@ -33,13 +32,13 @@ func (a *App) Routes() http.Handler {
 	return middleware.LogReq(middleware.ServeJson(mux))
 }
 
-func (a *App) RunServer() {
+func (a *App) RunServer(addr string) {
 	srv := &http.Server{
-		Addr:    a.Addr,
+		Addr:    addr,
 		Handler: a.Routes(),
 	}
 
-	utils.LogInfo(fmt.Sprintf("Listening on port: %v ...", a.Addr))
+	utils.LogInfo(fmt.Sprintf("Listening on port: %v ...", addr))
 	err := srv.ListenAndServe()
 
 	if err != nil {
@@ -47,16 +46,21 @@ func (a *App) RunServer() {
 	}
 }
 
-func main() {
+func (a App) Initialize(
+	dbUser string,
+	dbPass string,
+	dbAddr string,
+	dbName string,
+) {
 	if err := godotenv.Load(); err != nil {
 		utils.LogFatal("Error loading .env file")
 	}
 
 	cfg := mysql.Config{
-		User:      os.Getenv("DBUSER"),
-		Passwd:    os.Getenv("DBPASS"),
-		Addr:      "localhost:3309",
-		DBName:    "tracker",
+		User:      dbUser,
+		Passwd:    dbPass,
+		Addr:      dbAddr,
+		DBName:    dbName,
 		ParseTime: true,
 	}
 
@@ -65,11 +69,23 @@ func main() {
 	if err != nil {
 		utils.LogFatal(err.Error())
 	}
+}
+
+func main() {
+	if err := godotenv.Load(); err != nil {
+		utils.LogFatal("Error loading .env file")
+	}
 
 	app := &App{
-		Addr:      ":3333",
 		PublicDir: "./ui/public/",
 	}
 
-	app.RunServer()
+	app.Initialize(
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASS"),
+		os.Getenv("DB_ADDR"),
+		os.Getenv("DB_NAME"),
+	)
+
+	app.RunServer(":3333")
 }
