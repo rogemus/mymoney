@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 	"tracker/pkg/models"
+	assert "tracker/utils/testing"
 )
 
 func generateTransactions(budgetID int) models.Transaction {
@@ -21,32 +22,35 @@ func generateTransactions(budgetID int) models.Transaction {
 }
 
 func TestGetTransactions(t *testing.T) {
-	var tts []models.Transaction
-	tt := generateTransactions(1)
-	tts = append(tts, tt)
+	var transactions []models.Transaction
+
+	transaction := generateTransactions(1)
+	transactions = append(transactions, transaction)
+	columns := []string{
+		"TransactionID",
+		"TransactionUuid",
+		"Description",
+		"Amount",
+		"Created",
+		"BudgetID",
+	}
+	expectedRows := sqlmock.NewRows(columns)
+	expectedRows.AddRow(
+		transaction.TransactionID,
+		transaction.TransactionUuid,
+		transaction.Description,
+		transaction.Amount,
+		transaction.Created,
+		transaction.BudgetID,
+	)
 
 	t.Run("returns rows for budget", func(t *testing.T) {
 		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
-		columns := []string{
-			"TransactionID",
-			"TransactionUuid",
-			"Description",
-			"Amount",
-			"Created",
-			"BudgetID",
-		}
-		expectedRows := sqlmock.NewRows(columns)
-		expectedRows.AddRow(
-			tt.TransactionID,
-			tt.TransactionUuid,
-			tt.Description,
-			tt.Amount,
-			tt.Created,
-			tt.BudgetID,
-		)
+
+		budgetID := 1
 		mock.
 			ExpectQuery(QueryGetTransactions).
-			WithArgs(1).
+			WithArgs(budgetID).
 			WillReturnRows(expectedRows)
 
 		if err != nil {
@@ -56,22 +60,58 @@ func TestGetTransactions(t *testing.T) {
 		defer db.Close()
 
 		repo := NewTransactionRepository(db)
-		tts, err = repo.GetTransactions(1)
+		result, err := repo.GetTransactions(budgetID)
 
-		assertEqualInt(t, len(tts), 1)
+		assert.AssertEqualInt(t, len(result), len(transactions))
+		assert.AssertSliceOfStructs(t, result, transactions)
 
 		if err != nil {
 			t.Error(err)
 		}
 	})
-}
 
-func assertEqualInt(t testing.TB, got int, want int) {
-	t.Helper()
+	t.Run("return empty rows", func(t *testing.T) {
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
-	if want != got {
-		t.Fatalf("want %d, got %d", want, got)
-	}
+		columns := []string{
+			"TransactionID",
+			"TransactionUuid",
+			"Description",
+			"Amount",
+			"Created",
+			"BudgetID",
+		}
+		expectedRows := sqlmock.NewRows(columns)
+		// expectedRows.AddRow(
+		// 	transaction.TransactionID,
+		// 	transaction.TransactionUuid,
+		// 	transaction.Description,
+		// 	transaction.Amount,
+		// 	transaction.Created,
+		// 	transaction.BudgetID,
+		// )
+		budgetID := 99999
+		mock.
+			ExpectQuery(QueryGetTransactions).
+			WithArgs(budgetID).
+			WillReturnRows(expectedRows)
+
+		if err != nil {
+			t.Fatalf("an error has occured: %s", err)
+		}
+
+		defer db.Close()
+
+		repo := NewTransactionRepository(db)
+		transactions, err := repo.GetTransactions(budgetID)
+
+		assert.AssertEqualInt(t, len(transactions), 4)
+		assert.AssertSliceOfStructs[models.Transaction](t, transactions, make([]models.Transaction, 0))
+
+		if err != nil {
+			t.Error(err)
+		}
+	})
 }
 
 // func TestGetTransactions(t *testing.T) {
