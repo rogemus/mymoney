@@ -21,126 +21,79 @@ func generateTransactions(budgetID int) models.Transaction {
 	}
 }
 
-func TestGetTransactions(t *testing.T) {
+func TestGetTransactions_2(t *testing.T) {
+
 	var transactions []models.Transaction
 
-	transaction := generateTransactions(1)
-	transactions = append(transactions, transaction)
-	columns := []string{
-		"TransactionID",
-		"TransactionUuid",
-		"Description",
-		"Amount",
-		"Created",
-		"BudgetID",
+	transaction_1 := generateTransactions(1)
+	transactions = append(transactions, transaction_1)
+
+	testCases := []struct {
+		name          string
+		expected      []models.Transaction
+		expectedQuery string
+		budgetID      int
+	}{
+		{
+			name:          "returns rows for budgetID(1)",
+			expected:      transactions,
+			expectedQuery: QueryGetTransactions,
+			budgetID:      1,
+		},
+		{
+			name:          "returns empty row for budgetID(9999)",
+			expected:      make([]models.Transaction, 0),
+      expectedQuery: QueryGetTransactions,
+			budgetID:      9999,
+		},
 	}
-	expectedRows := sqlmock.NewRows(columns)
-	expectedRows.AddRow(
-		transaction.TransactionID,
-		transaction.TransactionUuid,
-		transaction.Description,
-		transaction.Amount,
-		transaction.Created,
-		transaction.BudgetID,
-	)
 
-	t.Run("returns rows for budget", func(t *testing.T) {
-		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	for _, test := range testCases {
+		t.Run(test.name, func(t *testing.T) {
 
-		budgetID := 1
-		mock.
-			ExpectQuery(QueryGetTransactions).
-			WithArgs(budgetID).
-			WillReturnRows(expectedRows)
+			db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
-		if err != nil {
-			t.Fatalf("an error has occured: %s", err)
-		}
+			columns := []string{
+				"TransactionID",
+				"TransactionUuid",
+				"Description",
+				"Amount",
+				"Created",
+				"BudgetID",
+			}
+			expectedRows := sqlmock.NewRows(columns)
 
-		defer db.Close()
+			for _, transaction := range test.expected {
+				expectedRows.AddRow(
+					transaction.TransactionID,
+					transaction.TransactionUuid,
+					transaction.Description,
+					transaction.Amount,
+					transaction.Created,
+					transaction.BudgetID,
+				)
+			}
 
-		repo := NewTransactionRepository(db)
-		result, err := repo.GetTransactions(budgetID)
+			mock.
+				ExpectQuery(test.expectedQuery).
+				WithArgs(test.budgetID).
+				WillReturnRows(expectedRows)
 
-		assert.AssertEqualInt(t, len(result), len(transactions))
-		assert.AssertSliceOfStructs(t, result, transactions)
+			if err != nil {
+				t.Fatalf("an error has occured: %s", err)
+			}
 
-		if err != nil {
-			t.Error(err)
-		}
-	})
+			defer db.Close()
 
-	t.Run("return empty rows", func(t *testing.T) {
-		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+			repo := NewTransactionRepository(db)
+			result, err := repo.GetTransactions(test.budgetID)
 
-		columns := []string{
-			"TransactionID",
-			"TransactionUuid",
-			"Description",
-			"Amount",
-			"Created",
-			"BudgetID",
-		}
-		expectedRows := sqlmock.NewRows(columns)
-		// expectedRows.AddRow(
-		// 	transaction.TransactionID,
-		// 	transaction.TransactionUuid,
-		// 	transaction.Description,
-		// 	transaction.Amount,
-		// 	transaction.Created,
-		// 	transaction.BudgetID,
-		// )
-		budgetID := 99999
-		mock.
-			ExpectQuery(QueryGetTransactions).
-			WithArgs(budgetID).
-			WillReturnRows(expectedRows)
+			assert.AssertEqualInt(t, len(result), len(test.expected))
+			assert.AssertSliceOfStructs(t, result, test.expected)
 
-		if err != nil {
-			t.Fatalf("an error has occured: %s", err)
-		}
-
-		defer db.Close()
-
-		repo := NewTransactionRepository(db)
-		transactions, err := repo.GetTransactions(budgetID)
-
-		assert.AssertEqualInt(t, len(transactions), 4)
-		assert.AssertSliceOfStructs[models.Transaction](t, transactions, make([]models.Transaction, 0))
-
-		if err != nil {
-			t.Error(err)
-		}
-	})
+			if err != nil {
+				t.Error(err)
+			}
+		})
+	}
 }
-
-// func TestGetTransactions(t *testing.T) {
-// 	db, mock, err := sqlmock.New()
-// 	tr := NewTransactionRepository(db)
-// 	defer db.Close()
-//
-// 	if err != nil {
-// 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-// 	}
-// 	defer db.Close()
-//
-// 	t.Run("do not return rows", func(t *testing.T) {
-// 		// rows := sqlmock.NewRows([]string{"TransactionID", "BudgetID"}).AddRow(1, 3)
-// 		budgetId := 5
-// 		query := `SELECT \* FROM transaction WHERE BudgetID = \?;`
-//
-// 		tr.GetTransactions(budgetId)
-//
-// 		mock.ExpectBegin()
-// 		mock.
-// 			ExpectQuery(query).
-// 			WithArgs("test")
-//
-// 		// 	WithArgs(1).
-// 		// 	WillReturnRows(rows)
-//
-// 		if err := mock.ExpectationsWereMet(); err != nil {
-// 			t.Errorf("ther were unfulfiled expectations: %s", err)
-// 		}
-// 	})
-// }
