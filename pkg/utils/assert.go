@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/google/go-cmp/cmp"
 	"reflect"
 	"testing"
 )
@@ -8,8 +9,24 @@ import (
 func AssertEqualInt(t testing.TB, got, want int) {
 	t.Helper()
 
-	if want != got {
+	if got != want {
 		t.Fatalf("want %d, got %d", want, got)
+	}
+}
+
+func AssertError(t testing.TB, got, want error) {
+	t.Helper()
+
+	if got != want {
+		t.Fatalf("want %v, got %v", want, got)
+	}
+}
+
+func AssertStruct[T any](t testing.TB, got, want T) {
+	t.Helper()
+
+	if !cmp.Equal(got, want) {
+		t.Fatalf("want %v, got %v", want, got)
 	}
 }
 
