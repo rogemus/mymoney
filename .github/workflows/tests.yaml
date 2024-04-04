@@ -16,7 +16,7 @@ jobs:
         cache-dependency-path: subdir/go.sum
     - name: Install dependencies
       run: |
-          go get .
+          go mod download
 
     - name: Run Go Tests
       run: make tests
