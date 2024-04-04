@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"tracker/pkg/models"
+	errors "tracker/pkg/utils"
 )
 
 type BudgetRepository interface {
@@ -24,15 +25,11 @@ func NewBudgetRepository(db *sql.DB) BudgetRepository {
 
 func (r *budgetRepository) GetBudget(id int) (models.Budget, error) {
 	var b models.Budget
-	query := "SELECT ID, Uuid, Title, Created, Description FROM budget WHERE ID = ?"
+	query := "SELECT ID, Uuid, Created, Description, Title FROM budget WHERE ID = ?"
 	row := r.db.QueryRow(query, id)
 
-	if err := row.Scan(&b.ID, &b.Uuid, &b.Title, &b.Created, &b.Description); err != nil {
-		if err == sql.ErrNoRows {
-			return b, fmt.Errorf("GetBudget %d: no such budget", id)
-		}
-
-		return b, fmt.Errorf("GetBudget %d: %v", id, err)
+	if err := row.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title); err != nil {
+		return b, errors.Budget404Err
 	}
 
 	return b, nil
@@ -40,7 +37,7 @@ func (r *budgetRepository) GetBudget(id int) (models.Budget, error) {
 
 func (r *budgetRepository) GetBudgets() ([]models.Budget, error) {
 	var budgets []models.Budget
-	query := "SELECT ID, Uuid, Title, Created, Description FROM budget"
+	query := "SELECT ID, Uuid, Created, Description, Title FROM budget"
 	rows, err := r.db.Query(query)
 
 	if err != nil {
@@ -67,7 +64,7 @@ func (r *budgetRepository) GetBudgets() ([]models.Budget, error) {
 }
 
 func (r *budgetRepository) CreateBudget(budget models.Budget) (int64, error) {
-	query := "INSERT INTO budget (Title, Description) VALUES (?, ?);"
+	query := "INSERT INTO budget (Title, Description) VALUES (?, ?)"
 	result, err := r.db.Exec(query, budget.Title, budget.Description)
 
 	if err != nil {
@@ -95,7 +92,7 @@ func (r *budgetRepository) DeleteBudget(id int) error {
 }
 
 func (r *budgetRepository) UpdateBudget(budget models.Budget, id int) error {
-	query := "UPDATE budget SET Title=?, Description=? WHERE ID = ?;"
+	query := "UPDATE budget SET Title=?, Description=? WHERE ID = ?"
 	_, err := r.db.Exec(query, budget.Title, budget.Description, id)
 
 	if err != nil {

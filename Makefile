@@ -4,4 +4,4 @@ server:
 
 tests:
 	@echo "Testing..."
-	@go test ./test/... -v
+	@go test ./test/...
