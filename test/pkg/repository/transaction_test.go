@@ -1,34 +1,19 @@
 package repository_test
 
 import (
-	"fmt"
-	"math/rand"
 	"testing"
-	"time"
 	"tracker/pkg/models"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
+	mocks "tracker/test/pkg/mocks"
 
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-func generateTransaction(budgetID int) models.Transaction {
-	mock_time := time.Date(2020, 23, 40, 56, 70, 0, 0, time.UTC)
-
-	return models.Transaction{
-		Uuid:        fmt.Sprintf("%d", rand.Intn(9999)),
-		ID:          rand.Intn(9999),
-		Description: fmt.Sprintf("description %d", rand.Intn(9999)),
-		Amount:      rand.Float32(),
-		Created:     mock_time,
-		BudgetID:    budgetID,
-	}
-}
-
 func TestGetTransactions(t *testing.T) {
 	var transactions []models.Transaction
 
-	transaction_1 := generateTransaction(1)
+	transaction_1 := mocks.GenerateTransaction(1)
 	transactions = append(transactions, transaction_1)
 
 	testCases := []struct {
@@ -53,7 +38,6 @@ func TestGetTransactions(t *testing.T) {
 
 	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
-
 			db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 			columns := []string{

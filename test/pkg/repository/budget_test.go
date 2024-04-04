@@ -1,34 +1,20 @@
 package repository_test
 
 import (
-	"fmt"
-	"math/rand"
 	"testing"
-	"time"
 	"tracker/pkg/models"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
 	errors "tracker/pkg/utils"
+	mocks "tracker/test/pkg/mocks"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/go-cmp/cmp"
 )
 
-func generateBudget() models.Budget {
-	mock_time := time.Date(2020, 23, 40, 56, 70, 0, 0, time.UTC)
-
-	return models.Budget{
-		ID:          rand.Intn(9999),
-		Uuid:        fmt.Sprintf("%d", rand.Intn(9999)),
-		Created:     mock_time.UTC(),
-		Description: fmt.Sprintf("description %d", rand.Intn(9999)),
-		Title:       fmt.Sprintf("title %d", rand.Intn(9999)),
-	}
-}
-
 func TestGetBudget(t *testing.T) {
 	var empty_budget models.Budget
-	budget := generateBudget()
+	budget := mocks.GenerateBudget()
 
 	testCases := []struct {
 		name          string
