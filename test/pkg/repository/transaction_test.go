@@ -22,8 +22,6 @@ func generateTransactions(budgetID int) models.Transaction {
 	}
 }
 
-break tests
-
 func TestGetTransactions(t *testing.T) {
 	var transactions []models.Transaction
 
