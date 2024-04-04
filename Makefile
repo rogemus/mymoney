@@ -2,6 +2,6 @@ server:
 	@echo "Starting go server ..."
 	@go run cmd/web/main.go
 
-test:
+tests:
 	@echo "Testing..."
-	@go test ./...
+	@go test ./test/... -v

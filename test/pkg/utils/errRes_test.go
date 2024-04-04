@@ -1,14 +1,15 @@
-package utils
+package utils_test
 
 import (
 	"fmt"
 	"testing"
 	"tracker/pkg/models"
+	"tracker/pkg/utils"
 )
 
 func TestErrRes(t *testing.T) {
 	mockErr := fmt.Errorf("Test Error")
-	got := ErrRes(mockErr)
+	got := utils.ErrRes(mockErr)
 	want := models.GenericPayload{Msg: "Test Error"}
 
 	if want != got {
