@@ -1,8 +1,9 @@
 name: tests
 run-name: Run unit tests
-on: 
+on:
   pull_request:
-    types: [opened, reopened]
+    branches:
+      - main
 jobs: 
   run-go-tests:
     runs-on: ubuntu-latest
