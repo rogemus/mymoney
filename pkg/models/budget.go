@@ -5,14 +5,14 @@ import (
 )
 
 type Budget struct {
-	BudgetID    int
-	BudgetUuid  string
-	Created     time.Time
-	Description string
-	Title       string
+	ID          int       `json:"id"`
+	Uuid        string    `json:"uuid"`
+	Created     time.Time `json:"created"`
+	Description string    `json:"description"`
+	Title       string    `json:"title"`
 }
 
 type BudgetWithTransactions struct {
-	Budget
-	Transactions []Transaction
+	Budget       `json:"budget"`
+	Transactions []Transaction `json:"transactions"`
 }
