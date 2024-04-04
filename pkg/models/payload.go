@@ -1,5 +1,5 @@
 package models
 
 type GenericPayload struct {
-  Msg string
+	Msg string `json:"msg"`
 }

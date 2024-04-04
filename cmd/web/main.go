@@ -1,91 +1,73 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 	"net/http"
 	"os"
-	"tracker/pkg/database"
-	"tracker/pkg/handlers"
+	"tracker/pkg/handler"
 	"tracker/pkg/middleware"
+	"tracker/pkg/repository"
 	"tracker/pkg/utils"
+
+	"github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
-type App struct {
-	PublicDir string
-}
+func main() {
+	var err error
 
-func (a *App) Routes() http.Handler {
-	mux := http.NewServeMux()
-
-	// API: Budget
-	mux.HandleFunc("GET /budget/{id}", handlers.GetBudget)
-	mux.HandleFunc("DELETE /budget/{id}", handlers.DeleteBudget)
-	mux.HandleFunc("PUT /budget/{id}", handlers.UpdateBudget)
-	mux.HandleFunc("GET /budgets", handlers.GetBudgets)
-	mux.HandleFunc("POST /budgets", handlers.CreateBudget)
-
-	publicFiles := http.FileServer(http.Dir(a.PublicDir))
-	mux.Handle("/", publicFiles)
-
-	return middleware.LogReq(middleware.ServeJson(mux))
-}
-
-func (a *App) RunServer(addr string) {
-	srv := &http.Server{
-		Addr:    addr,
-		Handler: a.Routes(),
-	}
-
-	utils.LogInfo(fmt.Sprintf("Listening on port: %v ...", addr))
-	err := srv.ListenAndServe()
-
-	if err != nil {
-		utils.LogFatal("Error while oppening the server :()")
-	}
-}
-
-func (a App) Initialize(
-	dbUser string,
-	dbPass string,
-	dbAddr string,
-	dbName string,
-) {
-	if err := godotenv.Load(); err != nil {
+	// Get .env file
+	if err = godotenv.Load(); err != nil {
 		utils.LogFatal("Error loading .env file")
 	}
 
+	// Init DB
 	cfg := mysql.Config{
-		User:      dbUser,
-		Passwd:    dbPass,
-		Addr:      dbAddr,
-		DBName:    dbName,
+		User:      os.Getenv("DB_USER"),
+		Passwd:    os.Getenv("DB_PASS"),
+		Addr:      os.Getenv("DB_ADDR"),
+		DBName:    os.Getenv("DB_NAME"),
 		ParseTime: true,
 	}
+	db, err := sql.Open("mysql", cfg.FormatDSN())
 
-	err := database.InitDB(cfg.FormatDSN())
-
-	if err != nil {
+	if err = db.Ping(); err != nil {
 		utils.LogFatal(err.Error())
 	}
-}
+	utils.LogInfo("Connected do Database 🎉 !!!")
 
-func main() {
-	if err := godotenv.Load(); err != nil {
-		utils.LogFatal("Error loading .env file")
+	// Init Routes
+	mux := http.NewServeMux()
+
+	// API: Transactions
+	transactionRepo := repository.NewTransactionRepository(db)
+	transactionHandler := handler.NewTransactionHandler(transactionRepo)
+	mux.HandleFunc("GET /transactions", transactionHandler.GetTransactions)
+
+	// API: Budget
+	budgetRepo := repository.NewBudgetRepository(db)
+	budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
+
+	mux.HandleFunc("GET /budget/{id}", budgetHandler.GetBudget)
+	mux.HandleFunc("DELETE /budget/{id}", budgetHandler.DeleteBudget)
+	mux.HandleFunc("PUT /budget/{id}", budgetHandler.UpdateBudget)
+	mux.HandleFunc("GET /budgets", budgetHandler.GetBudgets)
+	mux.HandleFunc("POST /budgets", budgetHandler.CreateBudget)
+
+	// API: Public Files
+	publicFiles := http.FileServer(http.Dir("./ui/public"))
+	mux.Handle("/", publicFiles)
+
+	routes := middleware.LogReq(middleware.ServeJson(mux))
+
+	// Init server
+	srv := &http.Server{
+		Addr:    ":3333",
+		Handler: routes,
 	}
 
-	app := &App{
-		PublicDir: "./ui/public/",
-	}
-
-	app.Initialize(
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASS"),
-		os.Getenv("DB_ADDR"),
-		os.Getenv("DB_NAME"),
-	)
-
-	app.RunServer(":3333")
+	// Start Server
+	utils.LogInfo(fmt.Sprintf("Listening on port: %v ...", ":3333"))
+	srv.ListenAndServe()
 }

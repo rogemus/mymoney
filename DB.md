@@ -28,12 +28,12 @@ mysql>use tracker
 ```sql
 DROP TABLE IF EXISTS budget;
 CREATE TABLE budget (
-    BudgetID    INT AUTO_INCREMENT NOT NULL,
-    BudgetUuid  VARCHAR(36) DEFAULT (uuid()),
+    ID          INT AUTO_INCREMENT NOT NULL,
+    Uuid        VARCHAR(36) DEFAULT (uuid()),
     Title       VARCHAR(128) NOT NULL,
     Description VARCHAR(255),
     Created     DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (BudgetID)
+    PRIMARY KEY (ID)
 );
 
 ```
@@ -54,14 +54,14 @@ VALUES
 ```sql
 DROP TABLE IF EXISTS transaction;
 CREATE TABLE transaction (
-    TransactionID   INT AUTO_INCREMENT NOT NULL,
-    TransactionUuid VARCHAR(36) DEFAULT (uuid()),
+    ID              INT AUTO_INCREMENT NOT NULL,
+    Uuid            VARCHAR(36) DEFAULT (uuid()),
     Description     VARCHAR(255), 
     Amount          FLOAT NOT NULL,
     Created         DATETIME DEFAULT CURRENT_TIMESTAMP,
   	BudgetID        INT NOT NULL,
-    PRIMARY KEY     (TransactionID),
-    FOREIGN KEY     (BudgetID) REFERENCES budget(BudgetID) 
+    PRIMARY KEY     (ID),
+    FOREIGN KEY     (BudgetID) REFERENCES budget(ID) 
 );
 
 ```

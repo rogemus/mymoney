@@ -1,22 +1,27 @@
-package handlers
+package handler
 
 import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"tracker/pkg/database"
 	"tracker/pkg/models"
+	"tracker/pkg/repository"
 	"tracker/pkg/utils"
 )
 
-func GetBudget(w http.ResponseWriter, r *http.Request) {
-	db := database.GetDB()
-	br := database.NewBudgetRepository(db)
-	tr := database.NewTransactionRepository(db)
+type BudgetHandler struct {
+	repo             repository.BudgetRepository
+	transactionsRepo repository.TransactionRepository
+}
 
+func NewBudgetHandler(repo repository.BudgetRepository, transactionsRepo repository.TransactionRepository) BudgetHandler {
+	return BudgetHandler{repo, transactionsRepo}
+}
+
+func (h *BudgetHandler) GetBudget(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.PathValue("id"))
-	budget, err := br.GetBudget(id)
-	transactions, _ := tr.GetTransactions(id)
+	budget, err := h.repo.GetBudget(id)
+	transactions, _ := h.transactionsRepo.GetTransactionsForBudget(id)
 	encoder := json.NewEncoder(w)
 	budgetWithTransaction := models.BudgetWithTransactions{
 		Budget:       budget,
@@ -36,10 +41,8 @@ func GetBudget(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(budgetWithTransaction)
 }
 
-func GetBudgets(w http.ResponseWriter, r *http.Request) {
-	db := database.GetDB()
-	br := database.NewBudgetRepository(db)
-	budgets, err := br.GetBudgets()
+func (h *BudgetHandler) GetBudgets(w http.ResponseWriter, r *http.Request) {
+	budgets, err := h.repo.GetBudgets()
 	encoder := json.NewEncoder(w)
 
 	// TODO handle different type of error
@@ -55,10 +58,8 @@ func GetBudgets(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(budgets)
 }
 
-func CreateBudget(w http.ResponseWriter, r *http.Request) {
+func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
 	var budget models.Budget
-	db := database.GetDB()
-	br := database.NewBudgetRepository(db)
 	encoder := json.NewEncoder(w)
 
 	if err := json.NewDecoder(r.Body).Decode(&budget); err != nil {
@@ -71,18 +72,16 @@ func CreateBudget(w http.ResponseWriter, r *http.Request) {
 	// TODO handle errors
 	// TODO write tests
 	payload := models.GenericPayload{Msg: "Budget created"}
-	br.CreateBudget(budget)
+	h.repo.CreateBudget(budget)
 	w.WriteHeader(http.StatusCreated)
 	encoder.Encode(payload)
 }
 
-func DeleteBudget(w http.ResponseWriter, r *http.Request) {
-	db := database.GetDB()
-	br := database.NewBudgetRepository(db)
+func (h *BudgetHandler) DeleteBudget(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.PathValue("id"))
 	encoder := json.NewEncoder(w)
 
-	if err := br.DeleteBudget(id); err != nil {
+	if err := h.repo.DeleteBudget(id); err != nil {
 		errPayload := utils.ErrRes(err)
 		w.WriteHeader(http.StatusBadRequest)
 		encoder.Encode(errPayload)
@@ -94,10 +93,8 @@ func DeleteBudget(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(payload)
 }
 
-func UpdateBudget(w http.ResponseWriter, r *http.Request) {
+func (h *BudgetHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
 	var budget models.Budget
-	db := database.GetDB()
-	br := database.NewBudgetRepository(db)
 	id, _ := strconv.Atoi(r.PathValue("id"))
 	encoder := json.NewEncoder(w)
 
@@ -109,7 +106,7 @@ func UpdateBudget(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload := models.GenericPayload{Msg: "Budget updated"}
-	br.UpdateBudget(budget, id)
+	h.repo.UpdateBudget(budget, id)
 	w.WriteHeader(http.StatusOK)
 	encoder.Encode(payload)
 }
