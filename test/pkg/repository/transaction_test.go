@@ -22,6 +22,8 @@ func generateTransactions(budgetID int) models.Transaction {
 	}
 }
 
+
+dupa
 func TestGetTransactions(t *testing.T) {
 	var transactions []models.Transaction
 
