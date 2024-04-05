@@ -85,11 +85,10 @@ func (r *budgetRepository) CreateBudget(budget models.Budget) (int64, error) {
 }
 
 func (r *budgetRepository) DeleteBudget(id int) error {
-	query := "DELETE from budget WHERE ID = ?;"
-	_, err := r.db.Exec(query, id)
+	query := "DELETE FROM budget WHERE ID = ?"
 
-	if err != nil {
-		return fmt.Errorf("DeleteBudget(%d): %v", id, err)
+	if _, err := r.db.Exec(query, id); err != nil {
+		return errors.Generic400Err
 	}
 
 	return nil
