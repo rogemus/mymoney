@@ -1,56 +1,100 @@
 package handlers_test
 
 import (
+	"database/sql"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 	"tracker/pkg/handler"
 	"tracker/pkg/repository"
+	assert "tracker/pkg/utils"
 	mocks "tracker/test/pkg/mocks"
 
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-func TestGetBudget(t *testing.T) {
+func TestHandlerGetBudget(t *testing.T) {
 	budget := mocks.GenerateBudget(1)
-	db, mock, _ := sqlmock.New()
-	//
-	columns := []string{
-		"ID",
-		"Uuid",
-		"Created",
-		"Description",
-		"Title",
+
+	testCases := []struct {
+		name           string
+		expected       string
+		expectedStatus int
+		budgetId       string
+		expectedErr    error
+	}{
+		{
+			name:           "returns budget json",
+			expected:       `{"budget":{"id":1,"uuid":"mock uuid","created":"2021-12-12T09:10:00Z","description":"mock description","title":"mock title"},"transactions":null}`,
+			expectedStatus: 200,
+			budgetId:       "1",
+			expectedErr:    nil,
+		},
+		{
+			name:           "returns 404 if budget not found",
+			expected:       `{"msg":"Budget not found"}`,
+			expectedStatus: 404,
+			budgetId:       "9999",
+			expectedErr:    sql.ErrNoRows,
+		},
+		{
+			name:           "returns 400 if budgetId not valid",
+			expected:       `{"msg":"Invalid request"}`,
+			expectedStatus: 400,
+			budgetId:       "test",
+			expectedErr:    nil,
+		},
 	}
-	expectedRows := sqlmock.NewRows(columns).
-		AddRow(
-			budget.ID,
-			budget.Uuid,
-			budget.Created,
-			budget.Description,
-			budget.Title,
-		)
 
-	mock.ExpectQuery("SELECT").WillReturnRows(expectedRows)
-	req, _ := http.NewRequest("GET", "/budget/1", nil)
+	for _, test := range testCases {
+		t.Run(test.name, func(t *testing.T) {
+			db, mock, _ := sqlmock.New()
+			columns := []string{
+				"ID",
+				"Uuid",
+				"Created",
+				"Description",
+				"Title",
+			}
+			expectedRows := sqlmock.
+				NewRows(columns).
+				AddRow(
+					&budget.ID,
+					&budget.Uuid,
+					&budget.Created,
+					&budget.Description,
+					&budget.Title,
+				)
 
-	budgetRepo := repository.NewBudgetRepository(db)
-	transactionRepo := repository.NewTransactionRepository(db)
-	budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
+			id, _ := strconv.Atoi(test.budgetId)
 
-	rr := httptest.NewRecorder()
-	hr := http.HandlerFunc(budgetHandler.GetBudget)
+			if test.expectedErr != nil {
+				mock.
+					ExpectQuery("SELECT").
+					WithArgs(id).
+					WillReturnError(sql.ErrNoRows)
+			} else {
+				mock.
+					ExpectQuery("SELECT").
+					WithArgs(id).
+					WillReturnRows(expectedRows)
+			}
 
-	hr.ServeHTTP(rr, req)
+			url := fmt.Sprintf("/budget/%s", test.budgetId)
+			req := httptest.NewRequest(http.MethodGet, url, nil)
 
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-	// Check the response body is what we expect.
-	expected := `{"alive": true}`
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
+			budgetRepo := repository.NewBudgetRepository(db)
+			transactionRepo := repository.NewTransactionRepository(db)
+			budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
+
+			rr := httptest.NewRecorder()
+			hr := http.HandlerFunc(budgetHandler.GetBudget)
+			hr.ServeHTTP(rr, req)
+
+			assert.AssertJson(t, rr.Body.String(), test.expected)
+			assert.AssertInt(t, rr.Code, test.expectedStatus)
+		})
 	}
 }
