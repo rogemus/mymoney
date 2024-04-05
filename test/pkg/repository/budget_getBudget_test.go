@@ -13,7 +13,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestRepoGetBudget(t *testing.T) {
+func Test_BudgetRepo_GetBudget(t *testing.T) {
 	var empty_budget models.Budget
 	budget := mocks.GenerateBudget()
 

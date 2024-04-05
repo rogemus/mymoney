@@ -40,28 +40,28 @@ func (r *budgetRepository) GetBudget(id int) (models.Budget, error) {
 }
 
 func (r *budgetRepository) GetBudgets() ([]models.Budget, error) {
-	var budgets []models.Budget
 	query := "SELECT ID, Uuid, Created, Description, Title FROM budget"
 	rows, err := r.db.Query(query)
 
 	if err != nil {
-		return nil, fmt.Errorf("GetBudgets: %v", err)
+		return nil, errors.Generic400Err
 	}
 
 	defer rows.Close()
+	budgets := []models.Budget{}
 
 	for rows.Next() {
 		var b models.Budget
 
-		if err := rows.Scan(&b.ID, &b.Uuid, &b.Title, &b.Created, &b.Description); err != nil {
-			return nil, fmt.Errorf("GetBudgets: %v", err)
+		if err := rows.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title); err != nil {
+			return nil, errors.Generic400Err
 		}
 
 		budgets = append(budgets, b)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("GetBudgets: %v", err)
+		return nil, errors.Generic400Err
 	}
 
 	return budgets, nil

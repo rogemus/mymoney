@@ -51,10 +51,8 @@ func (h *BudgetHandler) GetBudgets(w http.ResponseWriter, r *http.Request) {
 	budgets, err := h.repo.GetBudgets()
 	encoder := json.NewEncoder(w)
 
-	// TODO handle different type of error
-	// TODO write tests
 	if err != nil {
-		utils.ErrRes(w, err, 500)
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
