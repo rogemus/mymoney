@@ -21,11 +21,11 @@ func (r *transactionRepository) GetTransactionsForBudget(budgetId int) ([]models
 	query := "SELECT * FROM transaction WHERE BudgetID = ?"
 	rows, err := r.db.Query(query, budgetId)
 
-  if err != nil {
+	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var transactions []models.Transaction
+	transactions := make([]models.Transaction, 0)
 
 	for rows.Next() {
 		var transaction models.Transaction

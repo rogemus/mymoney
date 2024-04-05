@@ -10,7 +10,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-func TestGetTransactions(t *testing.T) {
+func TestRepoGetTransactions(t *testing.T) {
 	var transactions []models.Transaction
 
 	transaction_1 := mocks.GenerateTransaction(1)
@@ -75,7 +75,7 @@ func TestGetTransactions(t *testing.T) {
 			repo := repository.NewTransactionRepository(db)
 			result, err := repo.GetTransactionsForBudget(test.budgetID)
 
-			assert.AssertEqualInt(t, len(result), len(test.expected))
+			assert.AssertInt(t, len(result), len(test.expected))
 			assert.AssertSliceOfStructs(t, result, test.expected)
 
 			if err != nil {

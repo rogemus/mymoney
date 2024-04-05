@@ -1,16 +1,30 @@
 package utils
 
 import (
-	"github.com/google/go-cmp/cmp"
+	"encoding/json"
 	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
-func AssertEqualInt(t testing.TB, got, want int) {
+func AssertJson(t testing.TB, got, want string) {
+	t.Helper()
+
+	var gotI, wantI interface{}
+	json.Unmarshal([]byte(got), &gotI)
+	json.Unmarshal([]byte(want), &wantI)
+
+	if !reflect.DeepEqual(gotI, wantI) {
+		t.Errorf("\n want: %v \n got: %v", wantI, gotI)
+	}
+}
+
+func AssertInt(t testing.TB, got, want int) {
 	t.Helper()
 
 	if got != want {
-		t.Fatalf("want %d, got %d", want, got)
+		t.Errorf("\n want: %v \n got: %v", want, got)
 	}
 }
 
@@ -18,7 +32,7 @@ func AssertError(t testing.TB, got, want error) {
 	t.Helper()
 
 	if got != want {
-		t.Fatalf("want %v, got %v", want, got)
+		t.Errorf("\n want: %v \n got: %v", want, got)
 	}
 }
 
@@ -26,7 +40,7 @@ func AssertStruct[T any](t testing.TB, got, want T) {
 	t.Helper()
 
 	if !cmp.Equal(got, want) {
-		t.Fatalf("want %v, got %v", want, got)
+		t.Errorf("\n want: %v \n got: %v", want, got)
 	}
 }
 
@@ -37,6 +51,6 @@ func AssertSliceOfStructs[T any](t testing.TB, got, want []T) {
 	deepEqual := reflect.DeepEqual(got, want)
 
 	if !emptyArray && !deepEqual {
-		t.Fatalf("want %v, got %v", want, got)
+		t.Errorf("\n want: %v \n got: %v", want, got)
 	}
 }

@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"tracker/pkg/models"
 	"tracker/pkg/repository"
 	"tracker/pkg/utils"
+	errors "tracker/pkg/utils"
 )
 
 type BudgetHandler struct {
@@ -19,22 +21,26 @@ func NewBudgetHandler(repo repository.BudgetRepository, transactionsRepo reposit
 }
 
 func (h *BudgetHandler) GetBudget(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.PathValue("id"))
-	budget, err := h.repo.GetBudget(id)
-	transactions, _ := h.transactionsRepo.GetTransactionsForBudget(id)
 	encoder := json.NewEncoder(w)
+	parts := strings.Split(r.URL.Path, "/")
+	id, err := strconv.Atoi(parts[len(parts)-1])
+
+	if err != nil {
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	budget, err := h.repo.GetBudget(id)
+
+	if err == errors.Budget404Err {
+		utils.ErrRes(w, errors.Budget404Err, http.StatusNotFound)
+		return
+	}
+
+	transactions, _ := h.transactionsRepo.GetTransactionsForBudget(id)
 	budgetWithTransaction := models.BudgetWithTransactions{
 		Budget:       budget,
 		Transactions: transactions,
-	}
-
-	// TODO handle different type of error
-	// TODO write tests
-	if err != nil {
-		errPayload := utils.ErrRes(err)
-		w.WriteHeader(http.StatusNotFound)
-		encoder.Encode(errPayload)
-		return
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -48,9 +54,7 @@ func (h *BudgetHandler) GetBudgets(w http.ResponseWriter, r *http.Request) {
 	// TODO handle different type of error
 	// TODO write tests
 	if err != nil {
-		errPayload := utils.ErrRes(err)
-		w.WriteHeader(http.StatusBadRequest)
-		encoder.Encode(errPayload)
+		utils.ErrRes(w, err, 500)
 		return
 	}
 
@@ -63,9 +67,7 @@ func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
 	encoder := json.NewEncoder(w)
 
 	if err := json.NewDecoder(r.Body).Decode(&budget); err != nil {
-		errPayload := utils.ErrRes(err)
-		w.WriteHeader(http.StatusBadRequest)
-		encoder.Encode(errPayload)
+		utils.ErrRes(w, err, 500)
 		return
 	}
 
@@ -82,9 +84,7 @@ func (h *BudgetHandler) DeleteBudget(w http.ResponseWriter, r *http.Request) {
 	encoder := json.NewEncoder(w)
 
 	if err := h.repo.DeleteBudget(id); err != nil {
-		errPayload := utils.ErrRes(err)
-		w.WriteHeader(http.StatusBadRequest)
-		encoder.Encode(errPayload)
+		utils.ErrRes(w, err, 500)
 		return
 	}
 
@@ -99,9 +99,7 @@ func (h *BudgetHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
 	encoder := json.NewEncoder(w)
 
 	if err := json.NewDecoder(r.Body).Decode(&budget); err != nil {
-		errPayload := utils.ErrRes(err)
-		w.WriteHeader(http.StatusBadRequest)
-		encoder.Encode(errPayload)
+		utils.ErrRes(w, err, 500)
 		return
 	}
 
