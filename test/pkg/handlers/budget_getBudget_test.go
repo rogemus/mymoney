@@ -15,7 +15,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-func TestHandlerGetBudget(t *testing.T) {
+func Test_BudgetHandler_GetBudget(t *testing.T) {
 	budget := mocks.GenerateBudget(1)
 
 	testCases := []struct {
