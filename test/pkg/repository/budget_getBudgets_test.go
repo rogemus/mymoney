@@ -67,6 +67,7 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 
 			mock.
 				ExpectQuery(test.expectedQuery).
+        WithoutArgs().
 				WillReturnRows(expectedRows)
 
 			defer db.Close()
