@@ -72,13 +72,13 @@ func (r *budgetRepository) CreateBudget(budget models.Budget) (int64, error) {
 	result, err := r.db.Exec(query, budget.Title, budget.Description)
 
 	if err != nil {
-		return 0, fmt.Errorf("CreateBudget: %v", err)
+		return -1, errors.Generic400Err
 	}
 
 	id, err := result.LastInsertId()
 
 	if err != nil {
-		return 0, fmt.Errorf("CreateBudget: %v", err)
+		return -1, errors.Generic400Err
 	}
 
 	return id, nil
