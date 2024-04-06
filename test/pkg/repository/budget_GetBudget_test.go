@@ -20,7 +20,6 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expected       models.Budget
-		expectedQuery  string
 		budgetID       int
 		expectedErr    error
 		expectedSqlErr error
@@ -28,7 +27,6 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 		{
 			name:           "returns rows for budgetID(1)",
 			expected:       budget,
-			expectedQuery:  "SELECT ID, Uuid, Created, Description, Title FROM budget WHERE ID = ?",
 			budgetID:       1,
 			expectedErr:    nil,
 			expectedSqlErr: nil,
@@ -36,7 +34,6 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 		{
 			name:           "returns empty row for budgetID(9999)",
 			expected:       empty_budget,
-			expectedQuery:  "SELECT ID, Uuid, Created, Description, Title FROM budget WHERE ID = ?",
 			budgetID:       9999,
 			expectedErr:    errors.Budget404Err,
 			expectedSqlErr: sql.ErrNoRows,
@@ -70,12 +67,12 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 
 			if test.expectedSqlErr != nil {
 				mock.
-					ExpectQuery(test.expectedQuery).
+					ExpectQuery("SELECT ID, Uuid, Created, Description, Title FROM budget WHERE ID = ?").
 					WithArgs(test.budgetID).
 					WillReturnError(test.expectedSqlErr)
 			} else {
 				mock.
-					ExpectQuery(test.expectedQuery).
+					ExpectQuery("SELECT ID, Uuid, Created, Description, Title FROM budget WHERE ID = ?").
 					WithArgs(test.budgetID).
 					WillReturnRows(expectedRows)
 			}
