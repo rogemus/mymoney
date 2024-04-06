@@ -29,14 +29,15 @@ func (r *budgetRepository) GetBudget(id int) (models.Budget, error) {
 	row := r.db.QueryRow(query, id)
 	err := row.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title)
 
-	switch err {
-	case sql.ErrNoRows:
+	if err == sql.ErrNoRows {
 		return b, errors.Budget404Err
-	case nil:
-		return b, nil
-	default:
+	}
+
+	if err != nil {
 		return b, errors.Generic400Err
 	}
+
+	return b, nil
 }
 
 func (r *budgetRepository) GetBudgets() ([]models.Budget, error) {

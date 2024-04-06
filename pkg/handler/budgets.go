@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -65,9 +64,7 @@ func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
 	var budget models.Budget
 	encoder := json.NewEncoder(w)
 
-
 	if err := json.NewDecoder(r.Body).Decode(&budget); err != nil {
-    fmt.Printf("%v \n ", budget)
 		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
@@ -76,7 +73,6 @@ func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
 		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
-
 
 	payload := models.GenericPayload{Msg: "Budget created"}
 	h.repo.CreateBudget(budget)
@@ -111,11 +107,27 @@ func (h *BudgetHandler) DeleteBudget(w http.ResponseWriter, r *http.Request) {
 
 func (h *BudgetHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
 	var budget models.Budget
-	id, _ := strconv.Atoi(r.PathValue("id"))
+	parts := strings.Split(r.URL.Path, "/")
+	id, err := strconv.Atoi(parts[len(parts)-1])
 	encoder := json.NewEncoder(w)
 
+	if err != nil {
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	if _, err := h.repo.GetBudget(id); err == errors.Budget404Err {
+		utils.ErrRes(w, errors.Budget404Err, http.StatusNotFound)
+		return
+	}
+
 	if err := json.NewDecoder(r.Body).Decode(&budget); err != nil {
-		utils.ErrRes(w, err, 500)
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	if budget.Title == "" {
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
