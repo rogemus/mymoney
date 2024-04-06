@@ -11,21 +11,18 @@ import (
 func Test_BudgetRepo_DeleteBudget(t *testing.T) {
 	testCases := []struct {
 		name           string
-		expectedQuery  string
 		budgetID       int
 		expectedErr    error
 		expectedSqlErr error
 	}{
 		{
 			name:           "delete budget",
-			expectedQuery:  "DELETE FROM budget WHERE ID = ?",
 			budgetID:       1,
 			expectedErr:    nil,
 			expectedSqlErr: nil,
 		},
 		{
 			name:           "delete budget if not exist",
-			expectedQuery:  "DELETE FROM budget WHERE ID = ?",
 			budgetID:       9999,
 			expectedErr:    nil,
 			expectedSqlErr: nil,
@@ -39,7 +36,7 @@ func Test_BudgetRepo_DeleteBudget(t *testing.T) {
 			defer db.Close()
 
 			mock.
-				ExpectExec(test.expectedQuery).
+				ExpectExec("DELETE FROM budget WHERE ID = ?").
 				WithArgs(test.budgetID).
 				WillReturnResult(sqlmock.NewResult(int64(test.budgetID), 1)).
 				WillReturnError(test.expectedSqlErr)

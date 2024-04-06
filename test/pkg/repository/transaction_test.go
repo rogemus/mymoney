@@ -17,22 +17,19 @@ func TestRepoGetTransactions(t *testing.T) {
 	transactions = append(transactions, transaction_1)
 
 	testCases := []struct {
-		name          string
-		expected      []models.Transaction
-		expectedQuery string
-		budgetID      int
+		name     string
+		expected []models.Transaction
+		budgetID int
 	}{
 		{
-			name:          "returns rows for budgetID(1)",
-			expected:      transactions,
-			expectedQuery: "SELECT * FROM transaction WHERE BudgetID = ?",
-			budgetID:      1,
+			name:     "returns rows for budgetID(1)",
+			expected: transactions,
+			budgetID: 1,
 		},
 		{
-			name:          "returns empty row for budgetID(9999)",
-			expected:      make([]models.Transaction, 0),
-			expectedQuery: "SELECT * FROM transaction WHERE BudgetID = ?",
-			budgetID:      9999,
+			name:     "returns empty row for budgetID(9999)",
+			expected: make([]models.Transaction, 0),
+			budgetID: 9999,
 		},
 	}
 
@@ -62,7 +59,7 @@ func TestRepoGetTransactions(t *testing.T) {
 			}
 
 			mock.
-				ExpectQuery(test.expectedQuery).
+				ExpectQuery("SELECT * FROM transaction WHERE BudgetID = ?").
 				WithArgs(test.budgetID).
 				WillReturnRows(expectedRows)
 

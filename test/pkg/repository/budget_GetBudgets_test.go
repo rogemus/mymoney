@@ -22,21 +22,18 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expected       []models.Budget
-		expectedQuery  string
 		expectedErr    error
 		expectedSqlErr error
 	}{
 		{
 			name:           "returns rows for budgets",
 			expected:       budgets,
-			expectedQuery:  "SELECT ID, Uuid, Created, Description, Title FROM budget",
 			expectedErr:    nil,
 			expectedSqlErr: nil,
 		},
 		{
 			name:           "returns empty row for budgets",
 			expected:       empty_budgets,
-			expectedQuery:  "SELECT ID, Uuid, Created, Description, Title FROM budget",
 			expectedErr:    nil,
 			expectedSqlErr: nil,
 		},
@@ -66,8 +63,8 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 			}
 
 			mock.
-				ExpectQuery(test.expectedQuery).
-        WithoutArgs().
+				ExpectQuery("SELECT ID, Uuid, Created, Description, Title FROM budget").
+				WithoutArgs().
 				WillReturnRows(expectedRows)
 
 			defer db.Close()
