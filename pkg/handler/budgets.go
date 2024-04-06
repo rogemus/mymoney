@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -64,13 +65,19 @@ func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
 	var budget models.Budget
 	encoder := json.NewEncoder(w)
 
+
 	if err := json.NewDecoder(r.Body).Decode(&budget); err != nil {
-		utils.ErrRes(w, err, 500)
+    fmt.Printf("%v \n ", budget)
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
-	// TODO handle errors
-	// TODO write tests
+	if budget.Title == "" {
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+
 	payload := models.GenericPayload{Msg: "Budget created"}
 	h.repo.CreateBudget(budget)
 	w.WriteHeader(http.StatusCreated)
