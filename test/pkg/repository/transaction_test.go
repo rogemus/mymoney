@@ -2,7 +2,7 @@ package repository_test
 
 import (
 	"testing"
-	"tracker/pkg/models"
+	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
 	mocks "tracker/test/pkg/mocks"
@@ -11,14 +11,14 @@ import (
 )
 
 func TestRepoGetTransactions(t *testing.T) {
-	var transactions []models.Transaction
+	var transactions []model.Transaction
 
 	transaction_1 := mocks.GenerateTransaction(1)
 	transactions = append(transactions, transaction_1)
 
 	testCases := []struct {
 		name     string
-		expected []models.Transaction
+		expected []model.Transaction
 		budgetID int
 	}{
 		{
@@ -28,7 +28,7 @@ func TestRepoGetTransactions(t *testing.T) {
 		},
 		{
 			name:     "returns empty row for budgetID(9999)",
-			expected: make([]models.Transaction, 0),
+			expected: make([]model.Transaction, 0),
 			budgetID: 9999,
 		},
 	}

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"tracker/pkg/models"
+	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	"tracker/pkg/utils"
 	errors "tracker/pkg/utils"
@@ -38,7 +38,7 @@ func (h *BudgetHandler) GetBudget(w http.ResponseWriter, r *http.Request) {
 	}
 
 	transactions, _ := h.transactionsRepo.GetTransactionsForBudget(id)
-	budgetWithTransaction := models.BudgetWithTransactions{
+	budgetWithTransaction := model.BudgetWithTransactions{
 		Budget:       budget,
 		Transactions: transactions,
 	}
@@ -61,7 +61,7 @@ func (h *BudgetHandler) GetBudgets(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
-	var budget models.Budget
+	var budget model.Budget
 	encoder := json.NewEncoder(w)
 
 	if err := json.NewDecoder(r.Body).Decode(&budget); err != nil {
@@ -74,7 +74,7 @@ func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload := models.GenericPayload{Msg: "Budget created"}
+	payload := model.GenericPayload{Msg: "Budget created"}
 	h.repo.CreateBudget(budget)
 	w.WriteHeader(http.StatusCreated)
 	encoder.Encode(payload)
@@ -100,13 +100,13 @@ func (h *BudgetHandler) DeleteBudget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload := models.GenericPayload{Msg: "Budget deleted"}
+	payload := model.GenericPayload{Msg: "Budget deleted"}
 	w.WriteHeader(http.StatusNoContent)
 	encoder.Encode(payload)
 }
 
 func (h *BudgetHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
-	var budget models.Budget
+	var budget model.Budget
 	parts := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(parts[len(parts)-1])
 	encoder := json.NewEncoder(w)
@@ -131,7 +131,7 @@ func (h *BudgetHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload := models.GenericPayload{Msg: "Budget updated"}
+	payload := model.GenericPayload{Msg: "Budget updated"}
 	h.repo.UpdateBudget(budget, id)
 	w.WriteHeader(http.StatusOK)
 	encoder.Encode(payload)
