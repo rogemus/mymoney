@@ -2,11 +2,11 @@ package repository
 
 import (
 	"database/sql"
-	"tracker/pkg/models"
+	"tracker/pkg/model"
 )
 
 type TransactionRepository interface {
-	GetTransactionsForBudget(budgetId int) ([]models.Transaction, error)
+	GetTransactionsForBudget(budgetId int) ([]model.Transaction, error)
 }
 
 type transactionRepository struct {
@@ -17,7 +17,7 @@ func NewTransactionRepository(db *sql.DB) TransactionRepository {
 	return &transactionRepository{db}
 }
 
-func (r *transactionRepository) GetTransactionsForBudget(budgetId int) ([]models.Transaction, error) {
+func (r *transactionRepository) GetTransactionsForBudget(budgetId int) ([]model.Transaction, error) {
 	query := "SELECT * FROM transaction WHERE BudgetID = ?"
 	rows, err := r.db.Query(query, budgetId)
 
@@ -25,10 +25,10 @@ func (r *transactionRepository) GetTransactionsForBudget(budgetId int) ([]models
 		return nil, err
 	}
 	defer rows.Close()
-	transactions := make([]models.Transaction, 0)
+	transactions := make([]model.Transaction, 0)
 
 	for rows.Next() {
-		var transaction models.Transaction
+		var transaction model.Transaction
 
 		err := rows.Scan(
 			&transaction.ID,

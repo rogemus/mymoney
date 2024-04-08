@@ -55,6 +55,14 @@ func main() {
 	mux.HandleFunc("GET /budgets", budgetHandler.GetBudgets)
 	mux.HandleFunc("POST /budgets", budgetHandler.CreateBudget)
 
+	// API: User
+	userRepo := repository.NewUserRepository(db)
+	userHandler := handler.NewUserHandler(userRepo)
+
+	mux.HandleFunc("POST /register", userHandler.RegisterUser)
+	mux.HandleFunc("POST /login", userHandler.LoginUser)
+	mux.HandleFunc("GET /protected", middleware.Protected(userHandler.Protected))
+
 	// API: Public Files
 	publicFiles := http.FileServer(http.Dir("./ui/public"))
 	mux.Handle("/", publicFiles)

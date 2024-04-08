@@ -3,15 +3,15 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"tracker/pkg/models"
+	"tracker/pkg/model"
 	errors "tracker/pkg/utils"
 )
 
 type BudgetRepository interface {
-	GetBudget(id int) (models.Budget, error)
-	GetBudgets() ([]models.Budget, error)
-	CreateBudget(budget models.Budget) (int64, error)
-	UpdateBudget(budget models.Budget, id int) error
+	GetBudget(id int) (model.Budget, error)
+	GetBudgets() ([]model.Budget, error)
+	CreateBudget(budget model.Budget) (int64, error)
+	UpdateBudget(budget model.Budget, id int) error
 	DeleteBudget(id int) error
 }
 
@@ -23,8 +23,8 @@ func NewBudgetRepository(db *sql.DB) BudgetRepository {
 	return &budgetRepository{db}
 }
 
-func (r *budgetRepository) GetBudget(id int) (models.Budget, error) {
-	var b models.Budget
+func (r *budgetRepository) GetBudget(id int) (model.Budget, error) {
+	var b model.Budget
 	query := "SELECT ID, Uuid, Created, Description, Title FROM budget WHERE ID = ?"
 	row := r.db.QueryRow(query, id)
 	err := row.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title)
@@ -40,7 +40,7 @@ func (r *budgetRepository) GetBudget(id int) (models.Budget, error) {
 	return b, nil
 }
 
-func (r *budgetRepository) GetBudgets() ([]models.Budget, error) {
+func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
 	query := "SELECT ID, Uuid, Created, Description, Title FROM budget"
 	rows, err := r.db.Query(query)
 
@@ -49,10 +49,10 @@ func (r *budgetRepository) GetBudgets() ([]models.Budget, error) {
 	}
 
 	defer rows.Close()
-	budgets := []models.Budget{}
+	budgets := []model.Budget{}
 
 	for rows.Next() {
-		var b models.Budget
+		var b model.Budget
 
 		if err := rows.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title); err != nil {
 			return nil, errors.Generic400Err
@@ -68,7 +68,7 @@ func (r *budgetRepository) GetBudgets() ([]models.Budget, error) {
 	return budgets, nil
 }
 
-func (r *budgetRepository) CreateBudget(budget models.Budget) (int64, error) {
+func (r *budgetRepository) CreateBudget(budget model.Budget) (int64, error) {
 	query := "INSERT INTO budget (Title, Description) VALUES (?, ?)"
 	result, err := r.db.Exec(query, budget.Title, budget.Description)
 
@@ -95,7 +95,7 @@ func (r *budgetRepository) DeleteBudget(id int) error {
 	return nil
 }
 
-func (r *budgetRepository) UpdateBudget(budget models.Budget, id int) error {
+func (r *budgetRepository) UpdateBudget(budget model.Budget, id int) error {
 	query := "UPDATE budget SET Title=?, Description=? WHERE ID = ?"
 	_, err := r.db.Exec(query, budget.Title, budget.Description, id)
 
