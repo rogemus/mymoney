@@ -11,8 +11,6 @@ type Token struct {
 	UserEmail string
 }
 
-type Tokens []Token
-
 type Claims struct {
 	UserEmail string `json:"userEmail"`
 	jwt.RegisteredClaims

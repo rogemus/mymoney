@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -30,11 +29,10 @@ func Protected(next protectedHandler) http.HandlerFunc {
 		}
 		claims := &model.Claims{}
 
-		tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
+		// TODO Check if token in db
+    tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("SECRET_KEY")), nil
 		})
-
-		fmt.Printf("%v", claims.UserEmail)
 
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {

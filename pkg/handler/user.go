@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -26,17 +27,6 @@ func NewUserHandler(repo repository.UserRepository) UserHandler {
 }
 
 func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Register"))
-}
-
-func (h *UserHandler) Protected(w http.ResponseWriter, r *model.ProtectedRequest) {
-  fmt.Printf("%v >>>> \n", r.UserEmail)
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Protected"))
-}
-
-func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	var user model.User
 	encoder := json.NewEncoder(w)
 	decoder := json.NewDecoder(r.Body)
@@ -46,12 +36,55 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Move to Service
 	if user.Email == "" || user.Username == "" || user.Password == "" {
 		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
-	token := generateJwt(user.Email)
+	user.Password = hashPass(user.Password)
+	_, error := h.repo.CreateUser(user)
+
+	if error != nil {
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	payload := model.GenericPayload{Msg: "User created"}
+	encoder.Encode(payload)
+}
+
+func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
+	var userReq model.User
+	encoder := json.NewEncoder(w)
+	decoder := json.NewDecoder(r.Body)
+
+	if err := decoder.Decode(&userReq); err != nil {
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	// Validate Pass
+	// Move to Service
+	if userReq.Email == "" || userReq.Password == "" {
+		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	userDB, err := h.repo.GetUserByEmail(userReq.Email)
+
+	if err != nil {
+		utils.ErrRes(w, errors.User404Err, http.StatusNotFound)
+		return
+	}
+
+	if hashPass(userReq.Password) != userDB.Password {
+		utils.ErrRes(w, errors.AuthIvalidPass, http.StatusBadRequest)
+		return
+	}
+
+	token := generateJwt(userReq.Email)
 	tokens = append(tokens, token)
 
 	w.WriteHeader(http.StatusOK)
@@ -59,9 +92,14 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(payload)
 }
 
+func hashPass(pass string) string {
+	hashPass := sha256.Sum256([]byte(pass))
+	return fmt.Sprintf("%x", hashPass)
+}
+
+// TODO Move to Service
 func generateJwt(userEmail string) model.Token {
 	expirationTime := time.Now().Add(5 * time.Minute)
-
 	claims := &model.Claims{
 		UserEmail: "test@test.com",
 		RegisteredClaims: jwt.RegisteredClaims{
