@@ -69,6 +69,7 @@ func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+  // move to service
 	if budget.Title == "" {
 		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
 		return
@@ -126,6 +127,7 @@ func (h *BudgetHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+  // Move to service
 	if budget.Title == "" {
 		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
 		return

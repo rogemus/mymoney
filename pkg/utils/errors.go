@@ -11,3 +11,7 @@ var Generic401Err = errors.New("Unauthorized")
 
 // Auth
 var AuthInvalidHeader = errors.New("Invalid Authentaction Header")
+var AuthIvalidPass = errors.New("Invalid Password or Email")
+
+// User
+var User404Err = errors.New("User not found")

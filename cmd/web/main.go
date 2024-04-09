@@ -61,7 +61,7 @@ func main() {
 
 	mux.HandleFunc("POST /register", userHandler.RegisterUser)
 	mux.HandleFunc("POST /login", userHandler.LoginUser)
-	mux.HandleFunc("GET /protected", middleware.Protected(userHandler.Protected))
+
 
 	// API: Public Files
 	publicFiles := http.FileServer(http.Dir("./ui/public"))
