@@ -1,18 +1,14 @@
 package handler
 
 import (
-	"crypto/sha256"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"os"
-	"time"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
+	authService "tracker/pkg/service"
+	userService "tracker/pkg/service"
 	"tracker/pkg/utils"
 	errors "tracker/pkg/utils"
-
-	"github.com/golang-jwt/jwt/v5"
 )
 
 // TEMP: Move to DB
@@ -42,7 +38,7 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Password = hashPass(user.Password)
+	user.Password = authService.HashPass(user.Password)
 	_, error := h.repo.CreateUser(user)
 
 	if error != nil {
@@ -65,9 +61,7 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate Pass
-	// Move to Service
-	if userReq.Email == "" || userReq.Password == "" {
+	if err := userService.ValidateUser(userReq); err != nil {
 		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
@@ -79,44 +73,15 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if hashPass(userReq.Password) != userDB.Password {
+	if authService.IsPassEqual(userReq.Password, userDB.Password) {
 		utils.ErrRes(w, errors.AuthIvalidPass, http.StatusBadRequest)
 		return
 	}
 
-	token := generateJwt(userReq.Email)
+	token := authService.GenerateJwt(userReq.Email)
 	tokens = append(tokens, token)
 
 	w.WriteHeader(http.StatusOK)
 	payload := model.Authenticated{Token: token.Token}
 	encoder.Encode(payload)
-}
-
-func hashPass(pass string) string {
-	hashPass := sha256.Sum256([]byte(pass))
-	return fmt.Sprintf("%x", hashPass)
-}
-
-// TODO Move to Service
-func generateJwt(userEmail string) model.Token {
-	expirationTime := time.Now().Add(5 * time.Minute)
-	claims := &model.Claims{
-		UserEmail: "test@test.com",
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-		},
-	}
-
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	jwtTokenStr, err := jwtToken.SignedString([]byte(os.Getenv("SECRET_KEY")))
-
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-
-	token := model.Token{
-		Token:     jwtTokenStr,
-		UserEmail: userEmail,
-	}
-	return token
 }
