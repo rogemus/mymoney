@@ -15,3 +15,6 @@ var AuthIvalidPass = errors.New("Invalid Password or Email")
 
 // User
 var User404Err = errors.New("User not found")
+var UserInvalidEmail = errors.New("Invalid User email")
+var UserInvalidUsername = errors.New("Invalid User username")
+var UserInvalidPassword = errors.New("Invalid User Password")

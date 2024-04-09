@@ -21,15 +21,16 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (r *userRepository) GetUserByEmail(email string) (model.User, error) {
-	query := "SELECT ID, Uuid, Email, Created, Password FROM user WHERE Email = ?"
+	query := "SELECT ID, Uuid, Email, Password, Username, Created FROM user WHERE Email = ?"
 	var user model.User
 	row := r.db.QueryRow(query, email)
 	err := row.Scan(
 		&user.ID,
 		&user.Uuid,
 		&user.Email,
+		&user.Password,
+		&user.Username,
 		&user.Created,
-    &user.Password,
 	)
 
 	if err == sql.ErrNoRows {
@@ -81,8 +82,3 @@ func (r *userRepository) CreateUser(user model.User) (int64, error) {
 
 	return id, nil
 }
-
-//
-// func (r *UserRepository) UpdateUser(user model.User) error {}
-//
-// func (r *UserRepository) DeleteUser(userId int) error
