@@ -44,7 +44,7 @@ func (r *authRepository) GetToken(tokenStr string) (model.Token, error) {
 }
 
 func (r *authRepository) CreateToken(token, userEmail string) (int64, error) {
-	query := `INSERT INTO token (Token, UserEmail) VALUES ("?", "?")`
+	query := `INSERT INTO token (Token, UserEmail) VALUES (?, ?)`
 	result, err := r.db.Exec(query, token, userEmail)
 
 	if err != nil {

@@ -41,7 +41,7 @@ func Test_UserRepo_GetUserByEmail(t *testing.T) {
 
 	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
-			query := `SELECT ID, Uuid, Email, Password, Username, Created FROM user WHERE Email = "?"`
+			query := "SELECT ID, Uuid, Email, Password, Username, Created FROM user WHERE Email = ?"
 			db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 			columns := []string{

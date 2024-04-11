@@ -13,14 +13,14 @@ type UserValidator struct {
 
 func (v *UserValidator) IsEmailValid() bool {
 	email := v.User.Email
-	emailRegex, _ := regexp.Compile(`\S+@{1}\S+`)
-	return emailRegex.MatchString(email)
+	match, _ := regexp.MatchString(`\S+@{1}\S+`, email)
+	return match
 }
 
 func (v *UserValidator) IsPassValid(hash string) bool {
 	password := v.User.Password
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err != nil
+	return err == nil
 }
 
 func (v *UserValidator) IsUsernameValid() bool {
