@@ -27,10 +27,11 @@ func Protected(next protectedHandler) http.HandlerFunc {
 			errors.ErrRes(w, errors.Generic401Err, http.StatusUnauthorized)
 			return
 		}
+
 		claims := &model.Claims{}
 
 		// TODO Check if token in db
-    tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
+		tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("SECRET_KEY")), nil
 		})
 

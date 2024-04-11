@@ -8,6 +8,7 @@ build:
 
 dev:
 	@echo "Starting go server with live reload"
+	@air
 
 tests:
 	@echo "Testing..."
