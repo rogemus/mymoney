@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"tracker/pkg/errors"
+	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	authService "tracker/pkg/service"
@@ -25,13 +25,13 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
 	if err := decoder.Decode(&user); err != nil {
-		errors.ErrorResponse(w, errors.Generic400Err, http.StatusBadRequest)
+		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
   // TODO: Make something nicer
 	if user.Email == "" || user.Username == "" || user.Password == "" {
-		errors.ErrorResponse(w, errors.Generic422Err, http.StatusUnprocessableEntity)
+		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -40,7 +40,7 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	_, createUserErr := h.repo.CreateUser(user)
 
 	if createUserErr != nil {
-		errors.ErrorResponse(w, errors.Generic400Err, http.StatusBadRequest)
+		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
@@ -55,27 +55,27 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
 	if err := decoder.Decode(&userReq); err != nil {
-		errors.ErrorResponse(w, errors.Generic400Err, http.StatusBadRequest)
+		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
   // TODO: Make something nicer
 	if userReq.Password == "" || userReq.Email == "" {
-		errors.ErrorResponse(w, errors.Generic422Err, http.StatusUnprocessableEntity)
+		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
 		return
 	}
 
 	userDB, getUserErr := h.repo.GetUserByEmail(userReq.Email)
 
 	if getUserErr != nil {
-		errors.ErrorResponse(w, errors.User404Err, http.StatusNotFound)
+		errs.ErrorResponse(w, errs.User404Err, http.StatusNotFound)
 		return
 	}
 
 	validator := userService.UserValidator{User: userReq}
 
 	if !validator.IsEmailValid() || !validator.IsPassValid(userDB.Password) {
-		errors.ErrorResponse(w, errors.AuthIvalidPass, http.StatusUnauthorized)
+		errs.ErrorResponse(w, errs.AuthIvalidPass, http.StatusUnauthorized)
 		return
 	}
 
@@ -83,7 +83,7 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	_, tokenCreateErr := h.authRepo.CreateToken(token.Token, userReq.Email)
 
 	if tokenCreateErr != nil {
-		errors.ErrorResponse(w, tokenCreateErr, http.StatusBadRequest)
+		errs.ErrorResponse(w, tokenCreateErr, http.StatusBadRequest)
 		return
 	}
 
