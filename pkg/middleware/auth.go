@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"tracker/pkg/errs"
 	"tracker/pkg/model"
-	errors "tracker/pkg/utils"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -17,35 +17,36 @@ func Protected(next protectedHandler) http.HandlerFunc {
 		bearerToken := r.Header.Get("Authorization")
 
 		if bearerToken == "" {
-			errors.ErrRes(w, errors.Generic401Err, http.StatusUnauthorized)
+			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
 			return
 		}
 
 		reqToken, err := splitHeader(bearerToken)
 
 		if err != nil {
-			errors.ErrRes(w, errors.Generic401Err, http.StatusUnauthorized)
+			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
 			return
 		}
 
 		claims := &model.Claims{}
 
-		// TODO Check if token in db
-		tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
+    // TODO: Check if token in db
+    // TODO: Refactor this
+    tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("SECRET_KEY")), nil
 		})
 
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
-				errors.ErrRes(w, errors.Generic401Err, http.StatusUnauthorized)
+				errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
 				return
 			}
 
-			errors.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+			errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
 			return
 		}
 		if !tkn.Valid {
-			errors.ErrRes(w, errors.Generic401Err, http.StatusUnauthorized)
+			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
 			return
 		}
 
@@ -58,7 +59,7 @@ func splitHeader(header string) (string, error) {
 	parts := strings.Split(header, " ")
 
 	if len(parts) != 2 {
-		return "", errors.AuthInvalidHeader
+		return "", errs.AuthInvalidHeader
 	}
 
 	return parts[1], nil

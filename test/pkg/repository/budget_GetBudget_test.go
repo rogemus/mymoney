@@ -3,10 +3,10 @@ package repository_test
 import (
 	"database/sql"
 	"testing"
+	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
-	errors "tracker/pkg/utils"
 	mocks "tracker/test/pkg/mocks"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -35,7 +35,7 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 			name:           "returns empty row for budgetID(9999)",
 			expected:       empty_budget,
 			budgetID:       9999,
-			expectedErr:    errors.Budget404Err,
+			expectedErr:    errs.Budget404Err,
 			expectedSqlErr: sql.ErrNoRows,
 		},
 	}

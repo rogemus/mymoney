@@ -2,8 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"tracker/pkg/errs"
 	"tracker/pkg/model"
-	errors "tracker/pkg/utils"
 )
 
 type AuthRepository interface {
@@ -20,8 +20,8 @@ func NewAuthRepository(db *sql.DB) AuthRepository {
 }
 
 func (r *authRepository) GetToken(tokenStr string) (model.Token, error) {
-	var token model.Token
 	query := `SELECT ID, Uuid, Token, UserEmail, Created FROM token WHERE Token = "?"`
+	var token model.Token
 
 	row := r.db.QueryRow(query, tokenStr)
 	err := row.Scan(
@@ -33,11 +33,11 @@ func (r *authRepository) GetToken(tokenStr string) (model.Token, error) {
 	)
 
 	if err == sql.ErrNoRows {
-		return token, errors.AuthTokenNotFound
+		return token, errs.AuthTokenNotFound
 	}
 
 	if err != nil {
-		return token, errors.Generic400Err
+		return token, errs.Generic400Err
 	}
 
 	return token, nil
@@ -45,17 +45,16 @@ func (r *authRepository) GetToken(tokenStr string) (model.Token, error) {
 
 func (r *authRepository) CreateToken(token, userEmail string) (int64, error) {
 	query := `INSERT INTO token (Token, UserEmail) VALUES ("?", "?")`
-
 	result, err := r.db.Exec(query, token, userEmail)
 
 	if err != nil {
-		return -1, errors.Generic400Err
+		return -1, errs.Generic400Err
 	}
 
 	lastInsertId, err := result.LastInsertId()
 
 	if err != nil {
-		return -1, errors.Generic400Err
+		return -1, errs.Generic400Err
 	}
 
 	return lastInsertId, nil

@@ -80,5 +80,9 @@ func main() {
 
 	// Start Server
 	utils.LogInfo(fmt.Sprintf("Listening on port: %v ...", ":3333"))
-	srv.ListenAndServe()
+  servErr := srv.ListenAndServe()
+
+  if servErr != nil {
+    utils.LogFatal(servErr.Error())
+  }
 }
