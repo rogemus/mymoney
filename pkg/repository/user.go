@@ -45,13 +45,15 @@ func (r *userRepository) GetUserByEmail(email string) (model.User, error) {
 }
 
 func (r *userRepository) GetUser(id int) (model.User, error) {
-	query := "SELECT ID, Uuid, Email, Created FROM user WHERE ID = ?"
+	query := `SELECT ID, Uuid, Email, Password, Username, Created FROM user WHERE ID = ?`
 	var user model.User
 	row := r.db.QueryRow(query, id)
 	err := row.Scan(
 		&user.ID,
 		&user.Uuid,
 		&user.Email,
+		&user.Password,
+		&user.Username,
 		&user.Created,
 	)
 
