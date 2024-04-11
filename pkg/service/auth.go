@@ -1,41 +1,38 @@
 package service
 
 import (
-	"crypto/sha256"
-	"fmt"
 	"os"
 	"time"
 	"tracker/pkg/model"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func IsPassEqual(pass_1, hashPass_2 string) bool {
-	hashPass_1 := HashPass(pass_1)
+var expirationDuration = 10 * time.Minute
 
-	return hashPass_1 == hashPass_2
+func HashPass(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
 }
 
-func HashPass(pass string) string {
-	hashPass := sha256.Sum256([]byte(pass))
-	return fmt.Sprintf("%x", hashPass)
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 func GenerateJwt(userEmail string) model.Token {
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(expirationDuration)
+	expiresAt := jwt.NewNumericDate(expirationTime)
 	claims := &model.Claims{
 		UserEmail: userEmail,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
+			ExpiresAt: expiresAt,
 		},
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	jwtTokenStr, err := jwtToken.SignedString([]byte(os.Getenv("SECRET_KEY")))
-
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
+	jwtTokenStr, _ := jwtToken.SignedString([]byte(os.Getenv("SECRET_KEY")))
 
 	token := model.Token{
 		Token:     jwtTokenStr,

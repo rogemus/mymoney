@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
@@ -38,7 +39,8 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Password = authService.HashPass(user.Password)
+  _, err := authService.HashPass(user.Password)
+  fmt.Printf("%v >>> ", err)
 	_, error := h.repo.CreateUser(user)
 
 	if error != nil {
@@ -73,7 +75,7 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if authService.IsPassEqual(userReq.Password, userDB.Password) {
+	if authService.CheckPasswordHash(userReq.Password, userDB.Password) {
 		utils.ErrRes(w, errors.AuthIvalidPass, http.StatusBadRequest)
 		return
 	}
