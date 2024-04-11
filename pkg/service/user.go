@@ -3,43 +3,27 @@ package service
 import (
 	"regexp"
 	"tracker/pkg/model"
-	errors "tracker/pkg/utils"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserValidator struct {
-	user model.User
+	User model.User
 }
 
-func (v *UserValidator) IsEmailValid() (bool, error) {
-	email := v.user.Email
+func (v *UserValidator) IsEmailValid() bool {
+	email := v.User.Email
 	emailRegex, _ := regexp.Compile(`\S+@{1}\S+`)
-
-	if !emailRegex.MatchString(email) {
-		return false, errors.UserInvalidEmail
-	}
-
-	return true, nil
+	return emailRegex.MatchString(email)
 }
 
-func (v *UserValidator) IsPassValid(hash string) (bool, error) {
-	password := v.user.Password
+func (v *UserValidator) IsPassValid(hash string) bool {
+	password := v.User.Password
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-
-	if err != nil {
-		return false, errors.UserInvalidPassword
-	}
-
-	return true, nil
+	return err != nil
 }
 
-func (v *UserValidator) IsUsernameValid() (bool, error) {
-	username := v.user.Username
-
-	if username == "" || len(username) > 124 {
-		return false, errors.UserInvalidUsername
-	}
-
-	return true, nil
+func (v *UserValidator) IsUsernameValid() bool {
+	username := v.User.Username
+	return username != "" || len(username) < 124
 }
