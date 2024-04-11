@@ -3,8 +3,8 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"tracker/pkg/errs"
 	"tracker/pkg/model"
-	errors "tracker/pkg/utils"
 )
 
 type BudgetRepository interface {
@@ -30,11 +30,11 @@ func (r *budgetRepository) GetBudget(id int) (model.Budget, error) {
 	err := row.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title)
 
 	if err == sql.ErrNoRows {
-		return b, errors.Budget404Err
+		return b, errs.Budget404Err
 	}
 
 	if err != nil {
-		return b, errors.Generic400Err
+		return b, errs.Generic400Err
 	}
 
 	return b, nil
@@ -45,7 +45,7 @@ func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
 	rows, err := r.db.Query(query)
 
 	if err != nil {
-		return nil, errors.Generic400Err
+		return nil, errs.Generic400Err
 	}
 
 	defer rows.Close()
@@ -55,14 +55,14 @@ func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
 		var b model.Budget
 
 		if err := rows.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title); err != nil {
-			return nil, errors.Generic400Err
+			return nil, errs.Generic400Err
 		}
 
 		budgets = append(budgets, b)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, errors.Generic400Err
+		return nil, errs.Generic400Err
 	}
 
 	return budgets, nil
@@ -73,13 +73,13 @@ func (r *budgetRepository) CreateBudget(budget model.Budget) (int64, error) {
 	result, err := r.db.Exec(query, budget.Title, budget.Description)
 
 	if err != nil {
-		return -1, errors.Generic400Err
+		return -1, errs.Generic400Err
 	}
 
 	id, err := result.LastInsertId()
 
 	if err != nil {
-		return -1, errors.Generic400Err
+		return -1, errs.Generic400Err
 	}
 
 	return id, nil
@@ -89,7 +89,7 @@ func (r *budgetRepository) DeleteBudget(id int) error {
 	query := "DELETE FROM budget WHERE ID = ?"
 
 	if _, err := r.db.Exec(query, id); err != nil {
-		return errors.Generic400Err
+		return errs.Generic400Err
 	}
 
 	return nil

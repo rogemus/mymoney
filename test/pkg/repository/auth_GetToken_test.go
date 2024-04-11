@@ -3,10 +3,10 @@ package repository_test
 import (
 	"database/sql"
 	"testing"
+	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
-	errors "tracker/pkg/utils"
 	mocks "tracker/test/pkg/mocks"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -33,7 +33,7 @@ func Test_AuthRepo_GetToken(t *testing.T) {
 		{
 			name:           "return error if not found",
 			expected:       empty_token,
-			expectedErr:    errors.AuthTokenNotFound,
+			expectedErr:    errs.AuthTokenNotFound,
 			expectedSqlErr: sql.ErrNoRows,
 			tokenStr:       "error.error.error",
 		},

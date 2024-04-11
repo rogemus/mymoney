@@ -3,10 +3,10 @@ package repository_test
 import (
 	"database/sql"
 	"testing"
+	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
-	errors "tracker/pkg/utils"
 	mocks "tracker/test/pkg/mocks"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -33,7 +33,7 @@ func Test_UserRepo_GetUserByEmail(t *testing.T) {
 		{
 			name:           "return 404 if user not found",
 			expected:       empty_user,
-			expectedErr:    errors.User404Err,
+			expectedErr:    errs.User404Err,
 			expectedSqlErr: sql.ErrNoRows,
 			userEmail:      "error@error.com",
 		},
