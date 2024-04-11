@@ -2,25 +2,21 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"tracker/pkg/errors"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	authService "tracker/pkg/service"
 	userService "tracker/pkg/service"
-	"tracker/pkg/utils"
-	errors "tracker/pkg/utils"
 )
 
-// TEMP: Move to DB
-var tokens = make([]model.Token, 0)
-
 type UserHandler struct {
-	repo repository.UserRepository
+	repo     repository.UserRepository
+	authRepo repository.AuthRepository
 }
 
-func NewUserHandler(repo repository.UserRepository) UserHandler {
-	return UserHandler{repo}
+func NewUserHandler(repo repository.UserRepository, authRepo repository.AuthRepository) UserHandler {
+	return UserHandler{repo, authRepo}
 }
 
 func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
@@ -29,22 +25,22 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
 	if err := decoder.Decode(&user); err != nil {
-		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		errors.ErrorResponse(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
-	// Move to Service
+  // TODO: Make something nicer
 	if user.Email == "" || user.Username == "" || user.Password == "" {
-		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		errors.ErrorResponse(w, errors.Generic422Err, http.StatusUnprocessableEntity)
 		return
 	}
 
-  _, err := authService.HashPass(user.Password)
-  fmt.Printf("%v >>> ", err)
-	_, error := h.repo.CreateUser(user)
+	hashPass, _ := authService.HashPass(user.Password)
+	user.Password = hashPass
+	_, createUserErr := h.repo.CreateUser(user)
 
-	if error != nil {
-		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+	if createUserErr != nil {
+		errors.ErrorResponse(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
@@ -59,29 +55,37 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
 	if err := decoder.Decode(&userReq); err != nil {
-		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+		errors.ErrorResponse(w, errors.Generic400Err, http.StatusBadRequest)
 		return
 	}
 
-	if err := userService.ValidateUser(userReq); err != nil {
-		utils.ErrRes(w, errors.Generic400Err, http.StatusBadRequest)
+  // TODO: Make something nicer
+	if userReq.Password == "" || userReq.Email == "" {
+		errors.ErrorResponse(w, errors.Generic422Err, http.StatusUnprocessableEntity)
 		return
 	}
 
-	userDB, err := h.repo.GetUserByEmail(userReq.Email)
+	userDB, getUserErr := h.repo.GetUserByEmail(userReq.Email)
 
-	if err != nil {
-		utils.ErrRes(w, errors.User404Err, http.StatusNotFound)
+	if getUserErr != nil {
+		errors.ErrorResponse(w, errors.User404Err, http.StatusNotFound)
 		return
 	}
 
-	if authService.CheckPasswordHash(userReq.Password, userDB.Password) {
-		utils.ErrRes(w, errors.AuthIvalidPass, http.StatusBadRequest)
+	validator := userService.UserValidator{User: userReq}
+
+	if !validator.IsEmailValid() || !validator.IsPassValid(userDB.Password) {
+		errors.ErrorResponse(w, errors.AuthIvalidPass, http.StatusUnauthorized)
 		return
 	}
 
 	token := authService.GenerateJwt(userReq.Email)
-	tokens = append(tokens, token)
+	_, tokenCreateErr := h.authRepo.CreateToken(token.Token, userReq.Email)
+
+	if tokenCreateErr != nil {
+		errors.ErrorResponse(w, tokenCreateErr, http.StatusBadRequest)
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 	payload := model.Authenticated{Token: token.Token}

@@ -55,9 +55,12 @@ func main() {
 	mux.HandleFunc("GET /budgets", budgetHandler.GetBudgets)
 	mux.HandleFunc("POST /budgets", budgetHandler.CreateBudget)
 
+  // API: Token
+  authRepo := repository.NewAuthRepository(db)
+
 	// API: User
 	userRepo := repository.NewUserRepository(db)
-	userHandler := handler.NewUserHandler(userRepo)
+	userHandler := handler.NewUserHandler(userRepo, authRepo)
 
 	mux.HandleFunc("POST /register", userHandler.RegisterUser)
 	mux.HandleFunc("POST /login", userHandler.LoginUser)
