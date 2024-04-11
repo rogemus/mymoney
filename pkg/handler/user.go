@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
@@ -84,7 +83,6 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	_, tokenCreateErr := h.authRepo.CreateToken(token.Token, userReq.Email)
 
 	if tokenCreateErr != nil {
-		fmt.Printf("%v >>", tokenCreateErr)
 		errs.ErrorResponse(w, tokenCreateErr, http.StatusBadRequest)
 		return
 	}

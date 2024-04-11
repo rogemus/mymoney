@@ -17,7 +17,7 @@ func GenerateUser(id ...int) model.User {
 		ID:       mock_id,
 		Uuid:     "mock uuid",
 		Created:  time.Date(2020, 23, 40, 56, 70, 0, 0, time.UTC).UTC(),
-		Password: "pass",
+		Password: "$2a$14$K4TVJJ43ddGnXZ/65J4EyOwGtgTx6UWjDyxmyhPqXWI0qhg0kGXty", // pass
 		Email:    "mock@mock.com",
 		Username: "Mock Mosinski",
 	}
