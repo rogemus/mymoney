@@ -21,7 +21,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (r *userRepository) GetUserByEmail(email string) (model.User, error) {
-	query := `SELECT ID, Uuid, Email, Password, Username, Created FROM user WHERE Email = "?"`
+	query := `SELECT ID, Uuid, Email, Password, Username, Created FROM user WHERE Email = ?`
 	var user model.User
 	row := r.db.QueryRow(query, email)
 	err := row.Scan(

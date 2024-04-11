@@ -6,13 +6,22 @@ import (
 	"strings"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
+	"tracker/pkg/repository"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type protectedHandler func(w http.ResponseWriter, r *model.ProtectedRequest)
 
-func Protected(next protectedHandler) http.HandlerFunc {
+func NewAuthMiddleware(repo repository.AuthRepository) authMiddleware {
+	return authMiddleware{repo}
+}
+
+type authMiddleware struct {
+	repo repository.AuthRepository
+}
+
+func (m *authMiddleware) ProtectedRoute(next protectedHandler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bearerToken := r.Header.Get("Authorization")
 
@@ -30,11 +39,14 @@ func Protected(next protectedHandler) http.HandlerFunc {
 
 		claims := &model.Claims{}
 
-    // TODO: Check if token in db
-    // TODO: Refactor this
-    tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
+		tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("SECRET_KEY")), nil
 		})
+
+		if _, err := m.repo.GetToken(tkn.Raw); err != nil {
+			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
+			return
+		}
 
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {

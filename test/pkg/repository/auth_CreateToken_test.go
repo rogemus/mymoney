@@ -26,7 +26,7 @@ func Test_AuthRepo_CreateToken(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		query := `INSERT INTO token (Token, UserEmail) VALUES ("?", "?")`
+		query := `INSERT INTO token (Token, UserEmail) VALUES (?, ?)`
 		db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 		mock.

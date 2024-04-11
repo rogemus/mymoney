@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
@@ -29,7 +30,7 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-  // TODO: Make something nicer
+	// TODO: Make something nicer
 	if user.Email == "" || user.Username == "" || user.Password == "" {
 		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
 		return
@@ -59,7 +60,7 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-  // TODO: Make something nicer
+	// TODO: Make something nicer
 	if userReq.Password == "" || userReq.Email == "" {
 		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
 		return
@@ -83,6 +84,7 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	_, tokenCreateErr := h.authRepo.CreateToken(token.Token, userReq.Email)
 
 	if tokenCreateErr != nil {
+		fmt.Printf("%v >>", tokenCreateErr)
 		errs.ErrorResponse(w, tokenCreateErr, http.StatusBadRequest)
 		return
 	}
