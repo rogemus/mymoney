@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 	"tracker/pkg/handler"
-	"tracker/pkg/models"
+	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
 	mocks "tracker/test/pkg/mocks"
@@ -14,8 +14,8 @@ import (
 )
 
 func Test_BudgetHandler_GetBudgets(t *testing.T) {
-	var budgets []models.Budget
-	var empty_budgets []models.Budget
+	var budgets []model.Budget
+	var empty_budgets []model.Budget
 	budget_1 := mocks.GenerateBudget(1)
 	budget_2 := mocks.GenerateBudget(2)
 
@@ -27,7 +27,7 @@ func Test_BudgetHandler_GetBudgets(t *testing.T) {
 		expected       string
 		expectedStatus int
 		expectedErr    error
-		expectedData   []models.Budget
+		expectedData   []model.Budget
 	}{
 		{
 			name:           "returns budgets json",

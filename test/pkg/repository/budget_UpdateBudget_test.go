@@ -2,7 +2,7 @@ package repository_test
 
 import (
 	"testing"
-	"tracker/pkg/models"
+	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
 
@@ -49,7 +49,7 @@ func Test_BudgetRepo_UpdateBudget(t *testing.T) {
 
 			repo := repository.NewBudgetRepository(db)
 
-			newBudget := models.Budget{Title: test.budgetTitle, Description: test.budgetDesctiption, ID: test.budgetId}
+			newBudget := model.Budget{Title: test.budgetTitle, Description: test.budgetDesctiption, ID: test.budgetId}
 			updateErr := repo.UpdateBudget(newBudget, test.budgetId)
 			err := mock.ExpectationsWereMet()
 

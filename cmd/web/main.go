@@ -55,6 +55,17 @@ func main() {
 	mux.HandleFunc("GET /budgets", budgetHandler.GetBudgets)
 	mux.HandleFunc("POST /budgets", budgetHandler.CreateBudget)
 
+  // API: Token
+  authRepo := repository.NewAuthRepository(db)
+
+	// API: User
+	userRepo := repository.NewUserRepository(db)
+	userHandler := handler.NewUserHandler(userRepo, authRepo)
+
+	mux.HandleFunc("POST /register", userHandler.RegisterUser)
+	mux.HandleFunc("POST /login", userHandler.LoginUser)
+
+
 	// API: Public Files
 	publicFiles := http.FileServer(http.Dir("./ui/public"))
 	mux.Handle("/", publicFiles)
@@ -69,5 +80,9 @@ func main() {
 
 	// Start Server
 	utils.LogInfo(fmt.Sprintf("Listening on port: %v ...", ":3333"))
-	srv.ListenAndServe()
+  servErr := srv.ListenAndServe()
+
+  if servErr != nil {
+    utils.LogFatal(servErr.Error())
+  }
 }
