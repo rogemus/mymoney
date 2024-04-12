@@ -11,7 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type protectedHandler func(w http.ResponseWriter, r *model.ProtectedRequest)
+type ProtectedHandler func(w http.ResponseWriter, r *model.ProtectedRequest)
 
 func NewAuthMiddleware(repo repository.AuthRepository) authMiddleware {
 	return authMiddleware{repo}
@@ -21,24 +21,22 @@ type authMiddleware struct {
 	repo repository.AuthRepository
 }
 
-func (m *authMiddleware) ProtectedRoute(next protectedHandler) http.HandlerFunc {
+func (m *authMiddleware) ProtectedRoute(next ProtectedHandler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bearerToken := r.Header.Get("Authorization")
 
-		if bearerToken == "" {
+		if len(bearerToken) == 0 {
 			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
 			return
 		}
 
 		reqToken, err := splitHeader(bearerToken)
-
 		if err != nil {
-			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
+			errs.ErrorResponse(w, err, http.StatusUnauthorized)
 			return
 		}
 
 		claims := &model.Claims{}
-
 		tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("SECRET_KEY")), nil
 		})
@@ -57,12 +55,17 @@ func (m *authMiddleware) ProtectedRoute(next protectedHandler) http.HandlerFunc 
 			errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
 			return
 		}
+
 		if !tkn.Valid {
 			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
 			return
 		}
 
-		protectedRequest := model.ProtectedRequest{Request: r, UserEmail: claims.UserEmail}
+		protectedRequest := model.ProtectedRequest{
+			Request:   r,
+			UserEmail: claims.UserEmail,
+			UserID:    claims.UserID,
+		}
 		next(w, &protectedRequest)
 	})
 }

@@ -25,9 +25,9 @@ func NewBudgetRepository(db *sql.DB) BudgetRepository {
 
 func (r *budgetRepository) GetBudget(id int) (model.Budget, error) {
 	var b model.Budget
-	query := "SELECT ID, Uuid, Created, Description, Title FROM budget WHERE ID = ?"
+	query := "SELECT ID, Uuid, Created, Description, Title, UserID FROM budget WHERE ID = ?"
 	row := r.db.QueryRow(query, id)
-	err := row.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title)
+	err := row.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title, &b.UserID)
 
 	if err == sql.ErrNoRows {
 		return b, errs.Budget404Err
@@ -41,7 +41,7 @@ func (r *budgetRepository) GetBudget(id int) (model.Budget, error) {
 }
 
 func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
-	query := "SELECT ID, Uuid, Created, Description, Title FROM budget"
+	query := "SELECT ID, Uuid, Created, Description, Title, UserID FROM budget"
 	rows, err := r.db.Query(query)
 
 	if err != nil {
@@ -54,7 +54,7 @@ func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
 	for rows.Next() {
 		var b model.Budget
 
-		if err := rows.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title); err != nil {
+		if err := rows.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title, &b.UserID); err != nil {
 			return nil, errs.Generic400Err
 		}
 
@@ -69,8 +69,13 @@ func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
 }
 
 func (r *budgetRepository) CreateBudget(budget model.Budget) (int64, error) {
-	query := "INSERT INTO budget (Title, Description) VALUES (?, ?)"
-	result, err := r.db.Exec(query, budget.Title, budget.Description)
+	query := "INSERT INTO budget (Title, Description, UserID) VALUES (?, ?, ?)"
+	result, err := r.db.Exec(
+		query,
+		budget.Title,
+		budget.Description,
+		budget.UserID,
+	)
 
 	if err != nil {
 		return -1, errs.Generic400Err

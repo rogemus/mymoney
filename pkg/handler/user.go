@@ -79,7 +79,7 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := authService.GenerateJwt(userReq.Email)
+	token := authService.GenerateJwt(userDB.ID, userDB.Email)
 	_, tokenCreateErr := h.authRepo.CreateToken(token.Token, userReq.Email)
 
 	if tokenCreateErr != nil {
