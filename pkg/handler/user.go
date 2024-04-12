@@ -44,7 +44,7 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	payload := model.GenericPayload{Msg: "User created"}
 	encoder.Encode(payload)
 }
