@@ -3,10 +3,10 @@ package repository_test
 import (
 	"database/sql"
 	"testing"
-	"tracker/pkg/models"
+	"tracker/pkg/errs"
+	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
-	errors "tracker/pkg/utils"
 	mocks "tracker/test/pkg/mocks"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -14,12 +14,12 @@ import (
 )
 
 func Test_BudgetRepo_GetBudget(t *testing.T) {
-	var empty_budget models.Budget
+	var empty_budget model.Budget
 	budget := mocks.GenerateBudget()
 
 	testCases := []struct {
 		name           string
-		expected       models.Budget
+		expected       model.Budget
 		budgetID       int
 		expectedErr    error
 		expectedSqlErr error
@@ -35,7 +35,7 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 			name:           "returns empty row for budgetID(9999)",
 			expected:       empty_budget,
 			budgetID:       9999,
-			expectedErr:    errors.Budget404Err,
+			expectedErr:    errs.Budget404Err,
 			expectedSqlErr: sql.ErrNoRows,
 		},
 	}
@@ -82,7 +82,7 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 			repo := repository.NewBudgetRepository(db)
 			result, err := repo.GetBudget(test.budgetID)
 
-			assert.AssertStruct[models.Budget](t, result, test.expected)
+			assert.AssertStruct[model.Budget](t, result, test.expected)
 			assert.AssertError(t, err, test.expectedErr)
 
 			if err := mock.ExpectationsWereMet(); err != nil {

@@ -3,10 +3,20 @@ package utils
 import (
 	"encoding/json"
 	"reflect"
+	"regexp"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
+
+func AssertRegex(t testing.TB, got, pattern string) {
+	t.Helper()
+	match, _ := regexp.MatchString(pattern, got)
+
+	if !match {
+		t.Errorf("\n want: %v, to match %v", got, pattern)
+	}
+}
 
 func AssertJson(t testing.TB, got, want string) {
 	t.Helper()

@@ -2,7 +2,7 @@ package repository_test
 
 import (
 	"testing"
-	"tracker/pkg/models"
+	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
 	mocks "tracker/test/pkg/mocks"
@@ -11,8 +11,8 @@ import (
 )
 
 func Test_BudgetRepo_GetBudgets(t *testing.T) {
-	var budgets []models.Budget
-	var empty_budgets []models.Budget
+	var budgets []model.Budget
+	var empty_budgets []model.Budget
 	budget_1 := mocks.GenerateBudget(1)
 	budget_2 := mocks.GenerateBudget(2)
 
@@ -21,7 +21,7 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 
 	testCases := []struct {
 		name           string
-		expected       []models.Budget
+		expected       []model.Budget
 		expectedErr    error
 		expectedSqlErr error
 	}{
@@ -72,7 +72,7 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 			repo := repository.NewBudgetRepository(db)
 			result, err := repo.GetBudgets()
 
-			assert.AssertSliceOfStructs[models.Budget](t, result, test.expected)
+			assert.AssertSliceOfStructs[model.Budget](t, result, test.expected)
 			assert.AssertError(t, err, test.expectedErr)
 
 			if err := mock.ExpectationsWereMet(); err != nil {
