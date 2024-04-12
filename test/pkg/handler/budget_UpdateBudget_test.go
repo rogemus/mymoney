@@ -119,7 +119,7 @@ func Test_BudgetHandler_UpdateBudget(t *testing.T) {
 			budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
 			rr := httptest.NewRecorder()
-			hr := http.HandlerFunc(budgetHandler.UpdateBudget)
+			hr := http.HandlerFunc(mocks.MockProtected(budgetHandler.UpdateBudget))
 			hr.ServeHTTP(rr, req)
 
 			assert.AssertJson(t, rr.Body.String(), test.expected)

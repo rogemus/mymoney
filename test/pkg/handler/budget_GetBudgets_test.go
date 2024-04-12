@@ -31,7 +31,7 @@ func Test_BudgetHandler_GetBudgets(t *testing.T) {
 	}{
 		{
 			name:           "returns budgets json",
-			expected:       `[{"id":1,"uuid":"mock uuid","created":"2021-12-12T09:10:00Z","description":"mock description","title":"mock title"},{"id":2,"uuid":"mock uuid","created":"2021-12-12T09:10:00Z","description":"mock description","title":"mock title"}]`,
+			expected:       `[{"id":1,"uuid":"mock uuid","created":"2021-12-12T09:10:00Z","description":"mock description","title":"mock title", "userId": 1},{"id":2,"uuid":"mock uuid","created":"2021-12-12T09:10:00Z","description":"mock description","title":"mock title", "userId": 1}]`,
 			expectedStatus: 200,
 			expectedErr:    nil,
 			expectedData:   budgets,
@@ -54,17 +54,19 @@ func Test_BudgetHandler_GetBudgets(t *testing.T) {
 				"Created",
 				"Description",
 				"Title",
+				"UserID",
 			}
 
 			expectedRows := sqlmock.NewRows(columns)
 
 			for _, budget := range test.expectedData {
 				expectedRows.AddRow(
-					&budget.ID,
-					&budget.Uuid,
-					&budget.Created,
-					&budget.Description,
-					&budget.Title,
+					budget.ID,
+					budget.Uuid,
+					budget.Created,
+					budget.Description,
+					budget.Title,
+					budget.UserID,
 				)
 			}
 
@@ -79,7 +81,7 @@ func Test_BudgetHandler_GetBudgets(t *testing.T) {
 			budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
 			rr := httptest.NewRecorder()
-			hr := http.HandlerFunc(budgetHandler.GetBudgets)
+			hr := http.HandlerFunc(mocks.MockProtected(budgetHandler.GetBudgets))
 			hr.ServeHTTP(rr, req)
 
 			assert.AssertJson(t, rr.Body.String(), test.expected)

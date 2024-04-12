@@ -40,7 +40,7 @@ func Test_AuthRepo_GetToken(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		query := `SELECT ID, Uuid, Token, UserEmail, Created FROM token WHERE Token = "?"`
+		query := `SELECT ID, Uuid, Token, UserEmail, Created FROM token WHERE Token = ?`
 		db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 		t.Run(test.name, func(t *testing.T) {

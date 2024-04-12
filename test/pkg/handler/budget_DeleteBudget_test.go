@@ -89,7 +89,7 @@ func Test_BudgetHandler_DeleteBudget(t *testing.T) {
 			budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
 			rr := httptest.NewRecorder()
-			hr := http.HandlerFunc(budgetHandler.DeleteBudget)
+			hr := http.HandlerFunc(mocks.MockProtected(budgetHandler.DeleteBudget))
 			hr.ServeHTTP(rr, req)
 
 			assert.AssertJson(t, rr.Body.String(), test.expected)

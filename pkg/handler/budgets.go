@@ -19,7 +19,7 @@ func NewBudgetHandler(repo repository.BudgetRepository, transactionsRepo reposit
 	return BudgetHandler{repo, transactionsRepo}
 }
 
-func (h *BudgetHandler) GetBudget(w http.ResponseWriter, r *http.Request) {
+func (h *BudgetHandler) GetBudget(w http.ResponseWriter, r *model.ProtectedRequest) {
 	encoder := json.NewEncoder(w)
 	parts := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(parts[len(parts)-1])
@@ -46,7 +46,7 @@ func (h *BudgetHandler) GetBudget(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(budgetWithTransaction)
 }
 
-func (h *BudgetHandler) GetBudgets(w http.ResponseWriter, r *http.Request) {
+func (h *BudgetHandler) GetBudgets(w http.ResponseWriter, r *model.ProtectedRequest) {
 	budgets, err := h.repo.GetBudgets()
 	encoder := json.NewEncoder(w)
 
@@ -59,7 +59,7 @@ func (h *BudgetHandler) GetBudgets(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(budgets)
 }
 
-func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
+func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *model.ProtectedRequest) {
 	var budget model.Budget
 	encoder := json.NewEncoder(w)
 
@@ -74,13 +74,14 @@ func (h *BudgetHandler) CreateBudget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	budget.UserID = r.UserID
 	payload := model.GenericPayload{Msg: "Budget created"}
 	h.repo.CreateBudget(budget)
 	w.WriteHeader(http.StatusCreated)
 	encoder.Encode(payload)
 }
 
-func (h *BudgetHandler) DeleteBudget(w http.ResponseWriter, r *http.Request) {
+func (h *BudgetHandler) DeleteBudget(w http.ResponseWriter, r *model.ProtectedRequest) {
 	encoder := json.NewEncoder(w)
 	parts := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(parts[len(parts)-1])
@@ -105,7 +106,7 @@ func (h *BudgetHandler) DeleteBudget(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(payload)
 }
 
-func (h *BudgetHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
+func (h *BudgetHandler) UpdateBudget(w http.ResponseWriter, r *model.ProtectedRequest) {
 	var budget model.Budget
 	parts := strings.Split(r.URL.Path, "/")
 	id, err := strconv.Atoi(parts[len(parts)-1])

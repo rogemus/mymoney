@@ -21,7 +21,7 @@ func NewAuthRepository(db *sql.DB) AuthRepository {
 }
 
 func (r *authRepository) GetToken(tokenStr string) (model.Token, error) {
-	query := `SELECT ID, Uuid, Token, UserEmail, Created FROM token WHERE Token = "?"`
+	query := `SELECT ID, Uuid, Token, UserEmail, Created FROM token WHERE Token = ?`
 	var token model.Token
 
 	row := r.db.QueryRow(query, tokenStr)
@@ -49,7 +49,7 @@ func (r *authRepository) CreateToken(token, userEmail string) (int64, error) {
 	result, err := r.db.Exec(query, token, userEmail)
 
 	if err != nil {
-    fmt.Printf(">> %v \n", err)
+		fmt.Printf(">> %v \n", err)
 		return -1, errs.Generic400Err
 	}
 

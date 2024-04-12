@@ -50,6 +50,7 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 				"Created",
 				"Description",
 				"Title",
+        "UserID",
 			}
 			expectedRows := sqlmock.NewRows(columns)
 
@@ -62,17 +63,18 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 					bud.Created,
 					bud.Description,
 					bud.Title,
+          bud.UserID,
 				)
 			}
 
 			if test.expectedSqlErr != nil {
 				mock.
-					ExpectQuery("SELECT ID, Uuid, Created, Description, Title FROM budget WHERE ID = ?").
+					ExpectQuery("SELECT ID, Uuid, Created, Description, Title, UserID FROM budget WHERE ID = ?").
 					WithArgs(test.budgetID).
 					WillReturnError(test.expectedSqlErr)
 			} else {
 				mock.
-					ExpectQuery("SELECT ID, Uuid, Created, Description, Title FROM budget WHERE ID = ?").
+					ExpectQuery("SELECT ID, Uuid, Created, Description, Title, UserID FROM budget WHERE ID = ?").
 					WithArgs(test.budgetID).
 					WillReturnRows(expectedRows)
 			}

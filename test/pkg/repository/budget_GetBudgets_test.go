@@ -49,6 +49,7 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 				"Created",
 				"Description",
 				"Title",
+        "UserID",
 			}
 			expectedRows := sqlmock.NewRows(columns)
 
@@ -59,11 +60,12 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 					budget.Created,
 					budget.Description,
 					budget.Title,
+          budget.UserID,
 				)
 			}
 
 			mock.
-				ExpectQuery("SELECT ID, Uuid, Created, Description, Title FROM budget").
+				ExpectQuery("SELECT ID, Uuid, Created, Description, Title, UserID FROM budget").
 				WithoutArgs().
 				WillReturnRows(expectedRows)
 

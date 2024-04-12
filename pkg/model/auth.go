@@ -12,15 +12,17 @@ type Token struct {
 	Uuid      string
 	Token     string
 	UserEmail string
-	Created time.Time
+	Created   time.Time
 }
 
 type Claims struct {
 	UserEmail string
+	UserID    int
 	jwt.RegisteredClaims
 }
 
 type ProtectedRequest struct {
 	*http.Request
 	UserEmail string
+	UserID    int
 }

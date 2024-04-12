@@ -8,6 +8,7 @@ import (
 	"tracker/pkg/handler"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
+	mocks "tracker/test/pkg/mocks"
 
 	"github.com/DATA-DOG/go-sqlmock"
 )
@@ -71,7 +72,7 @@ func Test_BudgetHandler_CreateBudget(t *testing.T) {
 			budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
 			rr := httptest.NewRecorder()
-			hr := http.HandlerFunc(budgetHandler.CreateBudget)
+			hr := http.HandlerFunc(mocks.MockProtected(budgetHandler.CreateBudget))
 			hr.ServeHTTP(rr, req)
 
 			assert.AssertJson(t, rr.Body.String(), test.expected)

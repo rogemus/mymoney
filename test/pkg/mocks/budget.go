@@ -20,5 +20,6 @@ func GenerateBudget(id ...int) model.Budget {
 		Created:     mock_time.UTC(),
 		Description: "mock description",
 		Title:       "mock title",
+		UserID:      1,
 	}
 }

@@ -27,7 +27,7 @@ func Test_BudgetHandler_GetBudget(t *testing.T) {
 	}{
 		{
 			name:           "returns budget json",
-			expected:       `{"budget":{"id":1,"uuid":"mock uuid","created":"2021-12-12T09:10:00Z","description":"mock description","title":"mock title"},"transactions":null}`,
+			expected:       `{"budget":{"id":1,"uuid":"mock uuid","created":"2021-12-12T09:10:00Z","description":"mock description","title":"mock title", "userId": 1},"transactions":null}`,
 			expectedStatus: 200,
 			budgetId:       "1",
 			expectedErr:    nil,
@@ -57,15 +57,17 @@ func Test_BudgetHandler_GetBudget(t *testing.T) {
 				"Created",
 				"Description",
 				"Title",
+				"UserID",
 			}
 			expectedRows := sqlmock.
 				NewRows(columns).
 				AddRow(
-					&budget.ID,
-					&budget.Uuid,
-					&budget.Created,
-					&budget.Description,
-					&budget.Title,
+					budget.ID,
+					budget.Uuid,
+					budget.Created,
+					budget.Description,
+					budget.Title,
+					budget.UserID,
 				)
 
 			id, _ := strconv.Atoi(test.budgetId)
@@ -90,7 +92,7 @@ func Test_BudgetHandler_GetBudget(t *testing.T) {
 			budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
 			rr := httptest.NewRecorder()
-			hr := http.HandlerFunc(budgetHandler.GetBudget)
+			hr := http.HandlerFunc(mocks.MockProtected(budgetHandler.GetBudget))
 			hr.ServeHTTP(rr, req)
 
 			assert.AssertJson(t, rr.Body.String(), test.expected)

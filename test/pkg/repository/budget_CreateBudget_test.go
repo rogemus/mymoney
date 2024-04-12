@@ -17,6 +17,7 @@ func Test_BudgetRepo_CreateBudget(t *testing.T) {
 		budgetId          int
 		budgetTitle       string
 		budgetDesctiption string
+		budgetUserID      int
 	}{
 		{
 			name:              "create budget",
@@ -25,6 +26,7 @@ func Test_BudgetRepo_CreateBudget(t *testing.T) {
 			budgetId:          2,
 			budgetTitle:       "Test Title",
 			budgetDesctiption: "Test Desc",
+			budgetUserID:      1,
 		},
 		{
 			name:              "create budget without desc",
@@ -33,6 +35,7 @@ func Test_BudgetRepo_CreateBudget(t *testing.T) {
 			budgetId:          5,
 			budgetTitle:       "Test Title",
 			budgetDesctiption: "",
+			budgetUserID:      1,
 		},
 	}
 
@@ -42,14 +45,19 @@ func Test_BudgetRepo_CreateBudget(t *testing.T) {
 			defer db.Close()
 
 			mock.
-				ExpectExec("INSERT INTO budget (Title, Description) VALUES (?, ?)").
-				WithArgs(test.budgetTitle, test.budgetDesctiption).
+				ExpectExec("INSERT INTO budget (Title, Description, UserID) VALUES (?, ?, ?)").
+				WithArgs(test.budgetTitle, test.budgetDesctiption, test.budgetUserID).
 				WillReturnResult(sqlmock.NewResult(int64(test.budgetId), 1)).
 				WillReturnError(test.expectedSqlErr)
 
 			repo := repository.NewBudgetRepository(db)
 
-			newBudget := model.Budget{Title: test.budgetTitle, Description: test.budgetDesctiption, ID: test.budgetId}
+			newBudget := model.Budget{
+				Title:       test.budgetTitle,
+				Description: test.budgetDesctiption,
+				ID:          test.budgetId,
+				UserID:      test.budgetUserID,
+			}
 			newBudgetId, createErr := repo.CreateBudget(newBudget)
 			err := mock.ExpectationsWereMet()
 
