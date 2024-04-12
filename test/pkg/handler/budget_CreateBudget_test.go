@@ -30,6 +30,14 @@ func Test_BudgetHandler_CreateBudget(t *testing.T) {
 			budgetDesctiption: "Desc",
 		},
 		{
+			name:              "returns error if broken json",
+			expected:          `{"msg":"Invalid request"}`,
+			expectedStatus:    400,
+			body:              `{broken}`,
+			budgetTitle:       "",
+			budgetDesctiption: "desc",
+		},
+		{
 			name:              "returns error if empty title",
 			expected:          `{"msg":"Invalid request"}`,
 			expectedStatus:    400,
