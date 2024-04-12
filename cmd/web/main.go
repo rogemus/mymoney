@@ -45,18 +45,20 @@ func main() {
 	transactionHandler := handler.NewTransactionHandler(transactionRepo)
 	mux.HandleFunc("GET /transactions", transactionHandler.GetTransactions)
 
+	// API: Token
+	authRepo := repository.NewAuthRepository(db)
+	authMiddleware := middleware.NewAuthMiddleware(authRepo)
+	protected := authMiddleware.ProtectedRoute
+
 	// API: Budget
 	budgetRepo := repository.NewBudgetRepository(db)
 	budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
-	mux.HandleFunc("GET /budget/{id}", budgetHandler.GetBudget)
-	mux.HandleFunc("DELETE /budget/{id}", budgetHandler.DeleteBudget)
-	mux.HandleFunc("PUT /budget/{id}", budgetHandler.UpdateBudget)
-	mux.HandleFunc("GET /budgets", budgetHandler.GetBudgets)
-	mux.HandleFunc("POST /budgets", budgetHandler.CreateBudget)
-
-  // API: Token
-  authRepo := repository.NewAuthRepository(db)
+	mux.HandleFunc("GET /budget/{id}", protected(budgetHandler.GetBudget))
+	mux.HandleFunc("DELETE /budget/{id}", protected(budgetHandler.DeleteBudget))
+	mux.HandleFunc("PUT /budget/{id}", protected(budgetHandler.UpdateBudget))
+	mux.HandleFunc("GET /budgets", protected(budgetHandler.GetBudgets))
+	mux.HandleFunc("POST /budgets", protected(budgetHandler.CreateBudget))
 
 	// API: User
 	userRepo := repository.NewUserRepository(db)
@@ -64,7 +66,6 @@ func main() {
 
 	mux.HandleFunc("POST /register", userHandler.RegisterUser)
 	mux.HandleFunc("POST /login", userHandler.LoginUser)
-
 
 	// API: Public Files
 	publicFiles := http.FileServer(http.Dir("./ui/public"))
@@ -80,9 +81,9 @@ func main() {
 
 	// Start Server
 	utils.LogInfo(fmt.Sprintf("Listening on port: %v ...", ":3333"))
-  servErr := srv.ListenAndServe()
+	servErr := srv.ListenAndServe()
 
-  if servErr != nil {
-    utils.LogFatal(servErr.Error())
-  }
+	if servErr != nil {
+		utils.LogFatal(servErr.Error())
+	}
 }

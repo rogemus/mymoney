@@ -21,11 +21,12 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func GenerateJwt(userEmail string) model.Token {
+func GenerateJwt(userID int, userEmail string) model.Token {
 	expirationTime := time.Now().Add(expirationDuration)
 	expiresAt := jwt.NewNumericDate(expirationTime)
 	claims := &model.Claims{
 		UserEmail: userEmail,
+		UserID:    userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: expiresAt,
 		},
