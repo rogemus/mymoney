@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var expirationDuration = 10 * time.Minute
+var expirationDuration = 60 * time.Minute
 
 func HashPass(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)

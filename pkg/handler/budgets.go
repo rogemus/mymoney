@@ -31,12 +31,14 @@ func (h *BudgetHandler) GetBudget(w http.ResponseWriter, r *model.ProtectedReque
 
 	budget, err := h.repo.GetBudget(id)
 
-	if err == errs.Budget404Err {
+	if err != nil {
 		errs.ErrorResponse(w, errs.Budget404Err, http.StatusNotFound)
 		return
 	}
 
+	// TODO: Errors
 	transactions, _ := h.transactionsRepo.GetTransactionsForBudget(id)
+
 	budgetWithTransaction := model.BudgetWithTransactions{
 		Budget:       budget,
 		Transactions: transactions,

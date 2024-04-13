@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
 )
@@ -74,7 +73,6 @@ func (r *userRepository) CreateUser(user model.User) (int64, error) {
 	result, err := r.db.Exec(query, user.Username, user.Email, user.Password)
 
 	if err != nil {
-		fmt.Printf(">>> %v", err)
 		return -1, errs.Generic400Err
 	}
 

@@ -20,3 +20,10 @@ var User404Err = errors.New("User not found")
 var UserInvalidEmail = errors.New("Invalid User email")
 var UserInvalidUsername = errors.New("Invalid User username")
 var UserInvalidPassword = errors.New("Invalid User Password")
+
+
+// Transaction
+var Transaction404Err = errors.New("Transaction not fount")
+var TransactionInvalidAmount = errors.New("Invalid Transaction amount")
+var TransactionInvalidBudgetId = errors.New("Invalid Budget id")
+

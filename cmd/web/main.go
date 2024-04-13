@@ -40,15 +40,16 @@ func main() {
 	// Init Routes
 	mux := http.NewServeMux()
 
-	// API: Transactions
-	transactionRepo := repository.NewTransactionRepository(db)
-	transactionHandler := handler.NewTransactionHandler(transactionRepo)
-	mux.HandleFunc("GET /transactions", transactionHandler.GetTransactions)
-
 	// API: Token
 	authRepo := repository.NewAuthRepository(db)
 	authMiddleware := middleware.NewAuthMiddleware(authRepo)
 	protected := authMiddleware.ProtectedRoute
+
+	// API: Transactions
+	transactionRepo := repository.NewTransactionRepository(db)
+	transactionHandler := handler.NewTransactionHandler(transactionRepo)
+
+	mux.HandleFunc("POST /transactions", protected(transactionHandler.CreateTransation))
 
 	// API: Budget
 	budgetRepo := repository.NewBudgetRepository(db)

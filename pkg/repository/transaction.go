@@ -53,12 +53,13 @@ func (r *transactionRepository) CreateTransaction(transaction model.Transaction)
 // }
 
 func (r *transactionRepository) GetTransactionsForBudget(budgetId int) ([]model.Transaction, error) {
-	query := "SELECT Description, Amount, UserID FROM transaction WHERE BudgetID = ?"
+	query := "SELECT ID, Uuid, Description, Amount, Created, BudgetID, UserID FROM transaction WHERE BudgetID = ?"
 	rows, err := r.db.Query(query, budgetId)
 
 	if err != nil {
 		return nil, err
 	}
+
 	defer rows.Close()
 	transactions := make([]model.Transaction, 0)
 
