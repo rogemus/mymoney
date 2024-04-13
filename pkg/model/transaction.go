@@ -9,4 +9,5 @@ type Transaction struct {
 	Amount      float32   `json:"amount"`
 	Created     time.Time `json:"created"`
 	BudgetID    int       `json:"budgetId"`
+	UserID      int       `json:"userId"`
 }

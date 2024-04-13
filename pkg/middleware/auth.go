@@ -41,11 +41,6 @@ func (m *authMiddleware) ProtectedRoute(next ProtectedHandler) http.HandlerFunc 
 			return []byte(os.Getenv("SECRET_KEY")), nil
 		})
 
-		if _, err := m.repo.GetToken(tkn.Raw); err != nil {
-			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
-			return
-		}
-
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
 				errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
