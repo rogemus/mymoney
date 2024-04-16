@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -85,6 +86,7 @@ func (h *TransactionHandler) DeleteTransaction(w http.ResponseWriter, r *model.P
 		return
 	}
 
+  fmt.Printf("%v >> \n", id)
 	if _, err := h.repo.GetTransaction(id); err != nil {
 		errs.ErrorResponse(w, errs.Transaction404Err, http.StatusNotFound)
 		return

@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -35,7 +36,7 @@ func Test_TransactionHandler_DeleteTransaction(t *testing.T) {
 			name:           "returns 404 if transaction not found",
 			expected:       `{"msg":"Transaction not found"}`,
 			expectedStatus: 404,
-			expectedSqlErr: nil,
+			expectedSqlErr: sql.ErrNoRows,
 			transactionId:  "9999",
 		},
 		{

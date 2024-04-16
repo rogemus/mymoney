@@ -58,19 +58,20 @@ func (r *transactionRepository) DeleteTransaction(id int) error {
 	return nil
 }
 
-func (r *transactionRepository) GetTransaction(transactionId int) (model.Transaction, error) {
+func (r *transactionRepository) GetTransaction(id int) (model.Transaction, error) {
 	var transaction model.Transaction
 	query := "SELECT ID, Uuid, Description, Amount, Created, BudgetID, UserID FROM transaction WHERE ID = ?"
-	rows := r.db.QueryRow(query, transactionId)
-	err := rows.Scan(
-		&transaction.ID,
-		&transaction.Uuid,
-		&transaction.Description,
-		&transaction.Amount,
-		&transaction.Created,
-		&transaction.BudgetID,
-		&transaction.UserID,
-	)
+	err := r.db.
+		QueryRow(query, id).
+		Scan(
+			&transaction.ID,
+			&transaction.Uuid,
+			&transaction.Description,
+			&transaction.Amount,
+			&transaction.Created,
+			&transaction.BudgetID,
+			&transaction.UserID,
+		)
 
 	if err == sql.ErrNoRows {
 		return transaction, errs.Transaction404Err
