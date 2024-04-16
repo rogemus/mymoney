@@ -8,9 +8,10 @@ import (
 
 type TransactionRepository interface {
 	GetTransactionsForBudget(budgetId int) ([]model.Transaction, error)
+	GetTransaction(transactionId int) (model.Transaction, error)
 	CreateTransaction(transaction model.Transaction) (int64, error)
 	// UpdateTransaction(transaction model.Transaction) error
-	DeleteTransaction(id int) (int64, error)
+	DeleteTransaction(id int) error
 }
 
 type transactionRepository struct {
@@ -55,6 +56,31 @@ func (r *transactionRepository) DeleteTransaction(id int) error {
 	}
 
 	return nil
+}
+
+func (r *transactionRepository) GetTransaction(transactionId int) (model.Transaction, error) {
+	var transaction model.Transaction
+	query := "SELECT ID, Uuid, Description, Amount, Created, BudgetID, UserID FROM transaction WHERE ID = ?"
+	rows := r.db.QueryRow(query, transactionId)
+	err := rows.Scan(
+		&transaction.ID,
+		&transaction.Uuid,
+		&transaction.Description,
+		&transaction.Amount,
+		&transaction.Created,
+		&transaction.BudgetID,
+		&transaction.UserID,
+	)
+
+	if err == sql.ErrNoRows {
+		return transaction, errs.Transaction404Err
+	}
+
+	if err != nil {
+		return transaction, errs.Generic400Err
+	}
+
+	return transaction, nil
 }
 
 func (r *transactionRepository) GetTransactionsForBudget(budgetId int) ([]model.Transaction, error) {

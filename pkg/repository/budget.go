@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
-	"tracker/pkg/utils"
 )
 
 type BudgetRepository interface {
@@ -46,7 +45,6 @@ func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
 	rows, err := r.db.Query(query)
 
 	if err != nil {
-		utils.LogError(err.Error())
 		return nil, errs.Generic400Err
 	}
 
@@ -57,7 +55,6 @@ func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
 		var b model.Budget
 
 		if err := rows.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title, &b.UserID); err != nil {
-			utils.LogError(err.Error())
 			return nil, errs.Generic400Err
 		}
 
@@ -81,14 +78,12 @@ func (r *budgetRepository) CreateBudget(budget model.Budget) (int64, error) {
 	)
 
 	if err != nil {
-		utils.LogError(err.Error())
 		return -1, errs.Generic400Err
 	}
 
 	id, err := result.LastInsertId()
 
 	if err != nil {
-		utils.LogError(err.Error())
 		return -1, errs.Generic400Err
 	}
 
@@ -110,7 +105,6 @@ func (r *budgetRepository) UpdateBudget(budget model.Budget, id int) error {
 	_, err := r.db.Exec(query, budget.Title, budget.Description, id)
 
 	if err != nil {
-		utils.LogError(err.Error())
 		return fmt.Errorf("UpdateBudget(%d): %v", id, err)
 	}
 

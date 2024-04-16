@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
@@ -26,7 +27,7 @@ func (h *TransactionHandler) GetTransactions(w http.ResponseWriter, r *http.Requ
 		utils.LogError(err.Error())
 	}
 
-  // TODO Errors
+	// TODO Errors
 	transactions, _ := h.repo.GetTransactionsForBudget(budgetId)
 	w.WriteHeader(http.StatusOK)
 	encoder.Encode(transactions)
@@ -75,13 +76,47 @@ func (h *TransactionHandler) UpdateTransaction(w http.ResponseWriter, r *model.P
 }
 
 func (h *TransactionHandler) DeleteTransaction(w http.ResponseWriter, r *model.ProtectedRequest) {
-	// encoder := json.NewEncoder(w)
-	// parts := strings.Split(r.URL.Path, "/")
-	// id, err := strconv.Atoi(parts[len(parts)-1])
+	encoder := json.NewEncoder(w)
+	parts := strings.Split(r.URL.Path, "/")
+	id, err := strconv.Atoi(parts[len(parts)-1])
+
+	if err != nil {
+		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
+		return
+	}
+
+	if _, err := h.repo.GetTransaction(id); err != nil {
+		errs.ErrorResponse(w, errs.Transaction404Err, http.StatusNotFound)
+		return
+	}
+
+	if err := h.repo.DeleteTransaction(id); err != nil {
+		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	payload := model.GenericPayload{Msg: "Transaction deleted"}
+	w.WriteHeader(204)
+	encoder.Encode(payload)
 }
 
 func (h *TransactionHandler) GetTransaction(w http.ResponseWriter, r *model.ProtectedRequest) {
-	// encoder := json.NewEncoder(w)
-	// parts := strings.Split(r.URL.Path, "/")
-	// id, err := strconv.Atoi(parts[len(parts)-1])
+	encoder := json.NewEncoder(w)
+	parts := strings.Split(r.URL.Path, "/")
+	id, err := strconv.Atoi(parts[len(parts)-1])
+
+	if err != nil {
+		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
+		return
+	}
+
+	transaction, err := h.repo.GetTransaction(id)
+
+	if err != nil {
+		errs.ErrorResponse(w, errs.Transaction404Err, http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(200)
+	encoder.Encode(transaction)
 }

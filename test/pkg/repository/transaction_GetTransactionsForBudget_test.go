@@ -67,7 +67,7 @@ func Test_TransactionRepo_GetTransactionsForBudget(t *testing.T) {
 			}
 
 			mock.
-				ExpectQuery("SELECT Description, Amount, UserID FROM transaction WHERE BudgetID = ?").
+				ExpectQuery("SELECT ID, Uuid, Description, Amount, Created, BudgetID, UserID FROM transaction WHERE BudgetID = ?").
 				WithArgs(test.budgetID).
 				WillReturnRows(expectedRows).
 				WillReturnError(test.expectedSqlErr)
