@@ -69,7 +69,6 @@ func (h *TransactionHandler) CreateTransation(w http.ResponseWriter, r *model.Pr
 }
 
 func (h *TransactionHandler) UpdateTransaction(w http.ResponseWriter, r *model.ProtectedRequest) {
-
 	// encoder := json.NewEncoder(w)
 	// parts := strings.Split(r.URL.Path, "/")
 	// id, err := strconv.Atoi(parts[len(parts)-1])
