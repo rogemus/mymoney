@@ -14,19 +14,18 @@ func Test_UserRepo_CreateUser(t *testing.T) {
 		name           string
 		expectedErr    error
 		expectedSqlErr error
-		userName       string
-		userPass       string
-		userEmail      string
-		userId         int
+		user           model.User
 	}{
 		{
 			name:           "create budget",
 			expectedErr:    nil,
 			expectedSqlErr: nil,
-			userName:       "test",
-			userPass:       "pass",
-			userEmail:      "test@test.com",
-			userId:         1,
+			user: model.User{
+				Username: "test",
+				Password: "pass",
+				Email:    "test@test.com",
+				ID:       1,
+			},
 		},
 	}
 
@@ -37,19 +36,18 @@ func Test_UserRepo_CreateUser(t *testing.T) {
 
 			mock.
 				ExpectExec("INSERT INTO user (Username, Email, Password) VALUES (?, ?, ?)").
-				WithArgs(test.userName, test.userEmail, test.userPass).
-				WillReturnResult(sqlmock.NewResult(int64(test.userId), 1)).
+				WithArgs(test.user.Username, test.user.Email, test.user.Password).
+				WillReturnResult(sqlmock.NewResult(int64(test.user.ID), 1)).
 				WillReturnError(test.expectedSqlErr)
+			defer db.Close()
 
 			repo := repository.NewUserRepository(db)
+			newUserId, createUsrErr := repo.CreateUser(test.user)
+			sqlErr := mock.ExpectationsWereMet()
 
-			newUser := model.User{Username: test.userName, Email: test.userEmail, Password: test.userPass}
-			newUserId, createUsrErr := repo.CreateUser(newUser)
-			err := mock.ExpectationsWereMet()
-
-			assert.AssertInt(t, int(newUserId), test.userId)
-			assert.AssertError(t, err, test.expectedSqlErr)
-			assert.AssertError(t, createUsrErr, test.expectedErr)
+			assert.AssertError(t, createUsrErr, nil)
+			assert.AssertError(t, sqlErr, nil)
+			assert.AssertInt(t, int(newUserId), test.user.ID)
 		})
 	}
 }

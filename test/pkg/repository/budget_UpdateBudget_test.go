@@ -46,14 +46,14 @@ func Test_BudgetRepo_UpdateBudget(t *testing.T) {
 				WithArgs(test.budgetTitle, test.budgetDesctiption, test.budgetId).
 				WillReturnResult(sqlmock.NewResult(int64(test.budgetId), 1)).
 				WillReturnError(test.expectedSqlErr)
+			defer db.Close()
 
 			repo := repository.NewBudgetRepository(db)
-
 			newBudget := model.Budget{Title: test.budgetTitle, Description: test.budgetDesctiption, ID: test.budgetId}
 			updateErr := repo.UpdateBudget(newBudget, test.budgetId)
-			err := mock.ExpectationsWereMet()
+			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertError(t, err, test.expectedSqlErr)
+			assert.AssertError(t, sqlErr, test.expectedSqlErr)
 			assert.AssertError(t, updateErr, test.expectedErr)
 		})
 	}

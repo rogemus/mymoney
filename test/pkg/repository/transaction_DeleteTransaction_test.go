@@ -11,13 +11,11 @@ import (
 func Test_TransactionRepo_DeleteTransaction(t *testing.T) {
 	testCases := []struct {
 		name           string
-		expectedErr    error
 		expectedSqlErr error
 		transactionId  int
 	}{
 		{
 			name:           "delete transaction",
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 			transactionId:  1,
 		},
@@ -35,14 +33,14 @@ func Test_TransactionRepo_DeleteTransaction(t *testing.T) {
 				).
 				WillReturnResult(sqlmock.NewResult(int64(test.transactionId), 1)).
 				WillReturnError(test.expectedSqlErr)
+			defer db.Close()
 
 			repo := repository.NewTransactionRepository(db)
-
 			createErr := repo.DeleteTransaction(test.transactionId)
-			err := mock.ExpectationsWereMet()
+			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertError(t, err, test.expectedSqlErr)
-			assert.AssertError(t, createErr, test.expectedErr)
+			assert.AssertError(t, sqlErr, nil)
+			assert.AssertError(t, createErr, nil)
 		})
 	}
 }

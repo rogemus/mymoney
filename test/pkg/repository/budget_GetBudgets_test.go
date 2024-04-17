@@ -22,26 +22,23 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expected       []model.Budget
-		expectedErr    error
 		expectedSqlErr error
 	}{
 		{
 			name:           "returns rows for budgets",
 			expected:       budgets,
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 		},
 		{
 			name:           "returns empty row for budgets",
 			expected:       empty_budgets,
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 		},
 	}
 
 	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
-			db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+			db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 			columns := []string{
 				"ID",
@@ -68,18 +65,15 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 				ExpectQuery("SELECT ID, Uuid, Created, Description, Title, UserID FROM budget").
 				WithoutArgs().
 				WillReturnRows(expectedRows)
-
 			defer db.Close()
 
 			repo := repository.NewBudgetRepository(db)
-			result, err := repo.GetBudgets()
+			result, getErr := repo.GetBudgets()
+			sqlErr := mock.ExpectationsWereMet()
 
+			assert.AssertError(t, getErr, nil)
+			assert.AssertError(t, sqlErr, nil)
 			assert.AssertSliceOfStructs[model.Budget](t, result, test.expected)
-			assert.AssertError(t, err, test.expectedErr)
-
-			if err := mock.ExpectationsWereMet(); err != nil {
-				t.Errorf("there were unfulfilled expectations: %s", err)
-			}
 		})
 	}
 }

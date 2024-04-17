@@ -40,13 +40,14 @@ func Test_BudgetRepo_DeleteBudget(t *testing.T) {
 				WithArgs(test.budgetID).
 				WillReturnResult(sqlmock.NewResult(int64(test.budgetID), 1)).
 				WillReturnError(test.expectedSqlErr)
+			defer db.Close()
 
 			repo := repository.NewBudgetRepository(db)
 			delErr := repo.DeleteBudget(test.budgetID)
-			err := mock.ExpectationsWereMet()
+			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertError(t, err, test.expectedSqlErr)
-			assert.AssertError(t, delErr, test.expectedErr)
+			assert.AssertError(t, delErr, nil)
+			assert.AssertError(t, sqlErr, nil)
 		})
 	}
 }

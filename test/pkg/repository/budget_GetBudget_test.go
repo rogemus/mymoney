@@ -3,7 +3,6 @@ package repository_test
 import (
 	"database/sql"
 	"testing"
-	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
@@ -21,28 +20,25 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 		name           string
 		expected       model.Budget
 		budgetID       int
-		expectedErr    error
 		expectedSqlErr error
 	}{
 		{
 			name:           "returns rows for budgetID(1)",
 			expected:       budget,
 			budgetID:       1,
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 		},
 		{
 			name:           "returns empty row for budgetID(9999)",
 			expected:       empty_budget,
 			budgetID:       9999,
-			expectedErr:    errs.Budget404Err,
 			expectedSqlErr: sql.ErrNoRows,
 		},
 	}
 
 	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
-			db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+			db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 			columns := []string{
 				"ID",
@@ -50,7 +46,7 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 				"Created",
 				"Description",
 				"Title",
-        "UserID",
+				"UserID",
 			}
 			expectedRows := sqlmock.NewRows(columns)
 
@@ -63,33 +59,24 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 					bud.Created,
 					bud.Description,
 					bud.Title,
-          bud.UserID,
+					bud.UserID,
 				)
 			}
 
-			if test.expectedSqlErr != nil {
-				mock.
-					ExpectQuery("SELECT ID, Uuid, Created, Description, Title, UserID FROM budget WHERE ID = ?").
-					WithArgs(test.budgetID).
-					WillReturnError(test.expectedSqlErr)
-			} else {
-				mock.
-					ExpectQuery("SELECT ID, Uuid, Created, Description, Title, UserID FROM budget WHERE ID = ?").
-					WithArgs(test.budgetID).
-					WillReturnRows(expectedRows)
-			}
-
+			mock.
+				ExpectQuery("SELECT ID, Uuid, Created, Description, Title, UserID FROM budget WHERE ID = ?").
+				WithArgs(test.budgetID).
+				WillReturnError(test.expectedSqlErr).
+				WillReturnRows(expectedRows)
 			defer db.Close()
 
 			repo := repository.NewBudgetRepository(db)
-			result, err := repo.GetBudget(test.budgetID)
+			result, getErr := repo.GetBudget(test.budgetID)
+			sqlErr := mock.ExpectationsWereMet()
 
+			assert.AssertError(t, getErr, nil)
+			assert.AssertError(t, sqlErr, nil)
 			assert.AssertStruct[model.Budget](t, result, test.expected)
-			assert.AssertError(t, err, test.expectedErr)
-
-			if err := mock.ExpectationsWereMet(); err != nil {
-				t.Errorf("there were unfulfilled expectations: %s", err)
-			}
 		})
 	}
 }

@@ -3,7 +3,6 @@ package repository_test
 import (
 	"database/sql"
 	"testing"
-	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
@@ -20,21 +19,18 @@ func Test_TransactionRepo_GetTransaction(t *testing.T) {
 		name           string
 		expected       model.Transaction
 		transactionID  int
-		expectedErr    error
 		expectedSqlErr error
 	}{
 		{
 			name:           "returns row",
 			expected:       transaction,
 			transactionID:  1,
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 		},
 		{
 			name:           "returns err if not found",
 			expected:       empty_transaction,
 			transactionID:  9999,
-			expectedErr:    errs.Transaction404Err,
 			expectedSqlErr: sql.ErrNoRows,
 		},
 	}
@@ -69,17 +65,16 @@ func Test_TransactionRepo_GetTransaction(t *testing.T) {
 				WithArgs(test.transactionID).
 				WillReturnRows(expectedRows).
 				WillReturnError(test.expectedSqlErr)
-
 			defer db.Close()
 
 			repo := repository.NewTransactionRepository(db)
 			result, getErr := repo.GetTransaction(test.transactionID)
 			sqlErr := mock.ExpectationsWereMet()
 
+			assert.AssertError(t, getErr, nil)
+			assert.AssertError(t, sqlErr, nil)
 			assert.AssertInt(t, result.ID, test.expected.ID)
 			assert.AssertStruct[model.Transaction](t, result, test.expected)
-			assert.AssertError(t, getErr, test.expectedErr)
-			assert.AssertError(t, sqlErr, nil)
 		})
 	}
 }

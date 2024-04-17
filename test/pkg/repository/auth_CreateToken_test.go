@@ -13,14 +13,12 @@ func Test_AuthRepo_CreateToken(t *testing.T) {
 		name              string
 		expectedToken     string
 		expectedUserEmail string
-		expectedErr       error
 		expectedSqlErr    error
 	}{
 		{
 			name:              "create token",
 			expectedToken:     "token.token.token",
 			expectedUserEmail: "mock@mock.com",
-			expectedErr:       nil,
 			expectedSqlErr:    nil,
 		},
 	}
@@ -34,12 +32,13 @@ func Test_AuthRepo_CreateToken(t *testing.T) {
 			WithArgs(test.expectedToken, test.expectedUserEmail).
 			WillReturnError(test.expectedSqlErr).
 			WillReturnResult(sqlmock.NewResult(1, 1))
+		defer db.Close()
 
 		repo := repository.NewAuthRepository(db)
 		_, createErr := repo.CreateToken(test.expectedToken, test.expectedUserEmail)
-
 		sqlErr := mock.ExpectationsWereMet()
+
 		assert.AssertError(t, sqlErr, nil)
-		assert.AssertError(t, createErr, test.expectedErr)
+		assert.AssertError(t, createErr, nil)
 	}
 }

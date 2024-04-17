@@ -29,7 +29,7 @@ func (r *budgetRepository) GetBudget(id int) (model.Budget, error) {
 	err := row.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title, &b.UserID)
 
 	if err == sql.ErrNoRows {
-		return b, errs.Budget404Err
+		return b, errs.BudgetNotFound
 	}
 
 	if err != nil {

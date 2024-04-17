@@ -20,21 +20,18 @@ func Test_TransactionRepo_GetTransactionsForBudget(t *testing.T) {
 		name           string
 		expected       []model.Transaction
 		budgetID       int
-		expectedErr    error
 		expectedSqlErr error
 	}{
 		{
 			name:           "returns rows for budgetID(1)",
 			expected:       transactions,
 			budgetID:       1,
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 		},
 		{
 			name:           "returns empty row for budgetID(9999)",
 			expected:       make([]model.Transaction, 0),
 			budgetID:       9999,
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 		},
 	}
@@ -71,17 +68,16 @@ func Test_TransactionRepo_GetTransactionsForBudget(t *testing.T) {
 				WithArgs(test.budgetID).
 				WillReturnRows(expectedRows).
 				WillReturnError(test.expectedSqlErr)
-
 			defer db.Close()
 
 			repo := repository.NewTransactionRepository(db)
 			result, getErr := repo.GetTransactionsForBudget(test.budgetID)
 			sqlErr := mock.ExpectationsWereMet()
 
+			assert.AssertError(t, getErr, nil)
+			assert.AssertError(t, sqlErr, nil)
 			assert.AssertInt(t, len(result), len(test.expected))
 			assert.AssertSliceOfStructs(t, result, test.expected)
-			assert.AssertError(t, getErr, test.expectedErr)
-			assert.AssertError(t, sqlErr, nil)
 		})
 	}
 }

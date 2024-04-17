@@ -93,7 +93,7 @@ func (r *transactionRepository) GetTransaction(id int) (model.Transaction, error
 		)
 
 	if err == sql.ErrNoRows {
-		return transaction, errs.Transaction404Err
+		return transaction, errs.TransactionNotFound
 	}
 
 	if err != nil {

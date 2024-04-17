@@ -34,7 +34,7 @@ func (r *userRepository) GetUserByEmail(email string) (model.User, error) {
 	)
 
 	if err == sql.ErrNoRows {
-		return user, errs.User404Err
+		return user, errs.UserNotFound
 	}
 
 	if err != nil {
@@ -58,7 +58,7 @@ func (r *userRepository) GetUser(id int) (model.User, error) {
 	)
 
 	if err == sql.ErrNoRows {
-		return user, errs.User404Err
+		return user, errs.UserNotFound
 	}
 
 	if err != nil {

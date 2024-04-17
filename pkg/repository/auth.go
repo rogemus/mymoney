@@ -32,12 +32,8 @@ func (r *authRepository) GetToken(tokenStr string) (model.Token, error) {
 		&token.Created,
 	)
 
-	if err == sql.ErrNoRows {
-		return token, errs.AuthTokenNotFound
-	}
-
 	if err != nil {
-		return token, errs.Generic400Err
+		return token, err
 	}
 
 	return token, nil

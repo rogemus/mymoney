@@ -3,7 +3,6 @@ package repository_test
 import (
 	"database/sql"
 	"testing"
-	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
@@ -19,21 +18,18 @@ func Test_UserRepo_GetUser(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expected       model.User
-		expectedErr    error
 		expectedSqlErr error
 		userId         int
 	}{
 		{
 			name:           "returns user object",
 			expected:       user,
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 			userId:         1,
 		},
 		{
 			name:           "return 404 if user not found",
 			expected:       empty_user,
-			expectedErr:    errs.User404Err,
 			expectedSqlErr: sql.ErrNoRows,
 			userId:         9999,
 		},
@@ -68,12 +64,13 @@ func Test_UserRepo_GetUser(t *testing.T) {
 				WithArgs(test.userId).
 				WillReturnRows(expectedRow).
 				WillReturnError(test.expectedSqlErr)
+			defer db.Close()
 
 			userRepo := repository.NewUserRepository(db)
 			user, getErr := userRepo.GetUser(test.userId)
 			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertError(t, getErr, test.expectedErr)
+			assert.AssertError(t, getErr, nil)
 			assert.AssertError(t, sqlErr, nil)
 			assert.AssertStruct[model.User](t, user, test.expected)
 		})

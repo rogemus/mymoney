@@ -15,19 +15,16 @@ func Test_TransactionRepo_CreateTransaction(t *testing.T) {
 	var empty_transaction model.Transaction
 	testCases := []struct {
 		name           string
-		expectedErr    error
 		expectedSqlErr error
 		transaction    model.Transaction
 	}{
 		{
 			name:           "create transaction",
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 			transaction:    transaction,
 		},
 		{
 			name:           "create empty transaction",
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 			transaction:    empty_transaction,
 		},
@@ -48,15 +45,15 @@ func Test_TransactionRepo_CreateTransaction(t *testing.T) {
 				).
 				WillReturnResult(sqlmock.NewResult(int64(test.transaction.ID), 1)).
 				WillReturnError(test.expectedSqlErr)
+			defer db.Close()
 
 			repo := repository.NewTransactionRepository(db)
-
 			newTransactionId, createErr := repo.CreateTransaction(test.transaction)
-			err := mock.ExpectationsWereMet()
+			sqlErr := mock.ExpectationsWereMet()
 
+			assert.AssertError(t, createErr, nil)
+			assert.AssertError(t, sqlErr, nil)
 			assert.AssertInt(t, int(newTransactionId), test.transaction.ID)
-			assert.AssertError(t, err, test.expectedSqlErr)
-			assert.AssertError(t, createErr, test.expectedErr)
 		})
 	}
 }

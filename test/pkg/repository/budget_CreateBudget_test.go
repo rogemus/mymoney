@@ -53,6 +53,7 @@ func Test_BudgetRepo_CreateBudget(t *testing.T) {
 				).
 				WillReturnResult(sqlmock.NewResult(int64(test.budgetId), 1)).
 				WillReturnError(test.expectedSqlErr)
+			defer db.Close()
 
 			repo := repository.NewBudgetRepository(db)
 
@@ -63,11 +64,11 @@ func Test_BudgetRepo_CreateBudget(t *testing.T) {
 				UserID:      test.budgetUserID,
 			}
 			newBudgetId, createErr := repo.CreateBudget(newBudget)
-			err := mock.ExpectationsWereMet()
+			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertInt(t, int(newBudgetId), test.budgetId)
-			assert.AssertError(t, err, test.expectedSqlErr)
 			assert.AssertError(t, createErr, test.expectedErr)
+			assert.AssertError(t, sqlErr, test.expectedSqlErr)
+			assert.AssertInt(t, int(newBudgetId), test.budgetId)
 		})
 	}
 }

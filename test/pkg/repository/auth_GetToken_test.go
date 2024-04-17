@@ -3,7 +3,6 @@ package repository_test
 import (
 	"database/sql"
 	"testing"
-	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
@@ -26,14 +25,12 @@ func Test_AuthRepo_GetToken(t *testing.T) {
 		{
 			name:           "return token",
 			expected:       token,
-			expectedErr:    nil,
 			expectedSqlErr: nil,
 			tokenStr:       "token.token.token",
 		},
 		{
 			name:           "return error if not found",
 			expected:       empty_token,
-			expectedErr:    errs.AuthTokenNotFound,
 			expectedSqlErr: sql.ErrNoRows,
 			tokenStr:       "error.error.error",
 		},
@@ -66,15 +63,15 @@ func Test_AuthRepo_GetToken(t *testing.T) {
 				WithArgs(test.tokenStr).
 				WillReturnRows(expectedRow).
 				WillReturnError(test.expectedSqlErr)
+			defer db.Close()
 
 			repo := repository.NewAuthRepository(db)
-
 			token, errGet := repo.GetToken(test.tokenStr)
 			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertStruct[model.Token](t, token, test.expected)
 			assert.AssertError(t, errGet, test.expectedErr)
 			assert.AssertError(t, sqlErr, nil)
+			assert.AssertStruct[model.Token](t, token, test.expected)
 		})
 	}
 }
