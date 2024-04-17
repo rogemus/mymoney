@@ -1,6 +1,7 @@
 package repository_test
 
 import (
+	"database/sql"
 	"testing"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
@@ -19,7 +20,7 @@ func Test_AuthRepo_CreateToken(t *testing.T) {
 			name:              "create token",
 			expectedToken:     "token.token.token",
 			expectedUserEmail: "mock@mock.com",
-			expectedSqlErr:    nil,
+			expectedSqlErr:    sql.ErrNoRows,
 		},
 	}
 
@@ -39,6 +40,6 @@ func Test_AuthRepo_CreateToken(t *testing.T) {
 		sqlErr := mock.ExpectationsWereMet()
 
 		assert.AssertError(t, sqlErr, nil)
-		assert.AssertError(t, createErr, nil)
+		assert.AssertError(t, createErr, test.expectedSqlErr)
 	}
 }

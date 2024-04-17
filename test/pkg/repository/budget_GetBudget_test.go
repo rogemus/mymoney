@@ -74,7 +74,7 @@ func Test_BudgetRepo_GetBudget(t *testing.T) {
 			result, getErr := repo.GetBudget(test.budgetID)
 			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertError(t, getErr, nil)
+			assert.AssertError(t, getErr, test.expectedSqlErr)
 			assert.AssertError(t, sqlErr, nil)
 			assert.AssertStruct[model.Budget](t, result, test.expected)
 		})

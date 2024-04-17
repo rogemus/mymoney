@@ -33,13 +33,13 @@ func (r *transactionRepository) CreateTransaction(transaction model.Transaction)
 	)
 
 	if err != nil {
-		return -1, errs.Generic400Err
+		return -1, err
 	}
 
 	insertedId, err := result.LastInsertId()
 
 	if err != nil {
-		return -1, errs.Generic400Err
+		return -1, err
 	}
 
 	return insertedId, nil
@@ -92,12 +92,8 @@ func (r *transactionRepository) GetTransaction(id int) (model.Transaction, error
 			&transaction.UserID,
 		)
 
-	if err == sql.ErrNoRows {
-		return transaction, errs.TransactionNotFound
-	}
-
 	if err != nil {
-		return transaction, errs.Generic400Err
+		return transaction, err
 	}
 
 	return transaction, nil

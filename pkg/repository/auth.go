@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"tracker/pkg/errs"
 	"tracker/pkg/model"
 )
 
@@ -44,13 +43,13 @@ func (r *authRepository) CreateToken(token, userEmail string) (int64, error) {
 	result, err := r.db.Exec(query, token, userEmail)
 
 	if err != nil {
-		return -1, errs.Generic400Err
+		return -1, err
 	}
 
 	lastInsertId, err := result.LastInsertId()
 
 	if err != nil {
-		return -1, errs.Generic400Err
+		return -1, err
 	}
 
 	return lastInsertId, nil

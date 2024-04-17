@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"tracker/pkg/errs"
 	"tracker/pkg/model"
 )
 
@@ -33,12 +32,8 @@ func (r *userRepository) GetUserByEmail(email string) (model.User, error) {
 		&user.Created,
 	)
 
-	if err == sql.ErrNoRows {
-		return user, errs.UserNotFound
-	}
-
 	if err != nil {
-		return user, errs.Generic400Err
+		return user, err
 	}
 
 	return user, nil
@@ -57,12 +52,8 @@ func (r *userRepository) GetUser(id int) (model.User, error) {
 		&user.Created,
 	)
 
-	if err == sql.ErrNoRows {
-		return user, errs.UserNotFound
-	}
-
 	if err != nil {
-		return user, errs.Generic400Err
+		return user, err
 	}
 
 	return user, nil
@@ -73,13 +64,13 @@ func (r *userRepository) CreateUser(user model.User) (int64, error) {
 	result, err := r.db.Exec(query, user.Username, user.Email, user.Password)
 
 	if err != nil {
-		return -1, errs.Generic400Err
+		return -1, err
 	}
 
 	id, err := result.LastInsertId()
 
 	if err != nil {
-		return -1, errs.Generic400Err
+		return -1, err
 	}
 
 	return id, nil

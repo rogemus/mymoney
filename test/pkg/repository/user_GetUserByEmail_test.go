@@ -70,7 +70,7 @@ func Test_UserRepo_GetUserByEmail(t *testing.T) {
 			user, getErr := userRepo.GetUserByEmail(test.userEmail)
 			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertError(t, getErr, nil)
+			assert.AssertError(t, getErr, test.expectedSqlErr)
 			assert.AssertError(t, sqlErr, nil)
 			assert.AssertStruct[model.User](t, user, test.expected)
 		})

@@ -18,7 +18,6 @@ func Test_AuthRepo_GetToken(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expected       model.Token
-		expectedErr    error
 		expectedSqlErr error
 		tokenStr       string
 	}{
@@ -37,7 +36,6 @@ func Test_AuthRepo_GetToken(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		query := `SELECT ID, Uuid, Token, UserEmail, Created FROM token WHERE Token = ?`
 		db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 		t.Run(test.name, func(t *testing.T) {
@@ -59,17 +57,17 @@ func Test_AuthRepo_GetToken(t *testing.T) {
 				)
 
 			mock.
-				ExpectQuery(query).
+				ExpectQuery("SELECT ID, Uuid, Token, UserEmail, Created FROM token WHERE Token = ?").
 				WithArgs(test.tokenStr).
 				WillReturnRows(expectedRow).
 				WillReturnError(test.expectedSqlErr)
 			defer db.Close()
 
 			repo := repository.NewAuthRepository(db)
-			token, errGet := repo.GetToken(test.tokenStr)
+			token, getErr := repo.GetToken(test.tokenStr)
 			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertError(t, errGet, test.expectedErr)
+			assert.AssertError(t, getErr, test.expectedSqlErr)
 			assert.AssertError(t, sqlErr, nil)
 			assert.AssertStruct[model.Token](t, token, test.expected)
 		})

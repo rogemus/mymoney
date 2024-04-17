@@ -71,7 +71,7 @@ func Test_TransactionRepo_GetTransaction(t *testing.T) {
 			result, getErr := repo.GetTransaction(test.transactionID)
 			sqlErr := mock.ExpectationsWereMet()
 
-			assert.AssertError(t, getErr, nil)
+			assert.AssertError(t, getErr, test.expectedSqlErr)
 			assert.AssertError(t, sqlErr, nil)
 			assert.AssertInt(t, result.ID, test.expected.ID)
 			assert.AssertStruct[model.Transaction](t, result, test.expected)

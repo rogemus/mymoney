@@ -23,20 +23,23 @@ func NewBudgetRepository(db *sql.DB) BudgetRepository {
 }
 
 func (r *budgetRepository) GetBudget(id int) (model.Budget, error) {
-	var b model.Budget
+	var budget model.Budget
 	query := "SELECT ID, Uuid, Created, Description, Title, UserID FROM budget WHERE ID = ?"
 	row := r.db.QueryRow(query, id)
-	err := row.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title, &b.UserID)
-
-	if err == sql.ErrNoRows {
-		return b, errs.BudgetNotFound
-	}
+	err := row.Scan(
+		&budget.ID,
+		&budget.Uuid,
+		&budget.Created,
+		&budget.Description,
+		&budget.Title,
+		&budget.UserID,
+	)
 
 	if err != nil {
-		return b, errs.Generic400Err
+		return budget, err
 	}
 
-	return b, nil
+	return budget, nil
 }
 
 func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
