@@ -51,6 +51,7 @@ func main() {
 
 	mux.HandleFunc("POST /transactions", protected(transactionHandler.CreateTransation))
 	mux.HandleFunc("DELETE /transactions/{id}", protected(transactionHandler.DeleteTransaction))
+	mux.HandleFunc("POST /transactions/{id}", protected(transactionHandler.UpdateTransaction))
 	mux.HandleFunc("GET /transactions/{id}", protected(transactionHandler.GetTransaction))
 
 	// API: Budget

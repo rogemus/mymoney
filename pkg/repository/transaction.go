@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
 )
@@ -47,8 +48,14 @@ func (r *transactionRepository) CreateTransaction(transaction model.Transaction)
 
 func (r *transactionRepository) UpdateTransaction(transaction model.Transaction) (int64, error) {
 	query := "UPDATE transaction SET Amount=?, Description=? WHERE ID=?"
-	result, err := r.db.Exec(query, transaction.Amount, transaction.Description, transaction.ID)
+	result, err := r.db.Exec(
+		query,
+		transaction.Amount,
+		transaction.Description,
+		transaction.ID,
+	)
 
+  fmt.Printf("%v \n %v\n", err, transaction)
 	if err != nil {
 		return -1, errs.Generic400Err
 	}

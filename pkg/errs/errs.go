@@ -23,6 +23,6 @@ var UserInvalidPassword = errors.New("Invalid User Password")
 
 // Transaction
 var Transaction404Err = errors.New("Transaction not found")
-var TransactionInvalidAmount = errors.New("Invalid Transaction amount")
+var TransactionInvalidAmount = errors.New("Invalid transaction amount")
 var TransactionInvalidBudgetId = errors.New("Invalid Budget id")
 
