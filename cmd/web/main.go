@@ -40,20 +40,24 @@ func main() {
 	// Init Routes
 	mux := http.NewServeMux()
 
-	// API: Transactions
-	transactionRepo := repository.NewTransactionRepository(db)
-	transactionHandler := handler.NewTransactionHandler(transactionRepo)
-	mux.HandleFunc("GET /transactions", transactionHandler.GetTransactions)
-
 	// API: Token
 	authRepo := repository.NewAuthRepository(db)
 	authMiddleware := middleware.NewAuthMiddleware(authRepo)
 	protected := authMiddleware.ProtectedRoute
 
+	// API: Transactions
+	transactionRepo := repository.NewTransactionRepository(db)
+	transactionHandler := handler.NewTransactionHandler(transactionRepo)
+
+	mux.HandleFunc("DELETE /transactions/{id}", protected(transactionHandler.DeleteTransaction))
+	mux.HandleFunc("POST /transactions/{id}", protected(transactionHandler.UpdateTransaction))
+	mux.HandleFunc("GET /transactions/{id}", protected(transactionHandler.GetTransaction))
+
 	// API: Budget
 	budgetRepo := repository.NewBudgetRepository(db)
 	budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
+	mux.HandleFunc("POST /transactions", protected(budgetHandler.CreateTransation))
 	mux.HandleFunc("GET /budget/{id}", protected(budgetHandler.GetBudget))
 	mux.HandleFunc("DELETE /budget/{id}", protected(budgetHandler.DeleteBudget))
 	mux.HandleFunc("PUT /budget/{id}", protected(budgetHandler.UpdateBudget))

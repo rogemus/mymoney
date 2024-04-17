@@ -7,6 +7,7 @@ import (
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
+	"tracker/pkg/utils"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -32,6 +33,7 @@ func (m *authMiddleware) ProtectedRoute(next ProtectedHandler) http.HandlerFunc 
 
 		reqToken, err := splitHeader(bearerToken)
 		if err != nil {
+			utils.LogError(err.Error())
 			errs.ErrorResponse(w, err, http.StatusUnauthorized)
 			return
 		}
@@ -41,22 +43,19 @@ func (m *authMiddleware) ProtectedRoute(next ProtectedHandler) http.HandlerFunc 
 			return []byte(os.Getenv("SECRET_KEY")), nil
 		})
 
-		if _, err := m.repo.GetToken(tkn.Raw); err != nil {
-			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
-			return
-		}
-
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
+				utils.LogError(err.Error())
 				errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
 				return
 			}
 
-			errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
+			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
 			return
 		}
 
 		if !tkn.Valid {
+			utils.LogError(err.Error())
 			errs.ErrorResponse(w, errs.Generic401Err, http.StatusUnauthorized)
 			return
 		}

@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
 )
@@ -105,7 +104,7 @@ func (r *budgetRepository) UpdateBudget(budget model.Budget, id int) error {
 	_, err := r.db.Exec(query, budget.Title, budget.Description, id)
 
 	if err != nil {
-		return fmt.Errorf("UpdateBudget(%d): %v", id, err)
+		return errs.Generic400Err
 	}
 
 	return nil

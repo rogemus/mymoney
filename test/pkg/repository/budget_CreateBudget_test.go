@@ -46,7 +46,11 @@ func Test_BudgetRepo_CreateBudget(t *testing.T) {
 
 			mock.
 				ExpectExec("INSERT INTO budget (Title, Description, UserID) VALUES (?, ?, ?)").
-				WithArgs(test.budgetTitle, test.budgetDesctiption, test.budgetUserID).
+				WithArgs(
+					test.budgetTitle,
+					test.budgetDesctiption,
+					test.budgetUserID,
+				).
 				WillReturnResult(sqlmock.NewResult(int64(test.budgetId), 1)).
 				WillReturnError(test.expectedSqlErr)
 

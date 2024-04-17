@@ -25,7 +25,7 @@ func (m MockPass) Match(v driver.Value) bool {
 
 func Test_UserHandler_Register(t *testing.T) {
 	user := mocks.GenerateUser(1)
-  mock_pass := MockPass{}
+	mock_pass := MockPass{}
 	var empty_user model.User
 
 	testCases := []struct {
