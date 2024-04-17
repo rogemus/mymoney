@@ -49,7 +49,6 @@ func main() {
 	transactionRepo := repository.NewTransactionRepository(db)
 	transactionHandler := handler.NewTransactionHandler(transactionRepo)
 
-	mux.HandleFunc("POST /transactions", protected(transactionHandler.CreateTransation))
 	mux.HandleFunc("DELETE /transactions/{id}", protected(transactionHandler.DeleteTransaction))
 	mux.HandleFunc("POST /transactions/{id}", protected(transactionHandler.UpdateTransaction))
 	mux.HandleFunc("GET /transactions/{id}", protected(transactionHandler.GetTransaction))
@@ -58,6 +57,7 @@ func main() {
 	budgetRepo := repository.NewBudgetRepository(db)
 	budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
+	mux.HandleFunc("POST /transactions", protected(budgetHandler.CreateTransation))
 	mux.HandleFunc("GET /budget/{id}", protected(budgetHandler.GetBudget))
 	mux.HandleFunc("DELETE /budget/{id}", protected(budgetHandler.DeleteBudget))
 	mux.HandleFunc("PUT /budget/{id}", protected(budgetHandler.UpdateBudget))

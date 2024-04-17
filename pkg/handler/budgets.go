@@ -140,3 +140,42 @@ func (h *BudgetHandler) UpdateBudget(w http.ResponseWriter, r *model.ProtectedRe
 	w.WriteHeader(http.StatusOK)
 	encoder.Encode(payload)
 }
+
+func (h *BudgetHandler) CreateTransation(w http.ResponseWriter, r *model.ProtectedRequest) {
+	var transaction model.Transaction
+	budgetId, err := strconv.Atoi(r.URL.Query().Get("budgetId"))
+	encoder := json.NewEncoder(w)
+	decoder := json.NewDecoder(r.Body)
+
+	if err != nil || budgetId == 0 {
+		errs.ErrorResponse(w, errs.TransactionInvalidBudgetId, http.StatusBadRequest)
+		return
+	}
+
+	if err := decoder.Decode(&transaction); err != nil {
+		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	if transaction.Amount <= 0 {
+		errs.ErrorResponse(w, errs.TransactionInvalidAmount, http.StatusUnprocessableEntity)
+		return
+	}
+
+	if _, err := h.repo.GetBudget(budgetId); err != nil {
+		errs.ErrorResponse(w, errs.Budget404Err, http.StatusNotFound)
+		return
+	}
+
+	transaction.UserID = r.UserID
+	transaction.BudgetID = budgetId
+
+	if _, err := h.transactionsRepo.CreateTransaction(transaction); err != nil {
+		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	payload := model.GenericPayload{Msg: "Transaction created"}
+	w.WriteHeader(http.StatusCreated)
+	encoder.Encode(payload)
+}

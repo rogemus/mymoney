@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
 )
@@ -55,7 +54,6 @@ func (r *transactionRepository) UpdateTransaction(transaction model.Transaction)
 		transaction.ID,
 	)
 
-  fmt.Printf("%v \n %v\n", err, transaction)
 	if err != nil {
 		return -1, errs.Generic400Err
 	}
