@@ -1,4 +1,4 @@
-package handlers_test
+package budget_handler_test
 
 import (
 	"database/sql"
@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"strconv"
 	"testing"
-	"tracker/pkg/handler"
+	budget_handler "tracker/pkg/handler/budget"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
@@ -121,7 +121,7 @@ func Test_BudgetnHandler_GetTransactions(t *testing.T) {
 			transactionRepo := repository.NewTransactionRepository(db)
 
 			budgetRepo := repository.NewBudgetRepository(db)
-			budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
+			budgetHandler := budget_handler.NewBudgetHandler(budgetRepo, transactionRepo)
 			rr := httptest.NewRecorder()
 			hr := http.HandlerFunc(mocks.MockProtected(budgetHandler.GetTransactions))
 			hr.ServeHTTP(rr, req)

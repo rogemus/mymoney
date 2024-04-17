@@ -1,11 +1,11 @@
-package handlers_test
+package budget_handler_test
 
 import (
 	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"tracker/pkg/handler"
+	budget_handler "tracker/pkg/handler/budget"
 	"tracker/pkg/repository"
 	assert "tracker/pkg/utils"
 	mocks "tracker/test/pkg/mocks"
@@ -40,7 +40,7 @@ func Test_BudgetHandler_CreateBudget(t *testing.T) {
 		},
 		{
 			name:              "returns error if empty title",
-			expected:          `{"msg":"Invalid request"}`,
+			expected:          `{"msg":"Invalid Budget Titl"}`,
 			expectedStatus:    400,
 			body:              `{"title": "", "description": "Test Desc 2"}`,
 			budgetTitle:       "",
@@ -69,7 +69,7 @@ func Test_BudgetHandler_CreateBudget(t *testing.T) {
 
 			budgetRepo := repository.NewBudgetRepository(db)
 			transactionRepo := repository.NewTransactionRepository(db)
-			budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
+			budgetHandler := budget_handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
 			rr := httptest.NewRecorder()
 			hr := http.HandlerFunc(mocks.MockProtected(budgetHandler.CreateBudget))

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"tracker/pkg/handler"
+	budget_handler "tracker/pkg/handler/budget"
 	"tracker/pkg/middleware"
 	"tracker/pkg/repository"
 	"tracker/pkg/utils"
@@ -55,7 +56,7 @@ func main() {
 
 	// API: Budget
 	budgetRepo := repository.NewBudgetRepository(db)
-	budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
+	budgetHandler := budget_handler.NewBudgetHandler(budgetRepo, transactionRepo)
 
 	mux.HandleFunc("POST /transactions", protected(budgetHandler.CreateTransation))
 	mux.HandleFunc("GET /budget/{id}", protected(budgetHandler.GetBudget))
