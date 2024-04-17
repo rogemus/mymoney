@@ -6,8 +6,8 @@ This GitHub project focuses on creating a user-friendly app to tract daily expan
 ## User Authentication:
 Secure login and registration.
 
-- [ ] Add user
-- [ ] Login user
+- [x] Add user
+- [x] Login user
 - [ ] Update user
 
 ## Budget Management:
@@ -24,8 +24,8 @@ Share budgets with other users.
 ## Transaction Handling:
 Add, update, and remove transactions.
 
-- [ ] Get Transaction
-- [ ] Get Transactions
-- [ ] Add Transaction
+- [x] Get Transaction
+- [x] Get Transactions
+- [x] Add Transaction
 - [ ] Update Transaction
-- [ ] Delete Transaction
+- [x] Delete Transaction
