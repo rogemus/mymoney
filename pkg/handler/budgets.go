@@ -179,3 +179,28 @@ func (h *BudgetHandler) CreateTransation(w http.ResponseWriter, r *model.Protect
 	w.WriteHeader(http.StatusCreated)
 	encoder.Encode(payload)
 }
+
+func (h *BudgetHandler) GetTransactions(w http.ResponseWriter, r *model.ProtectedRequest) {
+	encoder := json.NewEncoder(w)
+	budgetId, err := strconv.Atoi(r.URL.Query().Get("budgetId"))
+
+	if err != nil || budgetId == 0 {
+		errs.ErrorResponse(w, errs.TransactionInvalidBudgetId, http.StatusBadRequest)
+		return
+	}
+
+	if _, err := h.repo.GetBudget(budgetId); err != nil {
+		errs.ErrorResponse(w, errs.Budget404Err, http.StatusNotFound)
+		return
+	}
+
+	transactions, err := h.transactionsRepo.GetTransactionsForBudget(budgetId)
+
+	if err != nil {
+		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	encoder.Encode(transactions)
+}

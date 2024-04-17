@@ -49,7 +49,7 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 				"Created",
 				"Description",
 				"Title",
-        "UserID",
+				"UserID",
 			}
 			expectedRows := sqlmock.NewRows(columns)
 
@@ -60,7 +60,7 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 					budget.Created,
 					budget.Description,
 					budget.Title,
-          budget.UserID,
+					budget.UserID,
 				)
 			}
 

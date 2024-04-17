@@ -8,7 +8,6 @@ import (
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
-	"tracker/pkg/utils"
 )
 
 type TransactionHandler struct {
@@ -17,20 +16,6 @@ type TransactionHandler struct {
 
 func NewTransactionHandler(repo repository.TransactionRepository) TransactionHandler {
 	return TransactionHandler{repo}
-}
-
-func (h *TransactionHandler) GetTransactions(w http.ResponseWriter, r *http.Request) {
-	encoder := json.NewEncoder(w)
-	budgetId, err := strconv.Atoi(r.URL.Query().Get("budgetId"))
-
-	if err != nil {
-		utils.LogError(err.Error())
-	}
-
-	// TODO Errors
-	transactions, _ := h.repo.GetTransactionsForBudget(budgetId)
-	w.WriteHeader(http.StatusOK)
-	encoder.Encode(transactions)
 }
 
 func (h *TransactionHandler) UpdateTransaction(w http.ResponseWriter, r *model.ProtectedRequest) {

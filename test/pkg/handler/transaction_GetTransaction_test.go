@@ -26,9 +26,9 @@ func Test_TransactionHandler_GetTransaction(t *testing.T) {
 		transactionId  string
 	}{
 		{
-			name:           "returns msg after delete",
-			expected:       `{"msg":"Transaction deleted"}`,
-			expectedStatus: 204,
+			name:           "returns transaction object",
+			expected:       `{"amount":6.9, "budgetId":1, "created":"2021-12-12T09:10:00Z", "description":"mock desc", "id":1, "userId":0, "uuid":"mock uuid"}`,
+			expectedStatus: 200,
 			expectedSqlErr: nil,
 			transactionId:  "1",
 		},
@@ -61,7 +61,6 @@ func Test_TransactionHandler_GetTransaction(t *testing.T) {
 				"UserID",
 			}
 			expectedRows := sqlmock.NewRows(columns)
-
 			expectedRows.AddRow(
 				transaction.ID,
 				transaction.Uuid,
@@ -80,19 +79,15 @@ func Test_TransactionHandler_GetTransaction(t *testing.T) {
 				WillReturnRows(expectedRows).
 				WillReturnError(test.expectedSqlErr)
 
-			mock.
-				ExpectExec("DELETE").
-				WithArgs(id).
-				WillReturnResult(sqlmock.NewResult(int64(id), 1))
-
 			url := fmt.Sprintf("/transactions/%s", test.transactionId)
-			req := httptest.NewRequest(http.MethodDelete, url, nil)
+			req := httptest.NewRequest(http.MethodGet, url, nil)
+
 
 			transactionRepo := repository.NewTransactionRepository(db)
 			transactionHandler := handler.NewTransactionHandler(transactionRepo)
 
 			rr := httptest.NewRecorder()
-			hr := http.HandlerFunc(mocks.MockProtected(transactionHandler.DeleteTransaction))
+			hr := http.HandlerFunc(mocks.MockProtected(transactionHandler.GetTransaction))
 			hr.ServeHTTP(rr, req)
 
 			assert.AssertJson(t, rr.Body.String(), test.expected)

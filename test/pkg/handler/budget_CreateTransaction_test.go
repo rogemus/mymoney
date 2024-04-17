@@ -15,7 +15,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-func Test_TransactionHandler_CreateTransaction(t *testing.T) {
+func Test_BudgetHandler_CreateTransaction(t *testing.T) {
 	budget := mocks.GenerateBudget(1)
 
 	testCases := []struct {

@@ -1,8 +1,6 @@
 package mocks_test
 
 import (
-	"fmt"
-	"math/rand"
 	"time"
 	"tracker/pkg/model"
 )
@@ -12,9 +10,9 @@ func GenerateTransaction(budgetID, id int) model.Transaction {
 
 	return model.Transaction{
     ID:          id,
-		Uuid:        fmt.Sprintf("%d", rand.Intn(9999)),
-		Description: fmt.Sprintf("description %d", rand.Intn(9999)),
-		Amount:      rand.Float64(),
+		Uuid:        "mock uuid",
+		Description: "mock desc",
+		Amount:      6.9,
 		Created:     mock_time,
 		BudgetID:    budgetID,
 	}
