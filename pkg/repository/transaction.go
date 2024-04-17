@@ -10,7 +10,7 @@ type TransactionRepository interface {
 	GetTransactionsForBudget(budgetId int) ([]model.Transaction, error)
 	GetTransaction(transactionId int) (model.Transaction, error)
 	CreateTransaction(transaction model.Transaction) (int64, error)
-	// UpdateTransaction(transaction model.Transaction) error
+	UpdateTransaction(transaction model.Transaction) (int64, error)
 	DeleteTransaction(id int) error
 }
 
@@ -45,9 +45,23 @@ func (r *transactionRepository) CreateTransaction(transaction model.Transaction)
 	return insertedId, nil
 }
 
-// func UpdateTransaction(budgetId, userId int, transaction model.Transaction) (int64, error) {
-//
-// }
+func (r *transactionRepository) UpdateTransaction(transaction model.Transaction) (int64, error) {
+	query := "UPDATE transaction SET Amount=?, Description=? WHERE ID=?"
+	result, err := r.db.Exec(query, transaction.Amount, transaction.Description, transaction.ID)
+
+	if err != nil {
+		return -1, errs.Generic400Err
+	}
+
+	updatedId, err := result.RowsAffected()
+
+	if err != nil {
+		return -1, errs.Generic400Err
+	}
+
+	return updatedId, nil
+}
+
 func (r *transactionRepository) DeleteTransaction(id int) error {
 	query := "DELETE FROM transaction WHERE ID = ?"
 
