@@ -44,13 +44,13 @@ func Test_TransactionRepo_GetTransactionsForBudget(t *testing.T) {
 			db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 			columns := []string{
-				"ID",
-				"Uuid",
-				"Description",
-				"Amount",
-				"Created",
-				"BudgetID",
-				"UserID",
+				"id",
+				"uuid",
+				"description",
+				"amount",
+				"created",
+				"budgetid",
+				"userid",
 			}
 			expectedRows := sqlmock.NewRows(columns)
 
@@ -67,7 +67,7 @@ func Test_TransactionRepo_GetTransactionsForBudget(t *testing.T) {
 			}
 
 			mock.
-				ExpectQuery("SELECT ID, Uuid, Description, Amount, Created, BudgetID, UserID FROM transaction WHERE BudgetID = ?").
+				ExpectQuery("SELECT id, uuid, description, amount, created, budgetid, userid FROM transactions WHERE budgetid = $1").
 				WithArgs(test.budgetID).
 				WillReturnRows(expectedRows).
 				WillReturnError(test.expectedSqlErr)

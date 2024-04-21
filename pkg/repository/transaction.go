@@ -9,7 +9,7 @@ import (
 type TransactionRepository interface {
 	GetTransactionsForBudget(budgetId int) ([]model.Transaction, error)
 	GetTransaction(transactionId int) (model.Transaction, error)
-	CreateTransaction(transaction model.Transaction) (int64, error)
+	CreateTransaction(transaction model.Transaction) error
 	UpdateTransaction(transaction model.Transaction) (int64, error)
 	DeleteTransaction(id int) error
 }
@@ -22,9 +22,9 @@ func NewTransactionRepository(db *sql.DB) TransactionRepository {
 	return &transactionRepository{db}
 }
 
-func (r *transactionRepository) CreateTransaction(transaction model.Transaction) (int64, error) {
-	query := "INSERT INTO transaction (Description, Amount, BudgetID, UserID) VALUES (?, ?, ?, ?)"
-	result, err := r.db.Exec(
+func (r *transactionRepository) CreateTransaction(transaction model.Transaction) error {
+	query := "INSERT INTO transactions (description, amount, budgetid, userid) VALUES ($1, $2, $3, $4)"
+	_, err := r.db.Exec(
 		query,
 		transaction.Description,
 		transaction.Amount,
@@ -33,20 +33,14 @@ func (r *transactionRepository) CreateTransaction(transaction model.Transaction)
 	)
 
 	if err != nil {
-		return -1, errs.Generic400Err
+		return err
 	}
 
-	insertedId, err := result.LastInsertId()
-
-	if err != nil {
-		return -1, errs.Generic400Err
-	}
-
-	return insertedId, nil
+	return nil
 }
 
 func (r *transactionRepository) UpdateTransaction(transaction model.Transaction) (int64, error) {
-	query := "UPDATE transaction SET Amount=?, Description=? WHERE ID=?"
+	query := "UPDATE transactions SET amount=$1, description=$2 WHERE id=$3"
 	result, err := r.db.Exec(
 		query,
 		transaction.Amount,
@@ -68,7 +62,7 @@ func (r *transactionRepository) UpdateTransaction(transaction model.Transaction)
 }
 
 func (r *transactionRepository) DeleteTransaction(id int) error {
-	query := "DELETE FROM transaction WHERE ID = ?"
+	query := "DELETE FROM transactions WHERE id = $1"
 
 	if _, err := r.db.Exec(query, id); err != nil {
 		return errs.Generic400Err
@@ -79,7 +73,7 @@ func (r *transactionRepository) DeleteTransaction(id int) error {
 
 func (r *transactionRepository) GetTransaction(id int) (model.Transaction, error) {
 	var transaction model.Transaction
-	query := "SELECT ID, Uuid, Description, Amount, Created, BudgetID, UserID FROM transaction WHERE ID = ?"
+	query := "SELECT id, uuid, description, amount, created, budgetid, userid FROM transactions WHERE id = $1"
 	err := r.db.
 		QueryRow(query, id).
 		Scan(
@@ -104,7 +98,7 @@ func (r *transactionRepository) GetTransaction(id int) (model.Transaction, error
 }
 
 func (r *transactionRepository) GetTransactionsForBudget(budgetId int) ([]model.Transaction, error) {
-	query := "SELECT ID, Uuid, Description, Amount, Created, BudgetID, UserID FROM transaction WHERE BudgetID = ?"
+	query := "SELECT id, uuid, description, amount, created, budgetid, userid FROM transactions WHERE budgetid = $1"
 	rows, err := r.db.Query(query, budgetId)
 
 	if err != nil {

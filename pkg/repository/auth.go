@@ -8,7 +8,7 @@ import (
 
 type AuthRepository interface {
 	GetToken(token string) (model.Token, error)
-	CreateToken(token string, userEmail string) (int64, error)
+	CreateToken(token string, userEmail string) (error)
 }
 
 type authRepository struct {
@@ -20,7 +20,7 @@ func NewAuthRepository(db *sql.DB) AuthRepository {
 }
 
 func (r *authRepository) GetToken(tokenStr string) (model.Token, error) {
-	query := `SELECT ID, Uuid, Token, UserEmail, Created FROM token WHERE Token = ?`
+	query := `SELECT id, uuid, token, useremail, created FROM tokens WHERE token = $1`
 	var token model.Token
 
 	row := r.db.QueryRow(query, tokenStr)
@@ -43,19 +43,13 @@ func (r *authRepository) GetToken(tokenStr string) (model.Token, error) {
 	return token, nil
 }
 
-func (r *authRepository) CreateToken(token, userEmail string) (int64, error) {
-	query := `INSERT INTO token (Token, UserEmail) VALUES (?, ?)`
-	result, err := r.db.Exec(query, token, userEmail)
+func (r *authRepository) CreateToken(token, userEmail string) error {
+	query := `INSERT INTO tokens (token, useremail) VALUES ($1, $2)`
+	_, err := r.db.Exec(query, token, userEmail)
 
 	if err != nil {
-		return -1, errs.Generic400Err
+		return err
 	}
 
-	lastInsertId, err := result.LastInsertId()
-
-	if err != nil {
-		return -1, errs.Generic400Err
-	}
-
-	return lastInsertId, nil
+	return nil
 }

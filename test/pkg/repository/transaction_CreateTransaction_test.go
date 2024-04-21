@@ -39,7 +39,7 @@ func Test_TransactionRepo_CreateTransaction(t *testing.T) {
 			defer db.Close()
 
 			mock.
-				ExpectExec("INSERT INTO transaction (Description, Amount, BudgetID, UserID) VALUES (?, ?, ?, ?)").
+				ExpectExec("INSERT INTO transactions (description, amount, budgetid, userid) VALUES ($1, $2, $3, $4)").
 				WithArgs(
 					test.transaction.Description,
 					test.transaction.Amount,
@@ -51,10 +51,9 @@ func Test_TransactionRepo_CreateTransaction(t *testing.T) {
 
 			repo := repository.NewTransactionRepository(db)
 
-			newTransactionId, createErr := repo.CreateTransaction(test.transaction)
+			createErr := repo.CreateTransaction(test.transaction)
 			err := mock.ExpectationsWereMet()
 
-			assert.AssertInt(t, int(newTransactionId), test.transaction.ID)
 			assert.AssertError(t, err, test.expectedSqlErr)
 			assert.AssertError(t, createErr, test.expectedErr)
 		})

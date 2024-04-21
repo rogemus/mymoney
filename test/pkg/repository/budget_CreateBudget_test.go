@@ -45,7 +45,7 @@ func Test_BudgetRepo_CreateBudget(t *testing.T) {
 			defer db.Close()
 
 			mock.
-				ExpectExec("INSERT INTO budget (Title, Description, UserID) VALUES (?, ?, ?)").
+				ExpectExec("INSERT INTO budgets (title, description, userid) VALUES ($1, $2, $3)").
 				WithArgs(
 					test.budgetTitle,
 					test.budgetDesctiption,
@@ -62,10 +62,9 @@ func Test_BudgetRepo_CreateBudget(t *testing.T) {
 				ID:          test.budgetId,
 				UserID:      test.budgetUserID,
 			}
-			newBudgetId, createErr := repo.CreateBudget(newBudget)
+			createErr := repo.CreateBudget(newBudget)
 			err := mock.ExpectationsWereMet()
 
-			assert.AssertInt(t, int(newBudgetId), test.budgetId)
 			assert.AssertError(t, err, test.expectedSqlErr)
 			assert.AssertError(t, createErr, test.expectedErr)
 		})

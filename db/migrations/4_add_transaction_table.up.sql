@@ -1,12 +1,11 @@
-CREATE TABLE transaction (
-    ID   						INT AUTO_INCREMENT NOT NULL,
-    Uuid 						VARCHAR(36) DEFAULT (uuid()),
-    Description     VARCHAR(255), 
-    Amount          FLOAT NOT NULL,
-    Created         DATETIME DEFAULT CURRENT_TIMESTAMP,
-  	BudgetID        INT NOT NULL,
-  	UserID 					INT NOT NULL,
-    PRIMARY KEY     (ID),
-    FOREIGN KEY     (BudgetID) REFERENCES budget(ID) 
+CREATE TABLE transactions (
+    id             SERIAL PRIMARY KEY,
+    uuid           UUID DEFAULT gen_random_uuid(),
+    description    VARCHAR(255),
+    amount         FLOAT NOT NULL,
+    created        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    budgetid       INT NOT NULL,
+    userid         INT NOT NULL,
+    FOREIGN KEY    (budgetid) REFERENCES budgets(id),
+    FOREIGN KEY    (userid) REFERENCES users(id)
 );
-

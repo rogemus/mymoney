@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS budget;
+DROP TABLE IF EXISTS budgets;

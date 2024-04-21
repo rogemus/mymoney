@@ -26,7 +26,7 @@ func Test_AuthRepo_CreateToken(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		query := `INSERT INTO token (Token, UserEmail) VALUES (?, ?)`
+		query := `INSERT INTO tokens (token, useremail) VALUES ($1, $2)`
 		db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 		mock.
@@ -36,7 +36,7 @@ func Test_AuthRepo_CreateToken(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		repo := repository.NewAuthRepository(db)
-		_, createErr := repo.CreateToken(test.expectedToken, test.expectedUserEmail)
+		createErr := repo.CreateToken(test.expectedToken, test.expectedUserEmail)
 
 		sqlErr := mock.ExpectationsWereMet()
 		assert.AssertError(t, sqlErr, nil)

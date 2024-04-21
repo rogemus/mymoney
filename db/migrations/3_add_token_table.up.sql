@@ -1,8 +1,7 @@
-CREATE TABLE token (
-    ID              INT AUTO_INCREMENT NOT NULL,
-    Uuid            VARCHAR(36) DEFAULT (uuid()),
-    Token           VARCHAR(255) NOT NULL,
-  	UserEmail				VARCHAR(255) NOT NULL,
-    Created         DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY     (ID)
+CREATE TABLE tokens (
+    id           SERIAL PRIMARY KEY,
+    uuid         UUID DEFAULT gen_random_uuid(),
+    token        VARCHAR(255) NOT NULL,
+    userEmail    VARCHAR(255) NOT NULL,
+    created      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

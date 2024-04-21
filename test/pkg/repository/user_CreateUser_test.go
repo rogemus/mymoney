@@ -20,7 +20,7 @@ func Test_UserRepo_CreateUser(t *testing.T) {
 		userId         int
 	}{
 		{
-			name:           "create budget",
+			name:           "create user",
 			expectedErr:    nil,
 			expectedSqlErr: nil,
 			userName:       "test",
@@ -36,7 +36,7 @@ func Test_UserRepo_CreateUser(t *testing.T) {
 			defer db.Close()
 
 			mock.
-				ExpectExec("INSERT INTO user (Username, Email, Password) VALUES (?, ?, ?)").
+				ExpectExec("INSERT INTO users (username, email, password) VALUES ($1, $2, $3)").
 				WithArgs(test.userName, test.userEmail, test.userPass).
 				WillReturnResult(sqlmock.NewResult(int64(test.userId), 1)).
 				WillReturnError(test.expectedSqlErr)
@@ -44,10 +44,9 @@ func Test_UserRepo_CreateUser(t *testing.T) {
 			repo := repository.NewUserRepository(db)
 
 			newUser := model.User{Username: test.userName, Email: test.userEmail, Password: test.userPass}
-			newUserId, createUsrErr := repo.CreateUser(newUser)
+			createUsrErr := repo.CreateUser(newUser)
 			err := mock.ExpectationsWereMet()
 
-			assert.AssertInt(t, int(newUserId), test.userId)
 			assert.AssertError(t, err, test.expectedSqlErr)
 			assert.AssertError(t, createUsrErr, test.expectedErr)
 		})

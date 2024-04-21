@@ -44,12 +44,12 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 			db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 			columns := []string{
-				"ID",
-				"Uuid",
-				"Created",
-				"Description",
-				"Title",
-				"UserID",
+				"id",
+				"uuid",
+				"created",
+				"description",
+				"title",
+				"userid",
 			}
 			expectedRows := sqlmock.NewRows(columns)
 
@@ -65,7 +65,7 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 			}
 
 			mock.
-				ExpectQuery("SELECT ID, Uuid, Created, Description, Title, UserID FROM budget").
+				ExpectQuery("SELECT id, uuid, created, description, title, userid FROM budgets").
 				WithoutArgs().
 				WillReturnRows(expectedRows)
 
@@ -74,7 +74,7 @@ func Test_BudgetRepo_GetBudgets(t *testing.T) {
 			repo := repository.NewBudgetRepository(db)
 			result, err := repo.GetBudgets()
 
-			assert.AssertSliceOfStructs[model.Budget](t, result, test.expected)
+			assert.AssertSliceOfStructs(t, result, test.expected)
 			assert.AssertError(t, err, test.expectedErr)
 
 			if err := mock.ExpectationsWereMet(); err != nil {

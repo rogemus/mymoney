@@ -9,7 +9,7 @@ import (
 type BudgetRepository interface {
 	GetBudget(id int) (model.Budget, error)
 	GetBudgets() ([]model.Budget, error)
-	CreateBudget(budget model.Budget) (int64, error)
+	CreateBudget(budget model.Budget) error
 	UpdateBudget(budget model.Budget, id int) error
 	DeleteBudget(id int) error
 }
@@ -24,7 +24,7 @@ func NewBudgetRepository(db *sql.DB) BudgetRepository {
 
 func (r *budgetRepository) GetBudget(id int) (model.Budget, error) {
 	var b model.Budget
-	query := "SELECT ID, Uuid, Created, Description, Title, UserID FROM budget WHERE ID = ?"
+	query := "SELECT id, uuid, created, description, title, userid FROM budgets WHERE id = $1"
 	row := r.db.QueryRow(query, id)
 	err := row.Scan(&b.ID, &b.Uuid, &b.Created, &b.Description, &b.Title, &b.UserID)
 
@@ -40,7 +40,7 @@ func (r *budgetRepository) GetBudget(id int) (model.Budget, error) {
 }
 
 func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
-	query := "SELECT ID, Uuid, Created, Description, Title, UserID FROM budget"
+	query := "SELECT id, uuid, created, description, title, userid FROM budgets"
 	rows, err := r.db.Query(query)
 
 	if err != nil {
@@ -67,9 +67,9 @@ func (r *budgetRepository) GetBudgets() ([]model.Budget, error) {
 	return budgets, nil
 }
 
-func (r *budgetRepository) CreateBudget(budget model.Budget) (int64, error) {
-	query := "INSERT INTO budget (Title, Description, UserID) VALUES (?, ?, ?)"
-	result, err := r.db.Exec(
+func (r *budgetRepository) CreateBudget(budget model.Budget) error {
+	query := "INSERT INTO budgets (title, description, userid) VALUES ($1, $2, $3)"
+	_, err := r.db.Exec(
 		query,
 		budget.Title,
 		budget.Description,
@@ -77,20 +77,14 @@ func (r *budgetRepository) CreateBudget(budget model.Budget) (int64, error) {
 	)
 
 	if err != nil {
-		return -1, errs.Generic400Err
+		return errs.Generic400Err
 	}
 
-	id, err := result.LastInsertId()
-
-	if err != nil {
-		return -1, errs.Generic400Err
-	}
-
-	return id, nil
+	return nil
 }
 
 func (r *budgetRepository) DeleteBudget(id int) error {
-	query := "DELETE FROM budget WHERE ID = ?"
+	query := "DELETE FROM budgets WHERE id = $1"
 
 	if _, err := r.db.Exec(query, id); err != nil {
 		return errs.Generic400Err
@@ -100,7 +94,7 @@ func (r *budgetRepository) DeleteBudget(id int) error {
 }
 
 func (r *budgetRepository) UpdateBudget(budget model.Budget, id int) error {
-	query := "UPDATE budget SET Title=?, Description=? WHERE ID = ?"
+	query := "UPDATE budgets SET title=$1, description=$2 WHERE id = $3"
 	_, err := r.db.Exec(query, budget.Title, budget.Description, id)
 
 	if err != nil {
