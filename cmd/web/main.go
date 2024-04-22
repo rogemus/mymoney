@@ -73,12 +73,12 @@ func main() {
 	mux.HandleFunc("POST /login", userHandler.LoginUser)
 
 	// API: Public Files
-	publicFiles := http.FileServer(http.Dir("./ui/public"))
+	publicFiles := http.FileServer(http.Dir("ui/public/browser"))
 	mux.Handle("/", publicFiles)
 
-	routes := middleware.LogReq(middleware.ServeJson(mux))
+	routes := middleware.LogReq(mux)
+	addr := fmt.Sprintf("%s:%s", os.Getenv("ADDR"), os.Getenv("PORT"))
 
-	addr := fmt.Sprintf("%s:%s", "0.0.0.0", os.Getenv("PORT"))
 	// Init server
 	srv := &http.Server{
 		Addr:    addr,
