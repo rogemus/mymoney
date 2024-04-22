@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
@@ -41,7 +40,6 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	createUserErr := h.repo.CreateUser(user)
 
 	if createUserErr != nil {
-		fmt.Printf("%v \n", createUserErr)
 		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
 		return
 	}
