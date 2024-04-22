@@ -42,7 +42,7 @@ func Test_BudgetRepo_UpdateBudget(t *testing.T) {
 			defer db.Close()
 
 			mock.
-				ExpectExec("UPDATE budget SET Title=?, Description=? WHERE ID = ?").
+				ExpectExec("UPDATE budgets SET title=$1, description=$2 WHERE id = $3").
 				WithArgs(test.budgetTitle, test.budgetDesctiption, test.budgetId).
 				WillReturnResult(sqlmock.NewResult(int64(test.budgetId), 1)).
 				WillReturnError(test.expectedSqlErr)

@@ -10,8 +10,8 @@ import (
 	"tracker/pkg/repository"
 	"tracker/pkg/utils"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -23,14 +23,15 @@ func main() {
 	}
 
 	// Init DB
-	cfg := mysql.Config{
-		User:      os.Getenv("DB_USER"),
-		Passwd:    os.Getenv("DB_PASS"),
-		Addr:      os.Getenv("DB_ADDR"),
-		DBName:    os.Getenv("DB_NAME"),
-		ParseTime: true,
-	}
-	db, err := sql.Open("mysql", cfg.FormatDSN())
+	cfg := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASS"),
+		os.Getenv("DB_NAME"),
+	)
+
+	db, err := sql.Open("postgres", cfg)
 
 	if err = db.Ping(); err != nil {
 		utils.LogFatal(err.Error())
@@ -77,14 +78,15 @@ func main() {
 
 	routes := middleware.LogReq(middleware.ServeJson(mux))
 
+	addr := fmt.Sprintf("%s:%s", "0.0.0.0", os.Getenv("PORT"))
 	// Init server
 	srv := &http.Server{
-		Addr:    ":3333",
+		Addr:    addr,
 		Handler: routes,
 	}
 
 	// Start Server
-	utils.LogInfo(fmt.Sprintf("Listening on port: %v ...", ":3333"))
+	utils.LogInfo(fmt.Sprintf("Listening on: %v ...", addr))
 	servErr := srv.ListenAndServe()
 
 	if servErr != nil {

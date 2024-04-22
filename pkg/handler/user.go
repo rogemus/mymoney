@@ -37,7 +37,7 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	hashPass, _ := authService.HashPass(user.Password)
 	user.Password = hashPass
-	_, createUserErr := h.repo.CreateUser(user)
+	createUserErr := h.repo.CreateUser(user)
 
 	if createUserErr != nil {
 		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
@@ -80,7 +80,7 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := authService.GenerateJwt(userDB.ID, userDB.Email)
-	_, tokenCreateErr := h.authRepo.CreateToken(token.Token, userReq.Email)
+	tokenCreateErr := h.authRepo.CreateToken(token.Token, userReq.Email)
 
 	if tokenCreateErr != nil {
 		errs.ErrorResponse(w, tokenCreateErr, http.StatusBadRequest)

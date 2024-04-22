@@ -36,7 +36,7 @@ func Test_BudgetRepo_DeleteBudget(t *testing.T) {
 			defer db.Close()
 
 			mock.
-				ExpectExec("DELETE FROM budget WHERE ID = ?").
+				ExpectExec("DELETE FROM budgets WHERE id = $1").
 				WithArgs(test.budgetID).
 				WillReturnResult(sqlmock.NewResult(int64(test.budgetID), 1)).
 				WillReturnError(test.expectedSqlErr)

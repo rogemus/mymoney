@@ -29,7 +29,7 @@ func Test_TransactionRepo_DeleteTransaction(t *testing.T) {
 			defer db.Close()
 
 			mock.
-				ExpectExec("DELETE FROM transaction WHERE ID = ?").
+				ExpectExec("DELETE FROM transactions WHERE id = $1").
 				WithArgs(
 					test.transactionId,
 				).

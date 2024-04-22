@@ -170,7 +170,7 @@ func (h *BudgetHandler) CreateTransation(w http.ResponseWriter, r *model.Protect
 	transaction.UserID = r.UserID
 	transaction.BudgetID = budgetId
 
-	if _, err := h.transactionsRepo.CreateTransaction(transaction); err != nil {
+	if err := h.transactionsRepo.CreateTransaction(transaction); err != nil {
 		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
 		return
 	}

@@ -35,7 +35,7 @@ func Test_TransactionRepo_UpdateTransaction(t *testing.T) {
 			defer db.Close()
 
 			mock.
-				ExpectExec("UPDATE transaction SET Amount=?, Description=? WHERE ID=?").
+				ExpectExec("UPDATE transactions SET amount=$1, description=$2 WHERE id=$3").
 				WithArgs(
 					test.transaction.Amount,
 					test.transaction.Description,
