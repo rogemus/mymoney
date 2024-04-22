@@ -31,6 +31,7 @@ func main() {
 		os.Getenv("DB_NAME"),
 	)
 
+  fmt.Printf("\n %v \n", cfg)
 	db, err := sql.Open("postgres", cfg)
 
 	if err = db.Ping(); err != nil {

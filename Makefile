@@ -1,3 +1,8 @@
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
 server:
 	@echo "Starting go server ..."
 	@go run cmd/web/main.go
@@ -25,3 +30,9 @@ testRepos:
 testHandlers:
 	@echo "Testing handlers..."
 	@go test ./test/pkg/handler/...
+
+
+migration:
+	GOOSE_DRIVER=postgres \
+	GOOSE_DBSTRING="host=$(DB_HOST) port=$(DB_PORT) user=$(DB_USER) password=$(DB_PASS) dbname=$(DB_NAME) sslmode=disable" \
+	goose -dir db/migrations $(action)
