@@ -45,6 +45,7 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
 	payload := model.GenericPayload{Msg: "User created"}
 	encoder.Encode(payload)
 }
@@ -88,6 +89,7 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
 	payload := model.Authenticated{Token: token.Token}
 	encoder.Encode(payload)
 }

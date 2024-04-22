@@ -7,17 +7,34 @@ server:
 	@echo "Starting go server ..."
 	@go run cmd/web/main.go
 
-buildProd:
-	@echo "Starting production build..."
+build:
+	@make buildGoProd
+	@echo "Backend Build DONE !!!"
+
+	@echo "---"
+
+	@make buildUiProd
+	@echo "UI Build DONE !!!"
+
+buildGoProd:
+	@echo "Starting go production build..."
 	GOOS=linux GOARCH=amd64 go build -o ./tmp/main-linux ./cmd/web/main.go
 
-buildDev:
-	@echo "Starting build ..."
+buildGoDev:
+	@echo "Starting go build ..."
 	@go build -v -o ./tmp/main ./cmd/web/main.go
 
-dev:
-	@echo "Starting go server with live reload"
+buildUiProd:
+	@echo "Starting UI build ..."
+	@npm run build --prefix ui
+
+devGo:
+	@echo "Starting go server with live reload..."
 	@air
+
+devUI:
+	@echo "Starting ui server with live reload..."
+	@npm run start --prefix ui
 
 tests:
 	@echo "Testing..."
@@ -30,7 +47,6 @@ testRepos:
 testHandlers:
 	@echo "Testing handlers..."
 	@go test ./test/pkg/handler/...
-
 
 migration:
 	GOOSE_DRIVER=postgres \

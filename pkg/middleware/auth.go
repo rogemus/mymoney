@@ -65,6 +65,7 @@ func (m *authMiddleware) ProtectedRoute(next ProtectedHandler) http.HandlerFunc 
 			UserEmail: claims.UserEmail,
 			UserID:    claims.UserID,
 		}
+		w.Header().Set("Content-Type", "application/json")
 		next(w, &protectedRequest)
 	})
 }
