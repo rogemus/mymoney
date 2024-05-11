@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"html/template"
 	"net/http"
 	"os"
 	"tracker/pkg/handler"
@@ -13,6 +14,22 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
+
+func loginViewHandler(w http.ResponseWriter, r *http.Request) {
+	templ, err := template.New("login").ParseFiles("ui/views/login.html", "ui/views/_base.html")
+
+	if err != nil {
+		utils.LogError(err.Error())
+		return
+	}
+
+	err = templ.ExecuteTemplate(w, "base", nil)
+
+	if err != nil {
+		utils.LogError(err.Error())
+		return
+	}
+}
 
 func main() {
 	var err error
@@ -75,6 +92,9 @@ func main() {
 	// API: Public Files
 	publicFiles := http.FileServer(http.Dir("ui/public/browser"))
 	mux.Handle("/", publicFiles)
+
+	// Views
+	mux.HandleFunc("/login", loginViewHandler)
 
 	routes := middleware.LogReq(mux)
 	addr := fmt.Sprintf("%s:%s", os.Getenv("ADDR"), os.Getenv("PORT"))

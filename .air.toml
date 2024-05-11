@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   bin = "./tmp/main"
-  cmd = "make buildDev"
+  cmd = "make buildGoDev"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "ui", "test", "api-docs", "db"]
   exclude_file = []

@@ -1,0 +1,29 @@
+{{ define "content" }}
+
+<h1>
+  Login Page
+</h1>
+
+<div hx-ext="response-targets">
+  <div id="err"></div>
+  <div id="success"></div>
+
+  <form hx-post="/login" hx-target="#success" hx-target-error="#err">
+    <div>
+      <label for="email">Email</label>
+      <input 
+        required
+        pattern="(.+)(@{1})(.+\.+.+)"
+        placeholder="Email..." id="email" id="email" />
+    </div>
+    <div>
+      <label for="pass">Password</label>
+      <input 
+        required
+        id="pass" placeholder="Password ..." type="password" />
+    </div>
+    <button type="submit">Login</button>
+  </form>
+</div>
+
+{{ end }}
