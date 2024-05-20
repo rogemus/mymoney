@@ -1,0 +1,23 @@
+meta {
+  name: Signin
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{url}}/signin
+  body: multipartForm
+  auth: none
+}
+
+body:json {
+  {
+    "email": "test2@test2.com",
+    "password": "pass123"
+  }
+}
+
+body:multipart-form {
+  email: test2@test2.com
+  password: pass123
+}

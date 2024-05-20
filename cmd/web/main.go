@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"html/template"
 	"net/http"
 	"os"
 	"tracker/pkg/handler"
@@ -14,22 +13,6 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
-
-func loginViewHandler(w http.ResponseWriter, r *http.Request) {
-	templ, err := template.New("login").ParseFiles("ui/views/login.html", "ui/views/_base.html")
-
-	if err != nil {
-		utils.LogError(err.Error())
-		return
-	}
-
-	err = templ.ExecuteTemplate(w, "base", nil)
-
-	if err != nil {
-		utils.LogError(err.Error())
-		return
-	}
-}
 
 func main() {
 	var err error
@@ -61,40 +44,23 @@ func main() {
 	// API: Token
 	authRepo := repository.NewAuthRepository(db)
 	authMiddleware := middleware.NewAuthMiddleware(authRepo)
-	protected := authMiddleware.ProtectedRoute
+	protected := authMiddleware.ProtectedView
 
-	// API: Transactions
-	transactionRepo := repository.NewTransactionRepository(db)
-	transactionHandler := handler.NewTransactionHandler(transactionRepo)
-
-	mux.HandleFunc("DELETE /transactions/{id}", protected(transactionHandler.DeleteTransaction))
-	mux.HandleFunc("POST /transactions/{id}", protected(transactionHandler.UpdateTransaction))
-	mux.HandleFunc("GET /transactions/{id}", protected(transactionHandler.GetTransaction))
-
-	// API: Budget
-	budgetRepo := repository.NewBudgetRepository(db)
-	budgetHandler := handler.NewBudgetHandler(budgetRepo, transactionRepo)
-
-	mux.HandleFunc("POST /transactions", protected(budgetHandler.CreateTransation))
-	mux.HandleFunc("GET /budget/{id}", protected(budgetHandler.GetBudget))
-	mux.HandleFunc("DELETE /budget/{id}", protected(budgetHandler.DeleteBudget))
-	mux.HandleFunc("PUT /budget/{id}", protected(budgetHandler.UpdateBudget))
-	mux.HandleFunc("GET /budgets", protected(budgetHandler.GetBudgets))
-	mux.HandleFunc("POST /budgets", protected(budgetHandler.CreateBudget))
-
-	// API: User
+	// User
 	userRepo := repository.NewUserRepository(db)
 	userHandler := handler.NewUserHandler(userRepo, authRepo)
 
-	mux.HandleFunc("POST /register", userHandler.RegisterUser)
-	mux.HandleFunc("POST /login", userHandler.LoginUser)
+	mux.HandleFunc("GET /", userHandler.LoginView)
+	mux.HandleFunc("POST /signin", userHandler.Signin)
+
+	// Dashboard
+	dashboardHandler := handler.NewDashboardHandler()
+
+	mux.HandleFunc("GET /dashboard", protected(dashboardHandler.MainView))
 
 	// API: Public Files
 	publicFiles := http.FileServer(http.Dir("ui/public/browser"))
 	mux.Handle("/", publicFiles)
-
-	// Views
-	mux.HandleFunc("/login", loginViewHandler)
 
 	routes := middleware.LogReq(mux)
 	addr := fmt.Sprintf("%s:%s", os.Getenv("ADDR"), os.Getenv("PORT"))

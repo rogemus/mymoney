@@ -6,21 +6,25 @@
 
 <div hx-ext="response-targets">
   <div id="err"></div>
-  <div id="success"></div>
-
-  <form hx-post="/login" hx-target="#success" hx-target-error="#err">
+  <form enctype="multipart/form-data" hx-replace-url="true" hx-post="/signin" hx-target="body" hx-target-error="#err">
     <div>
       <label for="email">Email</label>
       <input 
+        id="email"
+        name="email" 
+        placeholder="Email..."
         required
-        pattern="(.+)(@{1})(.+\.+.+)"
-        placeholder="Email..." id="email" id="email" />
+      />
     </div>
     <div>
       <label for="pass">Password</label>
       <input 
+        id="pass"
+        name="password"
+        placeholder="Password..."
         required
-        id="pass" placeholder="Password ..." type="password" />
+        type="password"
+      />
     </div>
     <button type="submit">Login</button>
   </form>

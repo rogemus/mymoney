@@ -8,7 +8,7 @@ import (
 
 type AuthRepository interface {
 	GetToken(token string) (model.Token, error)
-	CreateToken(token string, userEmail string) (error)
+	CreateToken(token model.Token) (error)
 }
 
 type authRepository struct {
@@ -43,9 +43,9 @@ func (r *authRepository) GetToken(tokenStr string) (model.Token, error) {
 	return token, nil
 }
 
-func (r *authRepository) CreateToken(token, userEmail string) error {
+func (r *authRepository) CreateToken(token model.Token) error {
 	query := `INSERT INTO tokens (token, useremail) VALUES ($1, $2)`
-	_, err := r.db.Exec(query, token, userEmail)
+	_, err := r.db.Exec(query, token.Token, token.UserEmail)
 
 	if err != nil {
 		return err

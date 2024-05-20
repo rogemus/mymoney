@@ -2,7 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+	"html/template"
 	"net/http"
+	"time"
 	"tracker/pkg/errs"
 	"tracker/pkg/model"
 	"tracker/pkg/repository"
@@ -50,14 +52,26 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(payload)
 }
 
-func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
-	var userReq model.User
-	encoder := json.NewEncoder(w)
-	decoder := json.NewDecoder(r.Body)
+func (h *UserHandler) LoginView(w http.ResponseWriter, r *http.Request) {
+	// TODO: handle err
+	// TODO: redirect if cookie is valid
 
-	if err := decoder.Decode(&userReq); err != nil {
-		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
+	templ, _ := template.
+		New("login").
+		ParseFiles("ui/views/login.html", "ui/views/_base.html")
+
+	templ.ExecuteTemplate(w, "base", nil)
+}
+
+func (h *UserHandler) Signin(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(0); err != nil {
+		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
 		return
+	}
+
+	userReq := model.User{
+		Email:    r.FormValue("email"),
+		Password: r.FormValue("password"),
 	}
 
 	// TODO: Make something nicer
@@ -80,16 +94,25 @@ func (h *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := authService.GenerateJwt(userDB.ID, userDB.Email)
-	tokenCreateErr := h.authRepo.CreateToken(token.Token, userReq.Email)
-
-	if tokenCreateErr != nil {
-		errs.ErrorResponse(w, tokenCreateErr, http.StatusBadRequest)
-		return
+	sessionid := authService.GenerateSessionId()
+	session := model.Session{
+		Id:        sessionid,
+		UserEmail: userDB.Email,
+		Duration:  int(model.SessionDuration),
+		ExpiresAt: time.Now().Add(model.SessionDuration),
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	payload := model.Authenticated{Token: token.Token}
-	encoder.Encode(payload)
+	model.SessionMux.Lock()
+	model.Sessions[sessionid] = session
+	model.SessionMux.Unlock()
+
+	cookie := http.Cookie{
+		Name:   "sessionid",
+		Value:  sessionid,
+		MaxAge: int(model.SessionDuration),
+		Path:   "/",
+	}
+
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
