@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"html/template"
 	"net/http"
 	"time"
@@ -21,47 +20,62 @@ func NewUserHandler(repo repository.UserRepository, authRepo repository.AuthRepo
 	return UserHandler{repo, authRepo}
 }
 
-func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	var user model.User
-	encoder := json.NewEncoder(w)
-	decoder := json.NewDecoder(r.Body)
+func (h *UserHandler) LogoutView(w http.ResponseWriter, r *http.Request) {
+	templ, _ := template.
+		New("logout").
+		ParseFiles("ui/views/logout.html", "ui/views/_base.html")
 
-	if err := decoder.Decode(&user); err != nil {
-		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
-		return
-	}
+	templ.ExecuteTemplate(w, "base", nil)
+}
 
-	// TODO: Make something nicer
-	if user.Email == "" || user.Username == "" || user.Password == "" {
-		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
-		return
-	}
+func (h *UserHandler) RegisterView(w http.ResponseWriter, r *http.Request) {
+	templ, _ := template.
+		New("register").
+		ParseFiles("ui/views/register.html", "ui/views/_base.html")
 
-	hashPass, _ := authService.HashPass(user.Password)
-	user.Password = hashPass
-	createUserErr := h.repo.CreateUser(user)
-
-	if createUserErr != nil {
-		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Content-Type", "application/json")
-	payload := model.GenericPayload{Msg: "User created"}
-	encoder.Encode(payload)
+	templ.ExecuteTemplate(w, "base", nil)
 }
 
 func (h *UserHandler) LoginView(w http.ResponseWriter, r *http.Request) {
-	// TODO: handle err
 	// TODO: redirect if cookie is valid
-
 	templ, _ := template.
 		New("login").
 		ParseFiles("ui/views/login.html", "ui/views/_base.html")
 
 	templ.ExecuteTemplate(w, "base", nil)
 }
+
+func (h *UserHandler) Signup(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(0); err != nil {
+		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
+		return
+	}
+
+	user := model.User{
+		Username: r.FormValue("username"),
+		Email:    r.FormValue("email"),
+		Password: r.FormValue("password"),
+	}
+
+	// TODO: Make something nicer
+	if user.Password == "" || user.Username == "" || user.Email == "" {
+		errs.ErrorResponse(w, errs.Generic422Err, http.StatusUnprocessableEntity)
+		return
+	}
+
+	hashPass, _ := authService.HashPass(user.Password)
+	user.Password = hashPass
+
+	if err := h.repo.CreateUser(user); err != nil {
+		errs.ErrorResponse(w, errs.Generic400Err, http.StatusBadRequest)
+		return
+	}
+
+	// TODO: display notification after user is created
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (h *UserHandler) Signout(w http.ResponseWriter, r *http.Request) {}
 
 func (h *UserHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(0); err != nil {
@@ -95,6 +109,7 @@ func (h *UserHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionid := authService.GenerateSessionId()
+	// TODO: Store session in db
 	session := model.Session{
 		Id:        sessionid,
 		UserEmail: userDB.Email,

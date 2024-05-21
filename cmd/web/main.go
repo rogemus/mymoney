@@ -51,7 +51,11 @@ func main() {
 	userHandler := handler.NewUserHandler(userRepo, authRepo)
 
 	mux.HandleFunc("GET /", userHandler.LoginView)
+	mux.HandleFunc("GET /register", userHandler.RegisterView)
+	mux.HandleFunc("GET /logout", userHandler.LogoutView)
+	mux.HandleFunc("POST /signup", userHandler.Signup)
 	mux.HandleFunc("POST /signin", userHandler.Signin)
+	mux.HandleFunc("POST /signout", userHandler.Signout)
 
 	// Dashboard
 	dashboardHandler := handler.NewDashboardHandler()

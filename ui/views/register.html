@@ -1,0 +1,30 @@
+{{ define "content" }}
+
+<h1>
+  Register Page
+</h1>
+
+<div hx-ext="response-targets">
+  <div id="err"></div>
+  <form enctype="multipart/form-data" hx-replace-url="true" hx-post="/signup" hx-target="body" hx-target-error="#err">
+    <div>
+      <label for="username">Username</label>
+      <input id="username" name="username" placeholder="Username..." required />
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input id="email" name="email" placeholder="Email..." required />
+    </div>
+    <div>
+      <label for="pass">Password</label>
+      <input id="pass" name="password" placeholder="Password..." required type="password" />
+    </div>
+    <button type="submit">Register</button>
+  </form>
+</div>
+
+<div>
+  <a href="#" hx-get="/" hx-push-url="true" hx-swap="innerHTML show:top" hx-target="body">Login</a>
+</div>
+
+{{ end }}
